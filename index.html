@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<title>دليل فيصل — بوكيت 2026</title>
+<style>
+/* ============================================
+   iOS TRAVEL GUIDE — SINGLE FILE PWA
+   Designed for iPhone Safari, Offline Ready
+   ============================================ */
+
+/* ===== CSS VARIABLES (Light Mode Default) ===== */
+:root {
+  --ios-bg: #F2F2F7;
+  --ios-surface: #FFFFFF;
+  --ios-surface-elevated: #FFFFFF;
+  --ios-text: #000000;
+  --ios-text-secondary: #8E8E93;
+  --ios-text-tertiary: #C7C7CC;
+  --ios-border: rgba(120,120,128,0.16);
+  --ios-separator: rgba(60,60,67,0.12);
+  --ios-blue: #007AFF;
+  --ios-green: #34C759;
+  --ios-orange: #FF9500;
+  --ios-red: #FF3B30;
+  --ios-indigo: #5856D6;
+  --ios-teal: #5AC8FA;
+  --ios-pink: #FF2D55;
+  --ios-yellow: #FFCC00;
+  --ios-gray: #8E8E93;
+  --ios-gray2: #AEAEB2;
+  --ios-gray3: #C7C7CC;
+  --ios-gray4: #D1D1D6;
+  --ios-gray5: #E5E5EA;
+  --ios-gray6: #F2F2F7;
+  --ios-card-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+  --ios-glass-bg: rgba(255,255,255,0.72);
+  --ios-glass-border: rgba(255,255,255,0.3);
+  --ios-blur: saturate(180%) blur(20px);
+  --safe-top: env(safe-area-inset-top, 44px);
+  --safe-bottom: env(safe-area-inset-bottom, 34px);
+  --nav-height: 64px;
+  --tab-height: 56px;
+}
+
+[data-theme="dark"] {
+  --ios-bg: #000000;
+  --ios-surface: #1C1C1E;
+  --ios-surface-elevated: #2C2C2E;
+  --ios-text: #FFFFFF;
+  --ios-text-secondary: #8E8E93;
+  --ios-text-tertiary: #48484A;
+  --ios-border: rgba(120,120,128,0.24);
+  --ios-separator: rgba(84,84,88,0.24);
+  --ios-card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.2);
+  --ios-glass-bg: rgba(28,28,30,0.72);
+  --ios-glass-border: rgba(255,255,255,0.08);
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  background: var(--ios-bg);
+  color: var(--ios-text);
+  line-height: 1.47059;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ===== SCROLLBAR (hidden on mobile) ===== */
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* ===== LAYOUT ===== */
+.app-container {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+  padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 16px);
+}
+
+/* ===== GLASSMORPHISM NAV ===== */
+.top-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding-top: var(--safe-top);
+  background: var(--ios-glass-bg);
+  backdrop-filter: var(--ios-blur);
+  -webkit-backdrop-filter: var(--ios-blur);
+  border-bottom: 0.5px solid var(--ios-border);
+  transition: background 0.3s ease;
+}
+.top-nav-inner {
+  max-width: 430px;
+  margin: 0 auto;
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  position: relative;
+}
+.nav-title {
+  font-size: 17px;
+  font-weight: 600;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.nav-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ios-gray5);
+  color: var(--ios-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+[data-theme="dark"] .nav-btn { background: var(--ios-surface-elevated); }
+.nav-btn:active { transform: scale(0.88); opacity: 0.7; }
+.nav-btn svg { width: 18px; height: 18px; }
+
+/* ===== BOTTOM TAB BAR ===== */
+.tab-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--ios-glass-bg);
+  backdrop-filter: var(--ios-blur);
+  -webkit-backdrop-filter: var(--ios-blur);
+  border-top: 0.5px solid var(--ios-border);
+  padding-bottom: var(--safe-bottom);
+}
+.tab-bar-inner {
+  max-width: 430px;
+  margin: 0 auto;
+  height: var(--tab-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 0;
+  border: none;
+  background: none;
+  color: var(--ios-gray);
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-family: inherit;
+}
+.tab-item.active { color: var(--ios-blue); }
+.tab-item svg { width: 24px; height: 24px; transition: transform 0.2s ease; }
+.tab-item:active svg { transform: scale(0.85); }
+
+/* ===== SECTIONS ===== */
+.section {
+  display: none;
+  padding: calc(var(--safe-top) + var(--nav-height) + 8px) 16px 16px;
+  animation: sectionIn 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.section.active { display: block; }
+@keyframes sectionIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== HERO / HOME ===== */
+.hero-card {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  aspect-ratio: 16/10;
+  box-shadow: var(--ios-card-shadow);
+}
+.hero-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+}
+.hero-title {
+  color: #fff;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 4px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.hero-subtitle {
+  color: rgba(255,255,255,0.8);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* ===== COUNTDOWN ===== */
+.countdown-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.countdown-box {
+  flex: 1;
+  background: var(--ios-surface);
+  border-radius: 16px;
+  padding: 14px 8px;
+  text-align: center;
+  box-shadow: var(--ios-card-shadow);
+  border: 0.5px solid var(--ios-border);
+}
+.countdown-num {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--ios-blue);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.countdown-label {
+  font-size: 11px;
+  color: var(--ios-text-secondary);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ===== PROGRESS RING ===== */
+.progress-card {
+  background: var(--ios-surface);
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--ios-card-shadow);
+  border: 0.5px solid var(--ios-border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.progress-ring-wrap {
+  position: relative;
+  width: 64px; height: 64px;
+  flex-shrink: 0;
+}
+.progress-ring-svg {
+  transform: rotate(-90deg);
+  width: 64px; height: 64px;
+}
+.progress-ring-bg {
+  fill: none;
+  stroke: var(--ios-gray5);
+  stroke-width: 6;
+}
+[data-theme="dark"] .progress-ring-bg { stroke: var(--ios-surface-elevated); }
+.progress-ring-fill {
+  fill: none;
+  stroke: var(--ios-blue);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.progress-ring-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ios-blue);
+}
+.progress-info h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.progress-info p {
+  font-size: 13px;
+  color: var(--ios-text-secondary);
+}
+
+/* ===== WEATHER WIDGET ===== */
+.weather-card {
+  background: linear-gradient(135deg, #5AC8FA 0%, #007AFF 100%);
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 16px;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,122,255,0.25);
+  position: relative;
+  overflow: hidden;
+}
+.weather-card::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -20%;
+  width: 200px; height: 200px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+}
+.weather-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+.weather-temp {
+  font-size: 48px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+.weather-temp span { font-size: 24px; font-weight: 400; }
+.weather-desc {
+  font-size: 15px;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+.weather-location {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+.weather-icon { font-size: 40px; }
+.weather-edit {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+.weather-edit input {
+  flex: 1;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+.weather-edit input::placeholder { color: rgba(255,255,255,0.6); }
+.weather-edit button {
+  background: rgba(255,255,255,0.25);
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ===== QUICK NAV CARDS ===== */
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.quick-card {
+  background: var(--ios-surface);
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  box-shadow: var(--ios-card-shadow);
+  border: 0.5px solid var(--ios-border);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  font-family: inherit;
+  color: inherit;
+}
+.quick-card:active { transform: scale(0.96); }
+.quick-card-icon {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 8px;
+  font-size: 22px;
+}
+.quick-card-icon.blue { background: rgba(0,122,255,0.12); }
+.quick-card-icon.green { background: rgba(52,199,89,0.12); }
+.quick-card-icon.orange { background: rgba(255,149,0,0.12); }
+.quick-card-icon.pink { background: rgba(255,45,85,0.12); }
+.quick-card-icon.indigo { background: rgba(88,86,214,0.12); }
+.quick-card-icon.teal { background: rgba(90,200,250,0.12); }
+.quick-card-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+.quick-card-sub {
+  font-size: 11px;
+  color: var(--ios-text-secondary);
+  margin-top: 2px;
+}
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.021em;
+}
+
+/* ===== SEARCH BAR ===== */
+.search-bar {
+  position: relative;
+  margin-bottom: 12px;
+}
+.search-bar input {
+  width: 100%;
+  padding: 10px 36px 10px 12px;
+  border-radius: 12px;
+  border: none;
+  background: var(--ios-gray5);
+  color: var(--ios-text);
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+[data-theme="dark"] .search-bar input { background: var(--ios-surface-elevated); }
+.search-bar input:focus {
+  background: var(--ios-surface);
+  box-shadow: 0 0 0 3px rgba(0,122,255,0.15);
+}
+.search-bar input::placeholder { color: var(--ios-gray); }
+.search-bar svg {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px; height: 16px;
+  color: var(--ios-gray);
+  pointer-events: none;
+}
+
+/* ===== IOS LIST / TABLE VIEW ===== */
+.ios-list {
+  background: var(--ios-surface);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: var(--ios-card-shadow);
+  border: 0.5px solid var(--ios-border);
+}
+.ios-list-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+  border-bottom: 0.5px solid var(--ios-separator);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  position: relative;
+}
+.ios-list-item:last-child { border-bottom: none; }
+.ios-list-item:active { background: var(--ios-gray5); }
+[data-theme="dark"] .ios-list-item:active { background: var(--ios-surface-elevated); }
+.ios-list-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.ios-list-content { flex: 1; min-width: 0; }
+.ios-list-title {
+  font-size: 16px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ios-list-sub {
+  font-size: 13px;
+  color: var(--ios-text-secondary);
+  margin-top: 1px;
+}
+.ios-list-chevron {
+  color: var(--ios-gray3);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ===== DETAIL CARD ===== */
+.detail-card {
+  background: var(--ios-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: var(--ios-card-shadow);
+  border: 0.5px solid var(--ios-border);
+}
+.detail-card-img {
+  width: 100%;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  display: block;
+}
+.detail-card-body { padding: 14px 16px; }
+.detail-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: -0.021em;
+}
+.detail-card-sub {
+  font-size: 15px;
+  color: var(--ios-text-secondary);
+  margin-bottom: 12px;
+}
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 0.5px solid var(--ios-separator);
+  font-size: 15px;
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-row-label { color: var(--ios-text-secondary); }
+.detail-row-value { font-weight: 500; text-align: left; }
+
+/* ===== ACTION BUTTONS ROW ===== */
+.action-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.action-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.action-btn:active { transform: scale(0.96); opacity: 0.8; }
+.action-btn.blue { background: var(--ios-blue); color: #fff; }
+.action-btn.green { background: var(--ios-green); color: #fff; }
+.action-btn.orange { background: var(--ios-orange); color: #fff; }
+.action-btn.gray { background: var(--ios-gray5); color: var(--ios-text); }
+[data-theme="dark"] .action-btn.gray { background: var(--ios-surface-elevated); }
+.action-btn svg { width: 16px; height: 16px; }
+
+/* ===== CHECKBOX ITEM ===== */
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid var(--ios-separator);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.check-item:last-child { border-bottom: none; }
+.check-item:active { background: var(--ios-gray5); }
+.check-box {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--ios-gray3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.check-box.checked {
+  background: var(--ios-blue);
+  border-color: var(--ios-blue);
+}
+.check-box.checked::after {
+  content: '✓';
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+.check-text {
+  flex: 1;
+  font-size: 16px;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+.check-text.done {
+  color: var(--ios-text-secondary);
+  text-decoration: line-through;
+}
+.check-delete {
+  color: var(--ios-red);
+  font-size: 18px;
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+.check-delete:hover { opacity: 1; }
+
+/* ===== ADD ITEM INPUT ===== */
+.add-item-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+}
+.add-item-row input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: var(--ios-gray5);
+  color: var(--ios-text);
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+}
+[data-theme="dark"] .add-item-row input { background: var(--ios-surface-elevated); }
+.add-item-row button {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--ios-blue);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ===== FAVORITE BUTTON ===== */
+.fav-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ios-gray5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+.fav-btn:active { transform: scale(0.88); }
+.fav-btn.active { background: rgba(255,45,85,0.15); }
+
+/* ===== BUDGET SECTION ===== */
+.budget-card {
+  background: var(--ios-surface);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--ios-card-shadow);
+  border: 0.5px solid var(--ios-border);
+}
+.budget-card h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.budget-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.budget-input-row label {
+  font-size: 15px;
+  color: var(--ios-text-secondary);
+  width: 80px;
+  flex-shrink: 0;
+}
+.budget-input-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  background: var(--ios-gray5);
+  color: var(--ios-text);
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+  text-align: left;
+}
+[data-theme="dark"] .budget-input-row input { background: var(--ios-surface-elevated); }
+.budget-total {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 0.5px solid var(--ios-separator);
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* ===== CURRENCY CONVERTER ===== */
+.currency-card {
+  background: linear-gradient(135deg, var(--ios-blue) 0%, var(--ios-indigo) 100%);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,122,255,0.25);
+}
+.currency-card h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  opacity: 0.9;
+}
+.currency-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.currency-row input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: inherit;
+  outline: none;
+  text-align: left;
+}
+.currency-row input::placeholder { color: rgba(255,255,255,0.5); }
+.currency-row span {
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 50px;
+  text-align: center;
+}
+.currency-rate {
+  font-size: 13px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+.currency-rate input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  font-size: 13px;
+  width: 60px;
+  text-align: center;
+  font-family: inherit;
+  outline: none;
+}
+
+/* ===== NOTES TEXTAREA ===== */
+.notes-area {
+  width: 100%;
+  min-height: 200px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: var(--ios-surface);
+  color: var(--ios-text);
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  box-shadow: var(--ios-card-shadow);
+  border: 0.5px solid var(--ios-border);
+  line-height: 1.6;
+}
+
+/* ===== EMERGENCY MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 2000;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+.modal-overlay.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.modal-sheet {
+  background: var(--ios-surface);
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 430px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 20px 16px calc(20px + var(--safe-bottom));
+  animation: sheetUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.modal-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+.modal-close {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ios-gray5);
+  color: var(--ios-text);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+[data-theme="dark"] .modal-close { background: var(--ios-surface-elevated); }
+
+/* ===== EMERGENCY FLOATING BUTTON ===== */
+.emergency-fab {
+  position: fixed;
+  bottom: calc(var(--tab-height) + var(--safe-bottom) + 12px);
+  left: 16px;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ios-red);
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(255,59,48,0.4);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+.emergency-fab:active { transform: scale(0.9); }
+
+/* ===== EMBASSY CARD ===== */
+.embassy-card {
+  background: var(--ios-surface);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--ios-card-shadow);
+  border: 0.5px solid var(--ios-border);
+}
+.embassy-card h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.embassy-card .detail-row { padding: 6px 0; }
+
+/* ===== ITINERARY DAY ===== */
+.day-card {
+  background: var(--ios-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: var(--ios-card-shadow);
+  border: 0.5px solid var(--ios-border);
+}
+.day-header {
+  padding: 14px 16px;
+  background: linear-gradient(135deg, var(--ios-blue) 0%, var(--ios-indigo) 100%);
+  color: #fff;
+}
+.day-header h3 {
+  font-size: 17px;
+  font-weight: 700;
+}
+.day-header p {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+.day-body { padding: 8px 0; }
+.day-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 0.5px solid var(--ios-separator);
+}
+.day-item:last-child { border-bottom: none; }
+.day-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ios-blue);
+  min-width: 48px;
+  text-align: left;
+}
+.day-content { flex: 1; }
+.day-content-title { font-size: 15px; font-weight: 500; }
+.day-content-sub { font-size: 13px; color: var(--ios-text-secondary); margin-top: 1px; }
+.day-check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--ios-gray3);
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.day-check.checked {
+  background: var(--ios-green);
+  border-color: var(--ios-green);
+}
+.day-check.checked::after {
+  content: '✓';
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ===== TAG PILLS ===== */
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 4px;
+  margin-bottom: 4px;
+}
+.tag-green { background: rgba(52,199,89,0.12); color: var(--ios-green); }
+.tag-red { background: rgba(255,59,48,0.12); color: var(--ios-red); }
+.tag-orange { background: rgba(255,149,0,0.12); color: var(--ios-orange); }
+.tag-blue { background: rgba(0,122,255,0.12); color: var(--ios-blue); }
+.tag-gray { background: var(--ios-gray5); color: var(--ios-text-secondary); }
+[data-theme="dark"] .tag-gray { background: var(--ios-surface-elevated); }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--ios-text-secondary);
+}
+.empty-state-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+.empty-state-title { font-size: 17px; font-weight: 600; margin-bottom: 4px; color: var(--ios-text); }
+.empty-state-sub { font-size: 15px; }
+
+/* ===== PHOTO GRID ===== */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.photo-grid-item {
+  aspect-ratio: 1;
+  background: var(--ios-surface);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ios-text-secondary);
+  font-size: 13px;
+  overflow: hidden;
+  position: relative;
+}
+.photo-grid-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.photo-add {
+  border: 2px dashed var(--ios-gray3);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.photo-add:active { border-color: var(--ios-blue); }
+
+/* ===== HIDE FILE INPUT ===== */
+input[type="file"] { display: none; }
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 500px) {
+  .app-container { border-left: 0.5px solid var(--ios-border); border-right: 0.5px solid var(--ios-border); }
+}
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<div class="app-container">
+
+<!-- TOP NAVIGATION -->
+<div class="top-nav">
+  <div class="top-nav-inner">
+    <button class="nav-btn" id="backBtn" style="visibility:hidden" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="nav-title" id="navTitle">الرئيسية</div>
+    <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+</div>
+
+<!-- EMERGENCY FAB -->
+<button class="emergency-fab" onclick="openEmergency()">🚨</button>
+
+<!-- ==================== HOME SECTION ==================== -->
+<div class="section active" id="sec-home">
+  <div class="hero-card">
+    <img src="https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&q=80" alt="Phuket" class="hero-img" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#007AFF,#5856D6)'">
+    <div class="hero-overlay">
+      <div class="hero-title">رحلة بوكيت 2026</div>
+      <div class="hero-subtitle">صيف لا يُنسى 🇹🇭</div>
+    </div>
+  </div>
+
+  <div class="countdown-row" id="countdownRow">
+    <div class="countdown-box"><div class="countdown-num" id="cd-days">--</div><div class="countdown-label">يوم</div></div>
+    <div class="countdown-box"><div class="countdown-num" id="cd-hours">--</div><div class="countdown-label">ساعة</div></div>
+    <div class="countdown-box"><div class="countdown-num" id="cd-minutes">--</div><div class="countdown-label">دقيقة</div></div>
+    <div class="countdown-box"><div class="countdown-num" id="cd-seconds">--</div><div class="countdown-label">ثانية</div></div>
+  </div>
+
+  <div class="progress-card">
+    <div class="progress-ring-wrap">
+      <svg class="progress-ring-svg" viewBox="0 0 64 64">
+        <circle class="progress-ring-bg" cx="32" cy="32" r="28"/>
+        <circle class="progress-ring-fill" id="progressRing" cx="32" cy="32" r="28" stroke-dasharray="175.9" stroke-dashoffset="175.9"/>
+      </svg>
+      <div class="progress-ring-text" id="progressText">0%</div>
+    </div>
+    <div class="progress-info">
+      <h3>تجهيز الرحلة</h3>
+      <p id="progressSub">0 من 0 تم الإنجاز</p>
+    </div>
+  </div>
+
+  <div class="weather-card" id="weatherCard">
+    <div class="weather-top">
+      <div>
+        <div class="weather-temp" id="weatherTemp">32<span>°</span></div>
+        <div class="weather-desc" id="weatherDesc">مشمس ☀️</div>
+        <div class="weather-location">بوكيت، تايلاند</div>
+      </div>
+      <div class="weather-icon" id="weatherIcon">☀️</div>
+    </div>
+    <div class="weather-edit">
+      <input type="text" id="weatherInput" placeholder="درجة الحرارة..." maxlength="3">
+      <button onclick="updateWeather()">تحديث</button>
+    </div>
+  </div>
+
+  <div class="quick-grid">
+    <button class="quick-card" onclick="showSection('schedule')">
+      <div class="quick-card-icon blue">📅</div>
+      <div class="quick-card-label">الجدول</div>
+      <div class="quick-card-sub">5 أيام</div>
+    </button>
+    <button class="quick-card" onclick="showSection('hotels')">
+      <div class="quick-card-icon green">🏨</div>
+      <div class="quick-card-label">الفنادق</div>
+      <div class="quick-card-sub">الفندق الحالي</div>
+    </button>
+    <button class="quick-card" onclick="showSection('restaurants')">
+      <div class="quick-card-icon orange">🍽️</div>
+      <div class="quick-card-label">المطاعم</div>
+      <div class="quick-card-sub">15 مطعم</div>
+    </button>
+    <button class="quick-card" onclick="showSection('activities')">
+      <div class="quick-card-icon pink">🏝️</div>
+      <div class="quick-card-label">الرحلات</div>
+      <div class="quick-card-sub">9 أنشطة</div>
+    </button>
+    <button class="quick-card" onclick="showSection('budget')">
+      <div class="quick-card-icon indigo">💰</div>
+      <div class="quick-card-label">الميزانية</div>
+      <div class="quick-card-sub">حاسبة العملة</div>
+    </button>
+    <button class="quick-card" onclick="showSection('packing')">
+      <div class="quick-card-icon teal">🧳</div>
+      <div class="quick-card-label">التجهيز</div>
+      <div class="quick-card-sub">قائمة الأمتعة</div>
+    </button>
+  </div>
+</div>
+
+<!-- ==================== SCHEDULE SECTION ==================== -->
+<div class="section" id="sec-schedule">
+  <div class="section-header">📅 جدول الرحلة</div>
+  <div id="scheduleList"></div>
+</div>
+
+<!-- ==================== HOTELS SECTION ==================== -->
+<div class="section" id="sec-hotels">
+  <div class="section-header">🏨 الفنادق</div>
+  <div id="hotelsList"></div>
+</div>
+
+<!-- ==================== RESTAURANTS SECTION ==================== -->
+<div class="section" id="sec-restaurants">
+  <div class="section-header">🍽️ المطاعم</div>
+  <div class="search-bar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="text" id="restSearch" placeholder="ابحث في المطاعم..." oninput="filterRestaurants()">
+  </div>
+  <div id="restaurantsList"></div>
+</div>
+
+<!-- ==================== MALLS SECTION ==================== -->
+<div class="section" id="sec-malls">
+  <div class="section-header">🛍️ المولات</div>
+  <div id="mallsList"></div>
+</div>
+
+<!-- ==================== ACTIVITIES SECTION ==================== -->
+<div class="section" id="sec-activities">
+  <div class="section-header">🏝️ الرحلات والأنشطة</div>
+  <div id="activitiesList"></div>
+</div>
+
+<!-- ==================== BUDGET SECTION ==================== -->
+<div class="section" id="sec-budget">
+  <div class="section-header">💰 الميزانية</div>
+
+  <div class="currency-card">
+    <h3>💱 محول العملة</h3>
+    <div class="currency-row">
+      <input type="number" id="thbInput" placeholder="0" oninput="convertCurrency()">
+      <span>بات 🇹🇭</span>
+    </div>
+    <div class="currency-row">
+      <input type="number" id="kwdInput" placeholder="0" oninput="convertCurrencyReverse()">
+      <span>د.ك 🇰🇼</span>
+    </div>
+    <div class="currency-rate">
+      سعر الصرف: 1 د.ك = <input type="number" id="rateInput" value="110" onchange="saveRate()"> بات
+    </div>
+  </div>
+
+  <div class="budget-card">
+    <h3>🏨 الفنادق</h3>
+    <div class="budget-input-row"><label>الفندق</label><input type="number" id="b-hotel" placeholder="0" oninput="calcBudget()"></div>
+    <div class="budget-input-row"><label>الإفطار</label><input type="number" id="b-breakfast" placeholder="0" oninput="calcBudget()"></div>
+  </div>
+  <div class="budget-card">
+    <h3>🍽️ الأكل</h3>
+    <div class="budget-input-row"><label>المطاعم</label><input type="number" id="b-food" placeholder="0" oninput="calcBudget()"></div>
+    <div class="budget-input-row"><label>المقاهي</label><input type="number" id="b-cafe" placeholder="0" oninput="calcBudget()"></div>
+  </div>
+  <div class="budget-card">
+    <h3>🛍️ التسوق</h3>
+    <div class="budget-input-row"><label>المولات</label><input type="number" id="b-shop" placeholder="0" oninput="calcBudget()"></div>
+    <div class="budget-input-row"><label>الهدايا</label><input type="number" id="b-gifts" placeholder="0" oninput="calcBudget()"></div>
+  </div>
+  <div class="budget-card">
+    <h3>🏝️ الرحلات</h3>
+    <div class="budget-input-row"><label>جزيرة</label><input type="number" id="b-tour1" placeholder="0" oninput="calcBudget()"></div>
+    <div class="budget-input-row"><label>أنشطة</label><input type="number" id="b-tour2" placeholder="0" oninput="calcBudget()"></div>
+  </div>
+  <div class="budget-card">
+    <h3>🚕 المواصلات + طوارئ</h3>
+    <div class="budget-input-row"><label>مواصلات</label><input type="number" id="b-trans" placeholder="0" oninput="calcBudget()"></div>
+    <div class="budget-input-row"><label>طوارئ</label><input type="number" id="b-emer" placeholder="0" oninput="calcBudget()"></div>
+  </div>
+  <div class="budget-card">
+    <div class="budget-total">
+      <span>الإجمالي</span>
+      <span id="budgetTotal">0 بات</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PACKING SECTION ==================== -->
+<div class="section" id="sec-packing">
+  <div class="section-header">🧳 قائمة التجهيز</div>
+  <div class="ios-list" id="packingList"></div>
+  <div class="add-item-row">
+    <input type="text" id="packingInput" placeholder="أضف عنصر جديد..." onkeypress="if(event.key==='Enter')addPackingItem()">
+    <button onclick="addPackingItem()">إضافة</button>
+  </div>
+</div>
+
+<!-- ==================== FAVORITES SECTION ==================== -->
+<div class="section" id="sec-favorites">
+  <div class="section-header">❤️ المفضلة</div>
+  <div id="favoritesList">
+    <div class="empty-state">
+      <div class="empty-state-icon">❤️</div>
+      <div class="empty-state-title">لا توجد مفضلات</div>
+      <div class="empty-state-sub">اضغط على القلب ❤️ في أي مكان لإضافته هنا</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== NOTES SECTION ==================== -->
+<div class="section" id="sec-notes">
+  <div class="section-header">📝 الملاحظات</div>
+  <textarea class="notes-area" id="notesArea" placeholder="اكتب ملاحظاتك هنا..." oninput="saveNotes()"></textarea>
+</div>
+
+<!-- ==================== GALLERY SECTION ==================== -->
+<div class="section" id="sec-gallery">
+  <div class="section-header">📷 معرض الصور</div>
+  <div class="photo-grid" id="photoGrid">
+    <label class="photo-grid-item photo-add">
+      <span>+ إضافة</span>
+      <input type="file" accept="image/*" onchange="addPhoto(this)">
+    </label>
+  </div>
+</div>
+
+<!-- ==================== VISITED SECTION ==================== -->
+<div class="section" id="sec-visited">
+  <div class="section-header">📍 الأماكن التي تمت زيارتها</div>
+  <div class="progress-card" style="margin-bottom:16px">
+    <div class="progress-ring-wrap">
+      <svg class="progress-ring-svg" viewBox="0 0 64 64">
+        <circle class="progress-ring-bg" cx="32" cy="32" r="28"/>
+        <circle class="progress-ring-fill" id="visitRing" cx="32" cy="32" r="28" stroke-dasharray="175.9" stroke-dashoffset="175.9"/>
+      </svg>
+      <div class="progress-ring-text" id="visitText">0%</div>
+    </div>
+    <div class="progress-info">
+      <h3>نسبة الزيارة</h3>
+      <p id="visitSub">0 من 0 مكان</p>
+    </div>
+  </div>
+  <div id="visitedList"></div>
+</div>
+
+<!-- ==================== SEARCH SECTION ==================== -->
+<div class="section" id="sec-search">
+  <div class="section-header">🔍 البحث</div>
+  <div class="search-bar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="text" id="globalSearch" placeholder="ابحث في كل الأقسام..." oninput="doGlobalSearch()">
+  </div>
+  <div id="searchResults"></div>
+</div>
+
+<!-- ==================== BOTTOM TAB BAR ==================== -->
+<div class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-item active" data-tab="home" onclick="showSection('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      الرئيسية
+    </button>
+    <button class="tab-item" data-tab="schedule" onclick="showSection('schedule')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      الجدول
+    </button>
+    <button class="tab-item" data-tab="search" onclick="showSection('search')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      بحث
+    </button>
+    <button class="tab-item" data-tab="favorites" onclick="showSection('favorites')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      مفضلة
+    </button>
+    <button class="tab-item" data-tab="more" onclick="showSection('more')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      المزيد
+    </button>
+  </div>
+</div>
+
+<!-- ==================== EMERGENCY MODAL ==================== -->
+<div class="modal-overlay" id="emergencyModal" onclick="closeEmergency(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2>🚨 أرقام الطوارئ</h2>
+      <button class="modal-close" onclick="closeEmergency()">✕</button>
+    </div>
+
+    <div class="ios-list" style="margin-bottom:12px">
+      <div class="ios-list-item" onclick="callNumber('191')">
+        <div class="ios-list-icon" style="background:rgba(255,59,48,0.12)">🚔</div>
+        <div class="ios-list-content">
+          <div class="ios-list-title">الشرطة</div>
+          <div class="ios-list-sub">191</div>
+        </div>
+        <div class="ios-list-chevron">📞</div>
+      </div>
+      <div class="ios-list-item" onclick="callNumber('1669')">
+        <div class="ios-list-icon" style="background:rgba(255,59,48,0.12)">🚑</div>
+        <div class="ios-list-content">
+          <div class="ios-list-title">الإسعاف</div>
+          <div class="ios-list-sub">1669</div>
+        </div>
+        <div class="ios-list-chevron">📞</div>
+      </div>
+      <div class="ios-list-item" onclick="callNumber('199')">
+        <div class="ios-list-icon" style="background:rgba(255,59,48,0.12)">🚒</div>
+        <div class="ios-list-content">
+          <div class="ios-list-title">الإطفاء</div>
+          <div class="ios-list-sub">199</div>
+        </div>
+        <div class="ios-list-chevron">📞</div>
+      </div>
+      <div class="ios-list-item" onclick="callNumber('1155')">
+        <div class="ios-list-icon" style="background:rgba(255,149,0,0.12)">🛡️</div>
+        <div class="ios-list-content">
+          <div class="ios-list-title">الشرطة السياحية</div>
+          <div class="ios-list-sub">1155</div>
+        </div>
+        <div class="ios-list-chevron">📞</div>
+      </div>
+    </div>
+
+    <div class="embassy-card">
+      <h3>🇸🇦 السفارة السعودية — بانكوك</h3>
+      <div class="detail-row"><span class="detail-row-label">الهاتف</span><span class="detail-row-value">+66 2 274 2222</span></div>
+      <div class="detail-row"><span class="detail-row-label">العنوان</span><span class="detail-row-value">Sathorn, Bangkok</span></div>
+      <div class="detail-row"><span class="detail-row-label">الموقع</span><span class="detail-row-value">mofa.gov.sa</span></div>
+      <div class="action-row">
+        <button class="action-btn blue" onclick="callNumber('+6622742222')">📞 اتصال</button>
+        <button class="action-btn gray" onclick="openMap('Saudi+Embassy+Bangkok')">🗺️ خريطة</button>
+      </div>
+    </div>
+
+    <div class="embassy-card">
+      <h3>🇰🇼 سفارة الكويت — بانكوك</h3>
+      <div class="detail-row"><span class="detail-row-label">الهاتف</span><span class="detail-row-value">+66 2 260 1560</span></div>
+      <div class="detail-row"><span class="detail-row-label">العنوان</span><span class="detail-row-value">Sukhumvit, Bangkok</span></div>
+      <div class="detail-row"><span class="detail-row-label">الموقع</span><span class="detail-row-value">kuwaitembassy.or.th</span></div>
+      <div class="action-row">
+        <button class="action-btn blue" onclick="callNumber('+6622601560')">📞 اتصال</button>
+        <button class="action-btn gray" onclick="openMap('Kuwait+Embassy+Bangkok')">🗺️ خريطة</button>
+      </div>
+    </div>
+
+    <div class="embassy-card">
+      <h3>🏨 فندقك الحالي</h3>
+      <div class="detail-row"><span class="detail-row-label">الاسم</span><span class="detail-row-value">Oceanfront Beach Resort</span></div>
+      <div class="detail-row"><span class="detail-row-label">الهاتف</span><span class="detail-row-value">+66 76 340 000</span></div>
+      <div class="detail-row"><span class="detail-row-label">العنوان</span><span class="detail-row-value">Prabaramee Rd, Patong</span></div>
+      <div class="action-row">
+        <button class="action-btn blue" onclick="callNumber('+6676340000')">📞 اتصال</button>
+        <button class="action-btn green" onclick="copyText('Oceanfront Beach Resort Phuket, Prabaramee Road, Patong, Phuket')">📋 نسخ</button>
+        <button class="action-btn gray" onclick="openMap('Oceanfront+Beach+Resort+Patong')">🗺️ خريطة</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MORE SECTION ==================== -->
+<div class="section" id="sec-more">
+  <div class="section-header">⚙️ المزيد</div>
+  <div class="ios-list" style="margin-bottom:12px">
+    <div class="ios-list-item" onclick="showSection('hotels')">
+      <div class="ios-list-icon" style="background:rgba(0,122,255,0.12)">🏨</div>
+      <div class="ios-list-content"><div class="ios-list-title">الفنادق</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+    <div class="ios-list-item" onclick="showSection('restaurants')">
+      <div class="ios-list-icon" style="background:rgba(255,149,0,0.12)">🍽️</div>
+      <div class="ios-list-content"><div class="ios-list-title">المطاعم</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+    <div class="ios-list-item" onclick="showSection('malls')">
+      <div class="ios-list-icon" style="background:rgba(175,82,222,0.12)">🛍️</div>
+      <div class="ios-list-content"><div class="ios-list-title">المولات</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+    <div class="ios-list-item" onclick="showSection('activities')">
+      <div class="ios-list-icon" style="background:rgba(255,45,85,0.12)">🏝️</div>
+      <div class="ios-list-content"><div class="ios-list-title">الرحلات</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+  </div>
+  <div class="ios-list" style="margin-bottom:12px">
+    <div class="ios-list-item" onclick="showSection('budget')">
+      <div class="ios-list-icon" style="background:rgba(52,199,89,0.12)">💰</div>
+      <div class="ios-list-content"><div class="ios-list-title">الميزانية</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+    <div class="ios-list-item" onclick="showSection('packing')">
+      <div class="ios-list-icon" style="background:rgba(90,200,250,0.12)">🧳</div>
+      <div class="ios-list-content"><div class="ios-list-title">قائمة التجهيز</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+    <div class="ios-list-item" onclick="showSection('visited')">
+      <div class="ios-list-icon" style="background:rgba(88,86,214,0.12)">📍</div>
+      <div class="ios-list-content"><div class="ios-list-title">الأماكن المزارة</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+  </div>
+  <div class="ios-list" style="margin-bottom:12px">
+    <div class="ios-list-item" onclick="showSection('gallery')">
+      <div class="ios-list-icon" style="background:rgba(255,149,0,0.12)">📷</div>
+      <div class="ios-list-content"><div class="ios-list-title">معرض الصور</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+    <div class="ios-list-item" onclick="showSection('notes')">
+      <div class="ios-list-icon" style="background:rgba(175,82,222,0.12)">📝</div>
+      <div class="ios-list-content"><div class="ios-list-title">الملاحظات</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+  </div>
+  <div class="ios-list">
+    <div class="ios-list-item" onclick="toggleTheme()">
+      <div class="ios-list-icon" style="background:rgba(0,122,255,0.12)">🌙</div>
+      <div class="ios-list-content"><div class="ios-list-title">الوضع الليلي / النهاري</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// DATA
+// ============================================
+
+const TRIP_DATE = "2026-08-15T00:00:00";
+
+const scheduleData = [
+  {
+    day: 1, date: "15 أغسطس", city: "باتونج", hotel: "Oceanfront Beach Resort",
+    items: [
+      { time: "08:00", title: "الوصول والاستلام", sub: "الفندق", done: false },
+      { time: "10:00", title: "فطور في Commune", sub: "مقهى / مطعم", done: false },
+      { time: "12:00", title: "تسوق في Central Patong", sub: "مول", done: false },
+      { time: "15:00", title: "استرخاء في Fuga Beach Club", sub: "شاطئ", done: false },
+      { time: "19:00", title: "عشاء في Layali Beirut", sub: "مطعم لبناني", done: false },
+      { time: "21:00", title: "جولة في Bangla Road", sub: "حياة ليلية", done: false },
+    ]
+  },
+  {
+    day: 2, date: "16 أغسطس", city: "باتونج / كاثو", hotel: "Oceanfront Beach Resort",
+    items: [
+      { time: "09:00", title: "ATV Rides", sub: "مغامرة في Big Buddha Hill", done: false },
+      { time: "12:00", title: "غداء في Three Monkeys", sub: "مطعم في الغابة", done: false },
+      { time: "15:00", title: "Hanuman World (Zipline)", sub: "مغامرة", done: false },
+      { time: "18:00", title: "غروب في View Point Cafe", sub: "مقهى بانورامي", done: false },
+      { time: "20:00", title: "عشاء في La Gritta", sub: "إيطالي فاخر", done: false },
+    ]
+  },
+  {
+    day: 3, date: "17 أغسطس", city: "جزيرة في في", hotel: "Oceanfront Beach Resort",
+    items: [
+      { time: "07:00", title: "الانطلاق لـ Noah Phi Phi Island", sub: "رحلة بحرية", done: false },
+      { time: "09:00", title: "Maya Bay", sub: "شاطئ ذا بيتش", done: false },
+      { time: "12:00", title: "غداء على الجزيرة", sub: "بوفيه", done: false },
+      { time: "14:00", title: "سنوركل في Coral Island", sub: "غوص حر", done: false },
+      { time: "17:00", title: "العودة + استرخاء", sub: "Spa في الفندق", done: false },
+    ]
+  },
+  {
+    day: 4, date: "18 أغسطس", city: "Old Town / راواي", hotel: "Oceanfront Beach Resort",
+    items: [
+      { time: "09:00", title: "قهوة في Rush Coffee", sub: "Old Town", done: false },
+      { time: "10:30", title: "جولة في Phuket Old Town", sub: "منطقة تراثية", done: false },
+      { time: "12:00", title: "Local Market", sub: "سوق محلي", done: false },
+      { time: "14:00", title: "غداء في Juicy Lucy", sub: "برجر", done: false },
+      { time: "16:00", title: "قهوة في The 5th", sub: "Roastery", done: false },
+      { time: "19:00", title: "عشاء في Day & Night", sub: "ميشلان جايد", done: false },
+    ]
+  },
+  {
+    day: 5, date: "19 أغسطس", city: "باتونج", hotel: "Oceanfront Beach Resort",
+    items: [
+      { time: "08:00", title: "Ma Doo Bua للتصوير", sub: "أشهر مكان للتصوير", done: false },
+      { time: "11:00", title: "The Cozy Coffee", sub: "Tri Trang Beach", done: false },
+      { time: "14:00", title: "Thai Cooking Experience", sub: "تعلم الطبخ التايلاندي", done: false },
+      { time: "17:00", title: "Three Bays للغروب", sub: "Karon Viewpoint", done: false },
+      { time: "20:00", title: "عشاء وداعي في Blu Saffron", sub: "عالمي فاخر", done: false },
+    ]
+  },
+];
+
+const hotelsData = [
+  {
+    id: "hotel1", name: "Oceanfront Beach Resort Phuket", nameTh: "โอเชียนฟร้อนท์ บีช รีสอร์ท",
+    address: "Prabaramee Road, Patong, Phuket", addressTh: "ถนนประบารมี ป่าตอง ภูเก็ต",
+    phone: "+66 76 340 000", rating: 4.8,
+    img: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80",
+    notes: "إطلالة بانورامية، مسبح لا متناهي، سبا فاخر. 5 دقائق لشاطئ باتونج."
+  }
+];
+
+const restaurantsData = [
+  { id:"r1", name:"Blu Saffron", nameTh:"บลู แซฟฟรอน", type:"عالمي", halal:false, halalNote:"خيارات بحرية", price:"$$$", hours:"17:00 - 23:00", rating:4.7, distance:"15 دقيقة", img:"https://images.unsplash.com/photo-1544148103-0773bf10d330?w=600&q=80", map:"Blu+Saffron+Phuket" },
+  { id:"r2", name:"La Gritta", nameTh:"ลา กริตต้า", type:"إيطالي فاخر", halal:false, halalNote:"لا", price:"$$$$", hours:"18:00 - 23:00", rating:4.8, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=600&q=80", map:"La+Gritta+Phuket" },
+  { id:"r3", name:"Three Monkeys", nameTh:"ทรี มังกี้ส์", type:"تايلاندي/عالمي", halal:false, halalNote:"لا", price:"$$", hours:"11:00 - 22:00", rating:4.6, distance:"35 دقيقة", img:"https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?w=600&q=80", map:"Three+Monkeys+Phuket" },
+  { id:"r4", name:"Meg Khram", nameTh:"เมก คราม", type:"عشاء رومانسي", halal:null, halalNote:"غير مؤكد", price:"$$$", hours:"18:00 - 23:00", rating:null, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80", map:"Meg+Khram+Phuket" },
+  { id:"r5", name:"Commune", nameTh:"คอมมูน", type:"إفطار/مقهى", halal:null, halalNote:"غير مؤكد", price:"$$", hours:"08:00 - 16:00", rating:null, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1493770348161-369560ae357d?w=600&q=80", map:"Commune+Phuket" },
+  { id:"r6", name:"Fat Mamma", nameTh:"แฟต มัมมา", type:"إيطالي", halal:false, halalNote:"لا", price:"$$", hours:"12:00 - 22:00", rating:4.4, distance:"15 دقيقة", img:"https://images.unsplash.com/photo-1574868235872-1663edcb4569?w=600&q=80", map:"Fat+Mamma+Phuket" },
+  { id:"r7", name:"Amritsr", nameTh:"อัมริทซาร์", type:"هندي", halal:true, halalNote:"حلال", price:"$$", hours:"11:00 - 23:00", rating:4.5, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80", map:"Amritsr+Phuket" },
+  { id:"r8", name:"Juicy Lucy", nameTh:"จูซี่ ลูซี่", type:"برجر أمريكي", halal:false, halalNote:"لا", price:"$$", hours:"11:00 - 22:00", rating:4.7, distance:"35 دقيقة", img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80", map:"Juicy+Lucy+Phuket" },
+  { id:"r9", name:"Efe Old Phuket", nameTh:"เอเฟ่ โอลด์ ภูเก็ต", type:"تركي", halal:true, halalNote:"حلال", price:"$$", hours:"12:00 - 22:00", rating:4.5, distance:"35 دقيقة", img:"https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=600&q=80", map:"Efe+Old+Phuket" },
+  { id:"r10", name:"Layali Beirut", nameTh:"ليالي بيروت", type:"لبناني", halal:true, halalNote:"حلال 100%", price:"$$", hours:"18:00 - 23:30", rating:4.9, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80", map:"Layali+Beirut+Phuket" },
+  { id:"r11", name:"Vero", nameTh:"เวโร่", type:"رومانسي", halal:null, halalNote:"غير مؤكد", price:"$$$", hours:"18:00 - 23:00", rating:null, distance:"15 دقيقة", img:"https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80", map:"Vero+Phuket" },
+  { id:"r12", name:"Day & Night", nameTh:"เดย์ แอนด์ ไนท์", type:"تايلاندي/عالمي", halal:false, halalNote:"لا", price:"$$$", hours:"11:00 - 00:00", rating:4.5, distance:"35 دقيقة", img:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80", map:"Day+Night+Phuket" },
+  { id:"r13", name:"Raga", nameTh:"รaga", type:"هندي + مقهى", halal:true, halalNote:"حلال", price:"$$", hours:"08:00 - 22:00", rating:4.4, distance:"30 دقيقة", img:"https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80", map:"Raga+Phuket" },
+  { id:"r14", name:"Prime Burger", nameTh:"ไพร์ม เบอร์เกอร์", type:"برجر", halal:true, halalNote:"حلال", price:"$$", hours:"10:00 - 22:00", rating:4.6, distance:"5 دقائق", img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80", map:"Prime+Burger+Patong" },
+  { id:"r15", name:"Fuga Beach Club", nameTh:"ฟูก้า บีช คลับ", type:"شاطئي", halal:null, halalNote:"غير مؤكد", price:"$$", hours:"10:00 - 22:00", rating:null, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80", map:"Fuga+Beach+Club+Phuket" },
+];
+
+const mallsData = [
+  { id:"m1", name:"Central Patong", nameTh:"เซ็นทรัล ป่าตอง", hours:"10:30 - 22:30", shops:"ماركات عالمية، مطاعم منوعة", restaurants:"مطاعم متنوعة في الطابق العلوي", distance:"5 دقائق", img:"https://images.unsplash.com/photo-1519567281028-11a5b85d38cc?w=600&q=80", map:"Central+Patong" },
+  { id:"m2", name:"Jungceylon", nameTh:"จังซีลอน", hours:"11:00 - 22:00", shops:"Big C, Robinson, Uniqlo, سينما", restaurants:"Food Court + مطاعم", distance:"7 دقائق", img:"https://images.unsplash.com/photo-1567958451986-2de427a4a0be?w=600&q=80", map:"Jungceylon+Patong" },
+  { id:"m3", name:"Premium Phuket Floresta", nameTh:"พรีเมี่ยม ภูเก็ต ฟลอเรสต้า", hours:"10:30 - 22:00", shops:"LV, Gucci, أندروود، ماركات فاخرة", restaurants:"مطاعم فاخرة", distance:"30 دقيقة", img:"https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=600&q=80", map:"Premium+Phuket+Floresta" },
+  { id:"m4", name:"Phuket Old Town", nameTh:"ย่านเมืองเก่าภูเก็ต", hours:"مفتوح (سوق الأحد 16:00 - 22:00)", shops:"هدايا تذكارية، ملابس محلية، مقاهي", restaurants:"مطاعم محلية وعالمية", distance:"35 دقيقة", img:"https://images.unsplash.com/photo-1583492723326-6b63d00192e2?w=600&q=80", map:"Phuket+Old+Town" },
+  { id:"m5", name:"Chillva Market", nameTh:"ตลาดชิลล์วา", hours:"17:00 - 23:00 (يومياً)", shops:"أكل شعبي، حرف يدوية، ملابس", restaurants:"ستريت فود متنوع", distance:"25 دقيقة", img:"https://images.unsplash.com/photo-1555212697-194d092e3b8f?w=600&q=80", map:"Chillva+Market+Phuket" },
+  { id:"m6", name:"Banzaan Fresh Market", nameTh:"ตลาดสดบันซ้าน", hours:"07:00 - 21:00", shops:"فواكه استوائية، أعشاب، توابل، مأكولات بحرية", restaurants:" stalls طعام طازج", distance:"8 دقائق", img:"https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=600&q=80", map:"Banzaan+Fresh+Market" },
+];
+
+const activitiesData = [
+  { id:"a1", name:"Noah Phi Phi Island", nameTh:"ทัวร์เกาะพีพี", company:"Love Andaman", time:"07:00", duration:"يوم كامل", price:"3,500 THB", bring:"نظارة شمس، كريم واقي، منشفة، كاميرا مقاومة للماء", notes:"حجز مسبق ضروري. يناسب الأزواج والعائلات.", img:"https://images.unsplash.com/photo-1540202404-b71188410214?w=600&q=80", map:"Phi+Phi+Islands" },
+  { id:"a2", name:"Racha Island Black Pearl", nameTh:"ทัวร์เกาะราชา แบล็คเพิร์ล", company:"Black Pearl Yacht", time:"08:00", duration:"يوم كامل", price:"3,500 THB", bring:"ملابس سباحة، واقي شمس، قبعة", notes:"يخت شراعي فاخر. غوص حر + سنوركل.", img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=80", map:"Racha+Island" },
+  { id:"a3", name:"Local Market", nameTh:"ตลาดสดท้องถิ่น", company:"—", time:"08:00", duration:"1-2 ساعة", price:"مجاني", bring:"نقود فكة، كيس", notes:"تفاوض على الأسعار. أفضل وقت الصباح الباكر.", img:"https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=600&q=80", map:"Phuket+Local+Market" },
+  { id:"a4", name:"Thai Cooking Experience", nameTh:"เรียนทำอาหารไทย", company:"Blue Elephant", time:"10:00", duration:"3 ساعات", price:"1,800 THB", bring:"شهية مفتوحة!", notes:"تعلم طبخ أشهر الأطباق التايلاندية.", img:"https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&q=80", map:"Blue+Elephant+Phuket" },
+  { id:"a5", name:"ATV Rides", nameTh:"ขับรถเอทีวี", company:"Big Buddha ATV", time:"09:00", duration:"1-2 ساعة", price:"1,500 THB", bring:"ملابس رياضية، حذاء مغلق", notes:"مغامرة في الغابة والجبال. +8 سنوات.", img:"https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80", map:"ATV+Phuket" },
+  { id:"a6", name:"Carnival Magic", nameTh:"คาร์นิวัล เมจิก", company:"Phuket FantaSea", time:"17:30", duration:"~4 ساعات", price:"2,500 THB", bring:"كاميرا، نقود للهدايا", notes:"عرض ترفيهي ثقافي مذهل. ممتاز للعائلات.", img:"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80", map:"Carnival+Magic+Phuket" },
+  { id:"a7", name:"Maya Bay", nameTh:"อ่าวมาหยา", company:"Love Andaman", time:"مع Phi Phi", duration:"ضمن الرحلة", price:"~3,500 THB", bring:"كاميرا، واقي شمس", notes:"موقع فيلم The Beach. مغلق أحياناً للتجديد.", img:"https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80", map:"Maya+Bay" },
+  { id:"a8", name:"Coral Island", nameTh:"เกาะเฮ", company:"—", time:"09:00", duration:"نصف يوم", price:"1,500 THB", bring:"ملابس سباحة، سنوركل", notes:"20 دقيقة بالقارب. رياضات مائية متوفرة.", img:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80", map:"Coral+Island+Phuket" },
+  { id:"a9", name:"Hanuman World", nameTh:"ฮานูมาน เวิลด์", company:"Hanuman World", time:"09:00", duration:"2-3 ساعات", price:"2,000 THB", bring:"ملابس رياضية، حذاء مغلق", notes:"أكبر زيبلاين في بوكيت. +4 سنوات.", img:"https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80", map:"Hanuman+World+Phuket" },
+];
+
+const defaultPacking = [
+  "جواز السفر","تأشيرة تايلاند","تذاكر الطيران","حجز الفندق (مطبوع)",
+  "الهاتف + الشاحن","باوربانك","محول كهرباء (تايلاند)","سماعات",
+  "ملابس سباحة","ملابس خفيفة (صيف)","حذاء مريح","حذاء ماء",
+  "نظارة شمس","كريم واقي SPF 50+","قبعة","مظلة صغيرة",
+  "عدسات لاصقة + محلول","أدوية شخصية","مسكنات","لاصقات",
+  "كاميرا / GoPro","بطاقات بنك","نقود (بات + دولار)","محفظة صغيرة",
+];
+
+// ============================================
+// STATE & LOCALSTORAGE
+// ============================================
+
+let state = {
+  theme: localStorage.getItem('tg_theme') || 'light',
+  currentSection: localStorage.getItem('tg_section') || 'home',
+  favorites: JSON.parse(localStorage.getItem('tg_favorites') || '[]'),
+  packing: JSON.parse(localStorage.getItem('tg_packing') || 'null') || defaultPacking.map(t => ({ text: t, done: false })),
+  notes: localStorage.getItem('tg_notes') || '',
+  budget: JSON.parse(localStorage.getItem('tg_budget') || '{}'),
+  weather: JSON.parse(localStorage.getItem('tg_weather') || '{"temp":32,"desc":"مشمس ☀️","icon":"☀️"}'),
+  exchangeRate: parseFloat(localStorage.getItem('tg_rate') || '110'),
+  photos: JSON.parse(localStorage.getItem('tg_photos') || '[]'),
+  schedule: JSON.parse(localStorage.getItem('tg_schedule') || 'null') || scheduleData.map(d => ({...d, items: d.items.map(i => ({...i}))})),
+  visited: JSON.parse(localStorage.getItem('tg_visited') || '[]'),
+};
+
+function saveState() {
+  localStorage.setItem('tg_theme', state.theme);
+  localStorage.setItem('tg_section', state.currentSection);
+  localStorage.setItem('tg_favorites', JSON.stringify(state.favorites));
+  localStorage.setItem('tg_packing', JSON.stringify(state.packing));
+  localStorage.setItem('tg_notes', state.notes);
+  localStorage.setItem('tg_budget', JSON.stringify(state.budget));
+  localStorage.setItem('tg_weather', JSON.stringify(state.weather));
+  localStorage.setItem('tg_rate', state.exchangeRate);
+  localStorage.setItem('tg_photos', JSON.stringify(state.photos));
+  localStorage.setItem('tg_schedule', JSON.stringify(state.schedule));
+  localStorage.setItem('tg_visited', JSON.stringify(state.visited));
+}
+
+// ============================================
+// THEME
+// ============================================
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', state.theme);
+  document.getElementById('themeBtn').textContent = state.theme === 'dark' ? '☀️' : '🌙';
+}
+function toggleTheme() {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  applyTheme();
+  saveState();
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
+
+const sectionTitles = {
+  home: 'الرئيسية', schedule: 'الجدول', hotels: 'الفنادق', restaurants: 'المطاعم',
+  malls: 'المولات', activities: 'الرحلات', budget: 'الميزانية', packing: 'التجهيز',
+  favorites: 'المفضلة', notes: 'الملاحظات', gallery: 'معرض الصور', visited: 'الزيارات',
+  search: 'البحث', more: 'المزيد'
+};
+
+function showSection(name) {
+  state.currentSection = name;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + name)?.classList.add('active');
+  document.getElementById('navTitle').textContent = sectionTitles[name] || name;
+  document.getElementById('backBtn').style.visibility = name === 'home' ? 'hidden' : 'visible';
+
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  const tabMap = { home:'home', schedule:'schedule', search:'search', favorites:'favorites', more:'more' };
+  if (tabMap[name]) {
+    document.querySelector(`.tab-item[data-tab="${tabMap[name]}"]`)?.classList.add('active');
+  }
+
+  if (name === 'schedule') renderSchedule();
+  if (name === 'hotels') renderHotels();
+  if (name === 'restaurants') renderRestaurants();
+  if (name === 'malls') renderMalls();
+  if (name === 'activities') renderActivities();
+  if (name === 'budget') loadBudget();
+  if (name === 'packing') renderPacking();
+  if (name === 'favorites') renderFavorites();
+  if (name === 'visited') renderVisited();
+  if (name === 'gallery') renderGallery();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  saveState();
+}
+
+function goBack() { showSection('home'); }
+
+// ============================================
+// COUNTDOWN
+// ============================================
+
+function updateCountdown() {
+  const target = new Date(TRIP_DATE);
+  const now = new Date();
+  const diff = target - now;
+  if (diff <= 0) {
+    document.getElementById('cd-days').textContent = '0';
+    document.getElementById('cd-hours').textContent = '0';
+    document.getElementById('cd-minutes').textContent = '0';
+    document.getElementById('cd-seconds').textContent = '0';
+    return;
+  }
+  const d = Math.floor(diff / (1000*60*60*24));
+  const h = Math.floor((diff / (1000*60*60)) % 24);
+  const m = Math.floor((diff / (1000*60)) % 60);
+  const s = Math.floor((diff / 1000) % 60);
+  document.getElementById('cd-days').textContent = d;
+  document.getElementById('cd-hours').textContent = h;
+  document.getElementById('cd-minutes').textContent = m;
+  document.getElementById('cd-seconds').textContent = s;
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ============================================
+// WEATHER
+// ============================================
+
+function updateWeather() {
+  const input = document.getElementById('weatherInput').value.trim();
+  if (!input) return;
+  const temp = parseInt(input);
+  if (isNaN(temp)) return;
+  let desc = 'مشمس ☀️', icon = '☀️';
+  if (temp >= 35) { desc = 'حار جداً 🔥'; icon = '🔥'; }
+  else if (temp >= 30) { desc = 'مشمس ☀️'; icon = '☀️'; }
+  else if (temp >= 25) { desc = 'دافئ ⛅'; icon = '⛅'; }
+  else if (temp >= 20) { desc = 'معتدل 🌤️'; icon = '🌤️'; }
+  else { desc = 'بارد 🌧️'; icon = '🌧️'; }
+  state.weather = { temp, desc, icon };
+  document.getElementById('weatherTemp').innerHTML = temp + '<span>°</span>';
+  document.getElementById('weatherDesc').textContent = desc;
+  document.getElementById('weatherIcon').textContent = icon;
+  document.getElementById('weatherInput').value = '';
+  saveState();
+}
+
+// ============================================
+// PROGRESS
+// ============================================
+
+function updateProgress() {
+  const total = state.packing.length;
+  const done = state.packing.filter(p => p.done).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  const circumference = 2 * Math.PI * 28;
+  const offset = circumference - (pct / 100) * circumference;
+  document.getElementById('progressRing').style.strokeDashoffset = offset;
+  document.getElementById('progressText').textContent = pct + '%';
+  document.getElementById('progressSub').textContent = `${done} من ${total} تم الإنجاز`;
+}
+
+// ============================================
+// SCHEDULE
+// ============================================
+
+function renderSchedule() {
+  const container = document.getElementById('scheduleList');
+  container.innerHTML = state.schedule.map((day, di) => `
+    <div class="day-card">
+      <div class="day-header">
+        <h3>اليوم ${day.day} — ${day.date}</h3>
+        <p>${day.city} • ${day.hotel}</p>
+      </div>
+      <div class="day-body">
+        ${day.items.map((item, ii) => `
+          <div class="day-item">
+            <div class="day-time">${item.time}</div>
+            <div class="day-content">
+              <div class="day-content-title">${item.title}</div>
+              <div class="day-content-sub">${item.sub}</div>
+            </div>
+            <div class="day-check ${item.done ? 'checked' : ''}" onclick="toggleSchedule(${di},${ii})"></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleSchedule(dayIdx, itemIdx) {
+  state.schedule[dayIdx].items[itemIdx].done = !state.schedule[dayIdx].items[itemIdx].done;
+  saveState();
+  renderSchedule();
+}
+
+// ============================================
+// HOTELS
+// ============================================
+
+function renderHotels() {
+  const container = document.getElementById('hotelsList');
+  container.innerHTML = hotelsData.map(h => `
+    <div class="detail-card">
+      <img src="${h.img}" alt="${h.name}" class="detail-card-img" onerror="this.style.display='none'">
+      <div class="detail-card-body">
+        <div class="detail-card-title">${h.name}</div>
+        <div class="detail-card-sub">${h.nameTh}</div>
+        <div class="detail-row"><span class="detail-row-label">التقييم</span><span class="detail-row-value">⭐ ${h.rating}</span></div>
+        <div class="detail-row"><span class="detail-row-label">العنوان</span><span class="detail-row-value">${h.address}</span></div>
+        <div class="detail-row"><span class="detail-row-label">العنوان (تايلندي)</span><span class="detail-row-value" style="font-size:13px">${h.addressTh}</span></div>
+        <div class="detail-row"><span class="detail-row-label">الهاتف</span><span class="detail-row-value">${h.phone}</span></div>
+        <div class="detail-row"><span class="detail-row-label">ملاحظات</span><span class="detail-row-value" style="font-size:13px">${h.notes}</span></div>
+        <div class="action-row">
+          <button class="action-btn blue" onclick="callNumber('${h.phone.replace(/[^0-9+]/g,'')}')">📞 اتصال</button>
+          <button class="action-btn green" onclick="copyText('${h.name}, ${h.address}')">📋 نسخ</button>
+          <button class="action-btn gray" onclick="openMap('${h.map}')">🗺️ خريطة</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// RESTAURANTS
+// ============================================
+
+function renderRestaurants(filter = '') {
+  const container = document.getElementById('restaurantsList');
+  let items = restaurantsData;
+  if (filter) {
+    const q = filter.toLowerCase();
+    items = items.filter(r => r.name.toLowerCase().includes(q) || r.type.includes(q) || (r.halalNote && r.halalNote.includes(q)));
+  }
+  container.innerHTML = items.map(r => `
+    <div class="detail-card">
+      <img src="${r.img}" alt="${r.name}" class="detail-card-img" onerror="this.style.display='none'">
+      <div class="detail-card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="detail-card-title">${r.name}</div>
+            <div class="detail-card-sub">${r.nameTh}</div>
+          </div>
+          <button class="fav-btn ${isFav('r', r.id) ? 'active' : ''}" onclick="toggleFav('r','${r.id}')">${isFav('r', r.id) ? '❤️' : '🤍'}</button>
+        </div>
+        <div style="margin:8px 0">
+          ${r.halal === true ? '<span class="tag-pill tag-green">✅ حلال</span>' : r.halal === false ? '<span class="tag-pill tag-red">❌ غير حلال</span>' : '<span class="tag-pill tag-gray">⚪ غير مؤكد</span>'}
+          <span class="tag-pill tag-blue">${r.type}</span>
+          <span class="tag-pill tag-orange">${r.price}</span>
+          ${r.rating ? `<span class="tag-pill tag-gray">⭐ ${r.rating}</span>` : ''}
+        </div>
+        <div class="detail-row"><span class="detail-row-label">الساعات</span><span class="detail-row-value">${r.hours}</span></div>
+        <div class="detail-row"><span class="detail-row-label">المسافة</span><span class="detail-row-value">${r.distance}</span></div>
+        <div class="action-row">
+          <button class="action-btn green" onclick="copyText('${r.nameTh}')">📋 نسخ (تايلندي)</button>
+          <button class="action-btn gray" onclick="openMap('${r.map}')">🗺️ خريطة</button>
+          <button class="action-btn ${isVisited(r.name) ? 'green' : 'blue'}" onclick="toggleVisit('${r.name}')">${isVisited(r.name) ? '✅ زُرت' : '✓ زيارة'}</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterRestaurants() {
+  renderRestaurants(document.getElementById('restSearch').value);
+}
+
+// ============================================
+// MALLS
+// ============================================
+
+function renderMalls() {
+  const container = document.getElementById('mallsList');
+  container.innerHTML = mallsData.map(m => `
+    <div class="detail-card">
+      <img src="${m.img}" alt="${m.name}" class="detail-card-img" onerror="this.style.display='none'">
+      <div class="detail-card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="detail-card-title">${m.name}</div>
+            <div class="detail-card-sub">${m.nameTh}</div>
+          </div>
+          <button class="fav-btn ${isFav('m', m.id) ? 'active' : ''}" onclick="toggleFav('m','${m.id}')">${isFav('m', m.id) ? '❤️' : '🤍'}</button>
+        </div>
+        <div class="detail-row"><span class="detail-row-label">الساعات</span><span class="detail-row-value">${m.hours}</span></div>
+        <div class="detail-row"><span class="detail-row-label">المحلات</span><span class="detail-row-value" style="font-size:13px">${m.shops}</span></div>
+        <div class="detail-row"><span class="detail-row-label">المطاعم</span><span class="detail-row-value" style="font-size:13px">${m.restaurants}</span></div>
+        <div class="detail-row"><span class="detail-row-label">المسافة</span><span class="detail-row-value">${m.distance}</span></div>
+        <div class="action-row">
+          <button class="action-btn gray" onclick="openMap('${m.map}')">🗺️ خريطة</button>
+          <button class="action-btn ${isVisited(m.name) ? 'green' : 'blue'}" onclick="toggleVisit('${m.name}')">${isVisited(m.name) ? '✅ زُرت' : '✓ زيارة'}</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// ACTIVITIES
+// ============================================
+
+function renderActivities() {
+  const container = document.getElementById('activitiesList');
+  container.innerHTML = activitiesData.map(a => `
+    <div class="detail-card">
+      <img src="${a.img}" alt="${a.name}" class="detail-card-img" onerror="this.style.display='none'">
+      <div class="detail-card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="detail-card-title">${a.name}</div>
+            <div class="detail-card-sub">${a.nameTh}</div>
+          </div>
+          <button class="fav-btn ${isFav('a', a.id) ? 'active' : ''}" onclick="toggleFav('a','${a.id}')">${isFav('a', a.id) ? '❤️' : '🤍'}</button>
+        </div>
+        <div class="detail-row"><span class="detail-row-label">الشركة</span><span class="detail-row-value">${a.company}</span></div>
+        <div class="detail-row"><span class="detail-row-label">وقت الانطلاق</span><span class="detail-row-value">${a.time}</span></div>
+        <div class="detail-row"><span class="detail-row-label">المدة</span><span class="detail-row-value">${a.duration}</span></div>
+        <div class="detail-row"><span class="detail-row-label">السعر</span><span class="detail-row-value" style="color:var(--ios-green);font-weight:700">${a.price}</span></div>
+        <div class="detail-row"><span class="detail-row-label">يجب إحضاره</span><span class="detail-row-value" style="font-size:13px">${a.bring}</span></div>
+        <div class="detail-row"><span class="detail-row-label">ملاحظات</span><span class="detail-row-value" style="font-size:13px">${a.notes}</span></div>
+        <div class="action-row">
+          <button class="action-btn gray" onclick="openMap('${a.map}')">🗺️ خريطة</button>
+          <button class="action-btn ${isVisited(a.name) ? 'green' : 'blue'}" onclick="toggleVisit('${a.name}')">${isVisited(a.name) ? '✅ تمت' : '✓ تم'}</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// BUDGET
+// ============================================
+
+function loadBudget() {
+  const b = state.budget;
+  if (b.hotel) document.getElementById('b-hotel').value = b.hotel;
+  if (b.breakfast) document.getElementById('b-breakfast').value = b.breakfast;
+  if (b.food) document.getElementById('b-food').value = b.food;
+  if (b.cafe) document.getElementById('b-cafe').value = b.cafe;
+  if (b.shop) document.getElementById('b-shop').value = b.shop;
+  if (b.gifts) document.getElementById('b-gifts').value = b.gifts;
+  if (b.tour1) document.getElementById('b-tour1').value = b.tour1;
+  if (b.tour2) document.getElementById('b-tour2').value = b.tour2;
+  if (b.trans) document.getElementById('b-trans').value = b.trans;
+  if (b.emer) document.getElementById('b-emer').value = b.emer;
+  document.getElementById('rateInput').value = state.exchangeRate;
+  calcBudget();
+}
+
+function calcBudget() {
+  const fields = ['hotel','breakfast','food','cafe','shop','gifts','tour1','tour2','trans','emer'];
+  let total = 0;
+  fields.forEach(f => {
+    const val = parseFloat(document.getElementById('b-' + f)?.value) || 0;
+    state.budget[f] = val;
+    total += val;
+  });
+  document.getElementById('budgetTotal').textContent = total.toLocaleString() + ' بات';
+  saveState();
+}
+
+function convertCurrency() {
+  const thb = parseFloat(document.getElementById('thbInput').value) || 0;
+  const kwd = thb / state.exchangeRate;
+  document.getElementById('kwdInput').value = kwd > 0 ? kwd.toFixed(3) : '';
+}
+function convertCurrencyReverse() {
+  const kwd = parseFloat(document.getElementById('kwdInput').value) || 0;
+  const thb = kwd * state.exchangeRate;
+  document.getElementById('thbInput').value = thb > 0 ? Math.round(thb) : '';
+}
+function saveRate() {
+  state.exchangeRate = parseFloat(document.getElementById('rateInput').value) || 110;
+  saveState();
+}
+
+// ============================================
+// PACKING
+// ============================================
+
+function renderPacking() {
+  const container = document.getElementById('packingList');
+  container.innerHTML = state.packing.map((item, i) => `
+    <div class="check-item" onclick="togglePacking(${i})">
+      <div class="check-box ${item.done ? 'checked' : ''}"></div>
+      <div class="check-text ${item.done ? 'done' : ''}">${item.text}</div>
+      <div class="check-delete" onclick="event.stopPropagation();deletePacking(${i})">🗑️</div>
+    </div>
+  `).join('');
+  updateProgress();
+}
+
+function togglePacking(i) {
+  state.packing[i].done = !state.packing[i].done;
+  saveState();
+  renderPacking();
+}
+
+function deletePacking(i) {
+  state.packing.splice(i, 1);
+  saveState();
+  renderPacking();
+}
+
+function addPackingItem() {
+  const input = document.getElementById('packingInput');
+  const text = input.value.trim();
+  if (!text) return;
+  state.packing.push({ text, done: false });
+  input.value = '';
+  saveState();
+  renderPacking();
+}
+
+// ============================================
+// FAVORITES
+// ============================================
+
+function isFav(type, id) {
+  return state.favorites.some(f => f.type === type && f.id === id);
+}
+
+function toggleFav(type, id) {
+  const idx = state.favorites.findIndex(f => f.type === type && f.id === id);
+  if (idx >= 0) {
+    state.favorites.splice(idx, 1);
+  } else {
+    let item;
+    if (type === 'r') item = restaurantsData.find(r => r.id === id);
+    else if (type === 'm') item = mallsData.find(m => m.id === id);
+    else if (type === 'a') item = activitiesData.find(a => a.id === id);
+    if (item) state.favorites.push({ type, id, name: item.name, sub: item.type || item.company || '' });
+  }
+  saveState();
+  if (state.currentSection === 'restaurants') renderRestaurants(document.getElementById('restSearch')?.value || '');
+  if (state.currentSection === 'malls') renderMalls();
+  if (state.currentSection === 'activities') renderActivities();
+  if (state.currentSection === 'favorites') renderFavorites();
+}
+
+function renderFavorites() {
+  const container = document.getElementById('favoritesList');
+  if (state.favorites.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">❤️</div>
+        <div class="empty-state-title">لا توجد مفضلات</div>
+        <div class="empty-state-sub">اضغط على القلب 🤍 في أي مكان لإضافته هنا</div>
+      </div>`;
+    return;
+  }
+  container.innerHTML = `<div class="ios-list">` + state.favorites.map(f => `
+    <div class="ios-list-item" onclick="removeFav('${f.type}','${f.id}')">
+      <div class="ios-list-icon" style="background:rgba(255,45,85,0.12)">❤️</div>
+      <div class="ios-list-content">
+        <div class="ios-list-title">${f.name}</div>
+        <div class="ios-list-sub">${f.sub}</div>
+      </div>
+      <div class="ios-list-chevron" style="color:var(--ios-red)">✕</div>
+    </div>
+  `).join('') + `</div>`;
+}
+
+function removeFav(type, id) {
+  toggleFav(type, id);
+}
+
+// ============================================
+// VISITED
+// ============================================
+
+function isVisited(name) {
+  return state.visited.includes(name);
+}
+
+function toggleVisit(name) {
+  const idx = state.visited.indexOf(name);
+  if (idx >= 0) state.visited.splice(idx, 1);
+  else state.visited.push(name);
+  saveState();
+  if (state.currentSection === 'restaurants') renderRestaurants(document.getElementById('restSearch')?.value || '');
+  if (state.currentSection === 'malls') renderMalls();
+  if (state.currentSection === 'activities') renderActivities();
+  if (state.currentSection === 'visited') renderVisited();
+}
+
+function renderVisited() {
+  const container = document.getElementById('visitedList');
+  const allPlaces = [
+    ...restaurantsData.map(r => r.name),
+    ...mallsData.map(m => m.name),
+    ...activitiesData.map(a => a.name)
+  ];
+  const total = allPlaces.length;
+  const done = state.visited.length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  const circumference = 2 * Math.PI * 28;
+  document.getElementById('visitRing').style.strokeDashoffset = circumference - (pct / 100) * circumference;
+  document.getElementById('visitText').textContent = pct + '%';
+  document.getElementById('visitSub').textContent = `${done} من ${total} مكان`;
+
+  if (state.visited.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📍</div><div>لم تزُر أي مكان بعد</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="ios-list">` + state.visited.map(v => `
+    <div class="ios-list-item">
+      <div class="ios-list-icon" style="background:rgba(52,199,89,0.12)">✅</div>
+      <div class="ios-list-content"><div class="ios-list-title">${v}</div></div>
+    </div>
+  `).join('') + `</div>`;
+}
+
+// ============================================
+// SEARCH
+// ============================================
+
+function doGlobalSearch() {
+  const q = document.getElementById('globalSearch').value.trim().toLowerCase();
+  const container = document.getElementById('searchResults');
+  if (!q) { container.innerHTML = ''; return; }
+
+  const results = [];
+  restaurantsData.forEach(r => {
+    if (r.name.toLowerCase().includes(q) || r.type.toLowerCase().includes(q) || r.nameTh.includes(q))
+      results.push({ type: 'مطعم', name: r.name, sub: r.type, icon: '🍽️' });
+  });
+  mallsData.forEach(m => {
+    if (m.name.toLowerCase().includes(q) || m.shops.toLowerCase().includes(q))
+      results.push({ type: 'مول', name: m.name, sub: m.shops.substring(0, 40) + '...', icon: '🛍️' });
+  });
+  activitiesData.forEach(a => {
+    if (a.name.toLowerCase().includes(q) || a.company.toLowerCase().includes(q))
+      results.push({ type: 'نشاط', name: a.name, sub: a.company, icon: '🏝️' });
+  });
+
+  if (results.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><div>لا توجد نتائج</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="ios-list">` + results.map(r => `
+    <div class="ios-list-item">
+      <div class="ios-list-icon" style="background:var(--ios-gray5)">${r.icon}</div>
+      <div class="ios-list-content">
+        <div class="ios-list-title">${r.name}</div>
+        <div class="ios-list-sub">${r.sub}</div>
+      </div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+  `).join('') + `</div>`;
+}
+
+// ============================================
+// EMERGENCY MODAL
+// ============================================
+
+function openEmergency() {
+  document.getElementById('emergencyModal').classList.add('active');
+}
+function closeEmergency(e) {
+  if (!e || e.target === document.getElementById('emergencyModal')) {
+    document.getElementById('emergencyModal').classList.remove('active');
+  }
+}
+
+// ============================================
+// UTILITIES
+// ============================================
+
+function callNumber(num) {
+  window.location.href = 'tel:' + num;
+}
+function copyText(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => alert('تم النسخ: ' + text));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('تم النسخ: ' + text);
+  }
+}
+function openMap(query) {
+  window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query), '_blank');
+}
+
+// ============================================
+// NOTES
+// ============================================
+
+function saveNotes() {
+  state.notes = document.getElementById('notesArea').value;
+  saveState();
+}
+
+// ============================================
+// GALLERY
+// ============================================
+
+function renderGallery() {
+  const grid = document.getElementById('photoGrid');
+  let html = '';
+  state.photos.forEach((photo, i) => {
+    html += `<div class="photo-grid-item" onclick="if(confirm('حذف الصورة؟')){state.photos.splice(${i},1);saveState();renderGallery();}"><img src="${photo}" alt="photo"></div>`;
+  });
+  html += `<label class="photo-grid-item photo-add"><span>+</span><input type="file" accept="image/*" onchange="addPhoto(this)"></label>`;
+  grid.innerHTML = html;
+}
+
+function addPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    state.photos.push(e.target.result);
+    saveState();
+    renderGallery();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+// ============================================
+// INIT
+// ============================================
+
+applyTheme();
+document.getElementById('weatherTemp').innerHTML = state.weather.temp + '<span>°</span>';
+document.getElementById('weatherDesc').textContent = state.weather.desc;
+document.getElementById('weatherIcon').textContent = state.weather.icon;
+document.getElementById('notesArea').value = state.notes;
+updateProgress();
+
+showSection(state.currentSection);
+
+if ('serviceWorker' in navigator) {
+  const swCode = `self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));`;
+  const swBlob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+</script>
+</body>
+</html>
