@@ -3,11 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
-<title>دليل فيصل — بوكيت 2026</title>
+<title>Thailand Trip — Phuket 2026</title>
 <style>
 /* ============================================
    iOS TRAVEL GUIDE — SINGLE FILE PWA
@@ -325,6 +328,7 @@ body {
   box-shadow: 0 4px 16px rgba(0,122,255,0.25);
   position: relative;
   overflow: hidden;
+  transition: background 0.6s ease, box-shadow 0.6s ease;
 }
 .weather-card::before {
   content: '';
@@ -333,6 +337,48 @@ body {
   width: 200px; height: 200px;
   background: rgba(255,255,255,0.1);
   border-radius: 50%;
+  animation: weatherGlow 10s ease-in-out infinite;
+}
+.weather-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(255,255,255,0.07), transparent 45%);
+  pointer-events: none;
+}
+.weather-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  overflow: hidden;
+}
+.weather-fx .fx-cloud,
+.weather-fx .fx-rain,
+.weather-fx .fx-spark {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+.weather-fx .fx-cloud {
+  background:
+    radial-gradient(circle at 18% 24%, rgba(255,255,255,0.26) 0 12%, transparent 32%),
+    radial-gradient(circle at 70% 30%, rgba(255,255,255,0.22) 0 10%, transparent 30%),
+    radial-gradient(circle at 42% 72%, rgba(255,255,255,0.16) 0 14%, transparent 34%);
+}
+.weather-fx .fx-rain {
+  background-image: repeating-linear-gradient(
+    110deg,
+    rgba(255,255,255,0.0) 0,
+    rgba(255,255,255,0.0) 11px,
+    rgba(255,255,255,0.42) 11px,
+    rgba(255,255,255,0.42) 13px
+  );
+}
+.weather-fx .fx-spark {
+  background: radial-gradient(circle at 30% 22%, rgba(255,255,255,0.62), transparent 35%);
 }
 .weather-top {
   display: flex;
@@ -358,36 +404,303 @@ body {
   opacity: 0.7;
   margin-top: 2px;
 }
-.weather-icon { font-size: 40px; }
-.weather-edit {
+.weather-visual {
+  position: relative;
+  width: 86px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.weather-orb {
+  position: absolute;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.86);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.weather-icon {
+  font-size: 44px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.14);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center;
+  box-shadow: inset 0 1px 4px rgba(255,255,255,0.18), 0 8px 20px rgba(0,0,0,0.14);
+}
+.weather-meta {
+  margin-top: 12px;
+  font-size: 12px;
+  opacity: 0.82;
+  position: relative;
+  z-index: 1;
+}
+.weather-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  position: relative;
+  z-index: 1;
+}
+.weather-pill {
+  background: rgba(255,255,255,0.18);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.weather-actions {
   margin-top: 12px;
   display: flex;
   gap: 8px;
   position: relative;
   z-index: 1;
 }
-.weather-edit input {
+.weather-actions button,
+.weather-actions a {
   flex: 1;
   background: rgba(255,255,255,0.2);
   border: none;
   border-radius: 10px;
-  padding: 8px 12px;
+  padding: 9px 12px;
   color: #fff;
   font-size: 14px;
+  font-weight: 600;
   font-family: inherit;
   outline: none;
-}
-.weather-edit input::placeholder { color: rgba(255,255,255,0.6); }
-.weather-edit button {
-  background: rgba(255,255,255,0.25);
-  border: none;
-  border-radius: 10px;
-  padding: 8px 14px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
   cursor: pointer;
-  font-family: inherit;
+  text-decoration: none;
+  text-align: center;
+}
+.weather-actions button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.weather-card.weather-sunny {
+  background: linear-gradient(135deg, #58c4ff 0%, #1e7eff 100%);
+  box-shadow: 0 6px 20px rgba(30,126,255,0.32);
+}
+.weather-card.weather-cloudy {
+  background: linear-gradient(135deg, #7d91a7 0%, #4f6383 100%);
+  box-shadow: 0 6px 20px rgba(79,99,131,0.32);
+}
+.weather-card.weather-cloudy-night {
+  background: linear-gradient(135deg, #1d2946 0%, #141d36 100%);
+  box-shadow: 0 8px 24px rgba(14,20,40,0.44);
+}
+.weather-card.weather-rain {
+  background: linear-gradient(135deg, #43607e 0%, #2f4360 100%);
+  box-shadow: 0 6px 20px rgba(47,67,96,0.36);
+}
+.weather-card.weather-storm {
+  background: linear-gradient(135deg, #2e3559 0%, #161a33 100%);
+  box-shadow: 0 8px 24px rgba(20,24,46,0.45);
+}
+.weather-card.weather-mist {
+  background: linear-gradient(135deg, #a0abb9 0%, #78879a 100%);
+  box-shadow: 0 6px 20px rgba(120,135,154,0.35);
+}
+.weather-card.weather-night {
+  background: linear-gradient(135deg, #182544 0%, #0f162f 100%);
+  box-shadow: 0 8px 24px rgba(12,18,40,0.46);
+}
+
+.weather-card.weather-sunny .weather-icon {
+  animation: sunPulse 2.8s ease-in-out infinite;
+}
+.weather-card.weather-sunny .weather-orb {
+  opacity: 1;
+  transform: scale(1);
+  background: radial-gradient(circle at 35% 35%, #fff7c8 0 30%, #ffcf55 58%, #ff9e2f 100%);
+  box-shadow: 0 0 30px rgba(255,216,120,0.65), 0 0 65px rgba(255,171,64,0.38);
+  animation: orbBreath 2.4s ease-in-out infinite;
+}
+.weather-card.weather-sunny .weather-fx {
+  opacity: 0.3;
+}
+.weather-card.weather-sunny .fx-cloud {
+  opacity: 0.55;
+  animation: cloudDriftWide 10s ease-in-out infinite;
+}
+.weather-card.weather-cloudy .weather-icon,
+.weather-card.weather-cloudy-night .weather-icon,
+.weather-card.weather-mist .weather-icon {
+  animation: cloudFloat 4.8s ease-in-out infinite;
+}
+.weather-card.weather-cloudy .weather-fx,
+.weather-card.weather-cloudy-night .weather-fx,
+.weather-card.weather-mist .weather-fx {
+  opacity: 0.5;
+}
+.weather-card.weather-cloudy .fx-cloud {
+  opacity: 0.95;
+  animation: cloudDriftWide 8s ease-in-out infinite;
+}
+.weather-card.weather-cloudy-night .fx-cloud {
+  opacity: 0.72;
+  animation: cloudDriftWide 9s ease-in-out infinite;
+}
+.weather-card.weather-rain .weather-icon {
+  animation: rainNudge 1.4s ease-in-out infinite;
+}
+.weather-card.weather-storm .weather-icon {
+  animation: stormShake 1s linear infinite;
+}
+.weather-card.weather-night .weather-icon {
+  animation: moonDrift 4s ease-in-out infinite;
+}
+.weather-card.weather-night .weather-orb {
+  opacity: 1;
+  transform: scale(1);
+  background: radial-gradient(circle at 30% 35%, #f7f7ff 0 26%, #d7ddff 54%, #9ca9e6 100%);
+  box-shadow: 14px 0 0 0 rgba(24,37,68,0.85), 0 0 28px rgba(170,180,255,0.4);
+}
+.weather-card.weather-night .weather-fx {
+  opacity: 0.28;
+}
+.weather-card.weather-night .fx-cloud {
+  opacity: 0.42;
+  animation: cloudDriftWide 11s ease-in-out infinite;
+}
+
+.weather-card.weather-rain .weather-fx {
+  opacity: 0.62;
+}
+.weather-card.weather-rain .fx-cloud {
+  opacity: 0.56;
+  animation: cloudDriftWide 8s ease-in-out infinite;
+}
+.weather-card.weather-rain .fx-rain {
+  opacity: 0.9;
+  animation: rainFallFast 0.55s linear infinite;
+}
+.weather-card.weather-storm .weather-fx {
+  opacity: 0.7;
+}
+.weather-card.weather-storm .fx-cloud {
+  opacity: 0.72;
+  animation: cloudDriftWide 6s ease-in-out infinite;
+}
+.weather-card.weather-storm .fx-rain {
+  opacity: 0.58;
+  animation: rainFallFast 0.45s linear infinite;
+}
+.weather-card.weather-storm .fx-spark {
+  opacity: 0.55;
+  animation: lightningFlash 2.1s ease-in-out infinite;
+}
+.weather-card.weather-mist .fx-cloud {
+  opacity: 0.64;
+  filter: blur(2px);
+  animation: fogWave 7s ease-in-out infinite;
+}
+
+/* Time-of-day tint like weather apps: morning blue, noon orange, night near-black */
+.weather-card.tod-morning {
+  background: linear-gradient(135deg, #4fb7ff 0%, #176bcb 100%);
+  box-shadow: 0 8px 24px rgba(23,107,203,0.36);
+}
+.weather-card.tod-noon {
+  background: linear-gradient(135deg, #ffb35c 0%, #e4692c 100%);
+  box-shadow: 0 8px 24px rgba(228,105,44,0.34);
+}
+.weather-card.tod-night {
+  background: linear-gradient(135deg, #171a23 0%, #090b12 100%);
+  box-shadow: 0 10px 26px rgba(5,7,12,0.5);
+}
+
+#sec-home {
+  transition: background 0.7s ease;
+}
+#sec-home.home-weather-sunny {
+  background: linear-gradient(to bottom, rgba(88,196,255,0.12), transparent 40%);
+}
+#sec-home.home-weather-cloudy {
+  background: linear-gradient(to bottom, rgba(125,145,167,0.12), transparent 40%);
+}
+#sec-home.home-weather-cloudy-night {
+  background: linear-gradient(to bottom, rgba(29,41,70,0.2), transparent 42%);
+}
+#sec-home.home-weather-rain {
+  background: linear-gradient(to bottom, rgba(67,96,126,0.14), transparent 44%);
+}
+#sec-home.home-weather-storm {
+  background: linear-gradient(to bottom, rgba(36,41,76,0.18), transparent 46%);
+}
+#sec-home.home-weather-mist {
+  background: linear-gradient(to bottom, rgba(160,171,185,0.14), transparent 42%);
+}
+#sec-home.home-weather-night {
+  background: linear-gradient(to bottom, rgba(24,37,68,0.16), transparent 44%);
+}
+#sec-home.home-tod-morning {
+  background: linear-gradient(to bottom, rgba(79,183,255,0.16), transparent 42%);
+}
+#sec-home.home-tod-noon {
+  background: linear-gradient(to bottom, rgba(255,179,92,0.2), transparent 44%);
+}
+#sec-home.home-tod-night {
+  background: linear-gradient(to bottom, rgba(12,15,24,0.28), transparent 46%);
+}
+
+@keyframes weatherGlow {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.9; }
+  50% { transform: translateY(-10px) scale(1.07); opacity: 1; }
+}
+@keyframes sunPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.12) rotate(8deg); }
+}
+@keyframes cloudFloat {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-6px); }
+}
+@keyframes rainNudge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+@keyframes stormShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(1.5px); }
+  75% { transform: translateX(-1.5px); }
+}
+@keyframes moonDrift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes orbBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+@keyframes cloudDriftWide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-14px); }
+}
+@keyframes rainSlide {
+  from { background-position: 0 0; }
+  to { background-position: 0 18px; }
+}
+@keyframes rainFallFast {
+  from { background-position: 0 0; }
+  to { background-position: 0 22px; }
+}
+@keyframes fogWave {
+  0%, 100% { transform: translateX(0) scale(1); }
+  50% { transform: translateX(-10px) scale(1.05); }
+}
+@keyframes lightningFlash {
+  0%, 22%, 100% { opacity: 0.2; }
+  24%, 26% { opacity: 0.72; }
+  60%, 62% { opacity: 0.52; }
 }
 
 /* ===== QUICK NAV CARDS ===== */
@@ -398,34 +711,28 @@ body {
   margin-bottom: 16px;
 }
 .quick-card {
-  background: var(--ios-surface);
-  border-radius: 16px;
-  padding: 16px 12px;
-  text-align: center;
-  box-shadow: var(--ios-card-shadow);
-  border: 0.5px solid var(--ios-border);
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   border: none;
+  border-radius: 16px;
+  background: var(--ios-surface);
+  box-shadow: var(--ios-card-shadow);
+  padding: 10px;
+  text-align: right;
+  color: var(--ios-text);
+  cursor: pointer;
   font-family: inherit;
-  color: inherit;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
 }
 .quick-card:active { transform: scale(0.96); }
 .quick-card-icon {
-  width: 44px; height: 44px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 8px;
-  font-size: 22px;
+  width: 100%;
+  height: 72px;
+  border-radius: 12px;
+  margin: 0 auto 10px;
+  background-color: var(--ios-gray5);
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 -40px 40px rgba(0,0,0,0.25);
 }
-.quick-card-icon.blue { background: rgba(0,122,255,0.12); }
-.quick-card-icon.green { background: rgba(52,199,89,0.12); }
-.quick-card-icon.orange { background: rgba(255,149,0,0.12); }
-.quick-card-icon.pink { background: rgba(255,45,85,0.12); }
-.quick-card-icon.indigo { background: rgba(88,86,214,0.12); }
-.quick-card-icon.teal { background: rgba(90,200,250,0.12); }
 .quick-card-label {
   font-size: 13px;
   font-weight: 600;
@@ -442,6 +749,55 @@ body {
   font-weight: 700;
   margin-bottom: 12px;
   letter-spacing: -0.021em;
+}
+.section-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.section-head-row .section-header {
+  margin-bottom: 0;
+}
+.mini-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background: var(--ios-blue);
+  color: #fff;
+}
+.mini-btn.gray {
+  background: var(--ios-gray5);
+  color: var(--ios-text);
+}
+[data-theme="dark"] .mini-btn.gray {
+  background: var(--ios-surface-elevated);
+}
+.day-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.day-header-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.day-header-actions .mini-btn,
+.day-item-actions .mini-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+.day-item-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
 }
 
 /* ===== SEARCH BAR ===== */
@@ -531,12 +887,13 @@ body {
 .detail-card {
   background: var(--ios-surface);
   border-radius: 16px;
-  overflow: hidden;
+  padding: 10px;
   margin-bottom: 12px;
   box-shadow: var(--ios-card-shadow);
   border: 0.5px solid var(--ios-border);
 }
 .detail-card-img {
+  overflow: hidden;
   width: 100%;
   aspect-ratio: 16/10;
   object-fit: cover;
@@ -553,6 +910,30 @@ body {
   font-size: 15px;
   color: var(--ios-text-secondary);
   margin-bottom: 12px;
+}
+.detail-card-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.detail-card-sub-row .detail-card-sub {
+  margin-bottom: 0;
+}
+.sub-copy-btn {
+  border: none;
+  background: var(--ios-gray5);
+  color: var(--ios-text-secondary);
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.sub-copy-btn:active {
+  transform: scale(0.96);
 }
 .detail-row {
   display: flex;
@@ -759,6 +1140,31 @@ body {
   margin-bottom: 12px;
   opacity: 0.9;
 }
+.currency-visual {
+  height: 110px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  background-color: rgba(255,255,255,0.18);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+.currency-visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0.15));
+}
+.currency-visual span {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
 .currency-row {
   display: flex;
   align-items: center;
@@ -867,6 +1273,35 @@ body {
   justify-content: center;
 }
 [data-theme="dark"] .modal-close { background: var(--ios-surface-elevated); }
+
+.place-gallery {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 78%;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  scroll-snap-type: x mandatory;
+}
+.place-gallery img {
+  width: 100%;
+  height: 176px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 0.5px solid var(--ios-border);
+  scroll-snap-align: start;
+}
+.place-detail-head {
+  margin-bottom: 10px;
+}
+.place-detail-sub {
+  color: var(--ios-text-secondary);
+  font-size: 14px;
+}
+.detail-card-img.clickable {
+  cursor: pointer;
+}
 
 /* ===== EMERGENCY FLOATING BUTTON ===== */
 .emergency-fab {
@@ -1029,6 +1464,127 @@ body {
 }
 .photo-add:active { border-color: var(--ios-blue); }
 
+/* ===== COUNTRY / CITY PICKER ===== */
+.city-picker {
+  max-width: 430px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.city-picker.active {
+  display: flex;
+}
+.city-picker-card {
+  width: 100%;
+  background: var(--ios-surface);
+  border: 0.5px solid var(--ios-border);
+  border-radius: 24px;
+  box-shadow: var(--ios-card-shadow);
+  padding: 22px;
+}
+.city-picker-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.city-picker-sub {
+  color: var(--ios-text-secondary);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.city-picker-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.city-card {
+  border: none;
+  border-radius: 16px;
+  padding: 10px;
+  background: var(--ios-gray6);
+  color: var(--ios-text);
+  text-align: center;
+  cursor: pointer;
+  font-family: inherit;
+  overflow: hidden;
+}
+[data-theme="dark"] .city-card {
+  background: var(--ios-surface-elevated);
+}
+.city-card-photo {
+  width: 100%;
+  aspect-ratio: 16/10;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 8px;
+  box-shadow: inset 0 -30px 30px rgba(0,0,0,0.2);
+}
+.city-card .name {
+  font-size: 14px;
+  font-weight: 700;
+}
+.city-card .meta {
+  font-size: 12px;
+  color: var(--ios-text-secondary);
+  margin-top: 2px;
+}
+.city-picker-note {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--ios-text-secondary);
+}
+.country-entry-btn {
+  width: 100%;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #00A3FF 0%, #007AFF 45%, #FF8A3D 100%);
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 12px;
+}
+.country-entry-btn:active {
+  transform: scale(0.98);
+}
+.app-hidden {
+  display: none;
+}
+
+:root[data-city="phuket"] {
+  --ios-bg: #F3FAFF;
+  --ios-blue: #0A84FF;
+  --ios-green: #2CC5B9;
+  --ios-indigo: #2D9CDB;
+  --ios-teal: #4CC9F0;
+  --ios-pink: #5E60CE;
+}
+
+:root[data-city="bangkok"] {
+  --ios-bg: #FFF8F2;
+  --ios-blue: #D96831;
+  --ios-green: #3BAA8A;
+  --ios-indigo: #8A5A44;
+  --ios-teal: #E98F5A;
+  --ios-pink: #BF4E30;
+}
+
+[data-city="phuket"] .hero-card {
+  box-shadow: 0 8px 24px rgba(0,122,255,0.22);
+}
+
+[data-city="bangkok"] .hero-card {
+  box-shadow: 0 8px 24px rgba(217,104,49,0.24);
+}
+
 /* ===== HIDE FILE INPUT ===== */
 input[type="file"] { display: none; }
 
@@ -1041,16 +1597,36 @@ input[type="file"] { display: none; }
 </head>
 <body>
 
-<div class="app-container">
+<div class="city-picker" id="cityPicker">
+  <div class="city-picker-card">
+    <div class="city-picker-title">Thailand</div>
+    <div class="city-picker-sub">Tap Thailand to view available trip cities</div>
+    <button class="country-entry-btn" type="button" onclick="showCityOptions()">Enter Thailand Trip</button>
+    <div class="city-picker-grid app-hidden" id="cityOptions">
+      <button class="city-card phuket" type="button" onclick="selectCity('phuket')">
+        <div class="city-card-photo" style="background-image:url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80')"></div>
+        <span class="name">Phuket</span>
+        <div class="meta">Islands and sea vibe</div>
+      </button>
+      <button class="city-card bangkok" type="button" onclick="selectCity('bangkok')">
+        <div class="city-card-photo" style="background-image:url('https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=900&q=80')"></div>
+        <span class="name">Bangkok</span>
+        <div class="meta">Modern city vibe</div>
+      </button>
+    </div>
+    <div class="city-picker-note" id="cityPickerNote">Start by tapping Thailand, then choose your city.</div>
+  </div>
+</div>
+
+<div class="app-container app-hidden" id="appContainer">
 
 <!-- TOP NAVIGATION -->
 <div class="top-nav">
   <div class="top-nav-inner">
-    <button class="nav-btn" id="backBtn" style="visibility:hidden" onclick="goBack()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    <div class="nav-title" id="navTitle">Home</div>
+    <button class="nav-btn" onclick="handleCityPickerShortcut()" id="cityPickerBtn" aria-label="Choose city">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
     </button>
-    <div class="nav-title" id="navTitle">الرئيسية</div>
-    <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
   </div>
 </div>
 
@@ -1060,10 +1636,35 @@ input[type="file"] { display: none; }
 <!-- ==================== HOME SECTION ==================== -->
 <div class="section active" id="sec-home">
   <div class="hero-card">
-    <img src="https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=800&q=80" alt="Phuket" class="hero-img" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#007AFF,#5856D6)'">
+    <img id="heroImage" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='500'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23007AFF'/><stop offset='1' stop-color='%235856D6'/></linearGradient></defs><rect width='800' height='500' fill='url(%23g)'/><text x='400' y='260' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='64' fill='%23fff'>بوكيت 2026</text></svg>" alt="Phuket" class="hero-img" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#007AFF,#5856D6)'">
     <div class="hero-overlay">
-      <div class="hero-title">رحلة بوكيت 2026</div>
-      <div class="hero-subtitle">صيف لا يُنسى 🇹🇭</div>
+      <div class="hero-title" id="heroTitle">Phuket Trip 2026</div>
+      <div class="hero-subtitle" id="heroSubtitle">Unforgettable Thailand moments 🇹🇭</div>
+    </div>
+  </div>
+
+  <div class="weather-card" id="weatherCard">
+    <div class="weather-fx" id="weatherFx">
+      <span class="fx-cloud"></span>
+      <span class="fx-rain"></span>
+      <span class="fx-spark"></span>
+    </div>
+    <div class="weather-top">
+      <div>
+        <div class="weather-temp" id="weatherTemp">32<span>°</span></div>
+        <div class="weather-desc" id="weatherDesc">مشمس ☀️</div>
+        <div class="weather-location" id="weatherLocation">Phuket, Thailand</div>
+      </div>
+      <div class="weather-visual">
+        <span class="weather-orb" aria-hidden="true"></span>
+        <div class="weather-icon" id="weatherIcon">☀️</div>
+      </div>
+    </div>
+    <div class="weather-meta" id="weatherMeta">جاري جلب الطقس الحقيقي من الأرصاد التايلندية...</div>
+    <div class="weather-stats" id="weatherStats"></div>
+    <div class="weather-actions">
+      <button type="button" id="weatherRefreshBtn" onclick="refreshWeather()">تحديث مباشر</button>
+      <a id="weatherSourceLink" href="https://www.tmd.go.th/en/weather/province/phuket">مصدر TMD</a>
     </div>
   </div>
 
@@ -1074,64 +1675,45 @@ input[type="file"] { display: none; }
     <div class="countdown-box"><div class="countdown-num" id="cd-seconds">--</div><div class="countdown-label">ثانية</div></div>
   </div>
 
-  <div class="progress-card">
-    <div class="progress-ring-wrap">
-      <svg class="progress-ring-svg" viewBox="0 0 64 64">
-        <circle class="progress-ring-bg" cx="32" cy="32" r="28"/>
-        <circle class="progress-ring-fill" id="progressRing" cx="32" cy="32" r="28" stroke-dasharray="175.9" stroke-dashoffset="175.9"/>
-      </svg>
-      <div class="progress-ring-text" id="progressText">0%</div>
-    </div>
-    <div class="progress-info">
-      <h3>تجهيز الرحلة</h3>
-      <p id="progressSub">0 من 0 تم الإنجاز</p>
-    </div>
-  </div>
-
-  <div class="weather-card" id="weatherCard">
-    <div class="weather-top">
-      <div>
-        <div class="weather-temp" id="weatherTemp">32<span>°</span></div>
-        <div class="weather-desc" id="weatherDesc">مشمس ☀️</div>
-        <div class="weather-location">بوكيت، تايلاند</div>
-      </div>
-      <div class="weather-icon" id="weatherIcon">☀️</div>
-    </div>
-    <div class="weather-edit">
-      <input type="text" id="weatherInput" placeholder="درجة الحرارة..." maxlength="3">
-      <button onclick="updateWeather()">تحديث</button>
-    </div>
-  </div>
-
   <div class="quick-grid">
     <button class="quick-card" onclick="showSection('schedule')">
-      <div class="quick-card-icon blue">📅</div>
-      <div class="quick-card-label">الجدول</div>
-      <div class="quick-card-sub">5 أيام</div>
+      <div class="quick-card-icon" data-media="schedule"></div>
+      <div class="quick-card-label">Schedule</div>
+      <div class="quick-card-sub" id="homeScheduleCount"> أيام</div>
     </button>
     <button class="quick-card" onclick="showSection('hotels')">
-      <div class="quick-card-icon green">🏨</div>
-      <div class="quick-card-label">الفنادق</div>
-      <div class="quick-card-sub">الفندق الحالي</div>
+      <div class="quick-card-icon" data-media="hotels"></div>
+      <div class="quick-card-label">Hotels</div>
+      <div class="quick-card-sub" id="homeHotelsCount">الفندق الحالي</div>
     </button>
     <button class="quick-card" onclick="showSection('restaurants')">
-      <div class="quick-card-icon orange">🍽️</div>
-      <div class="quick-card-label">المطاعم</div>
-      <div class="quick-card-sub">15 مطعم</div>
+      <div class="quick-card-icon" data-media="restaurants"></div>
+      <div class="quick-card-label">Restaurants</div>
+      <div class="quick-card-sub" id="homeRestaurantsCount">مطاعم</div>
+    </button>
+    <button class="quick-card" onclick="showSection('cafes')">
+      <div class="quick-card-icon" data-media="cafes"></div>
+      <div class="quick-card-label">Cafes</div>
+      <div class="quick-card-sub" id="homeCafesCount">مقاهي</div>
+    </button>
+    <button class="quick-card" onclick="showSection('malls')">
+      <div class="quick-card-icon" data-media="malls"></div>
+      <div class="quick-card-label">Malls</div>
+      <div class="quick-card-sub" id="homeMallsCount">مولات</div>
     </button>
     <button class="quick-card" onclick="showSection('activities')">
-      <div class="quick-card-icon pink">🏝️</div>
-      <div class="quick-card-label">الرحلات</div>
-      <div class="quick-card-sub">9 أنشطة</div>
+      <div class="quick-card-icon" data-media="activities"></div>
+      <div class="quick-card-label">Activities</div>
+      <div class="quick-card-sub" id="homeActivitiesCount">أنشطة</div>
     </button>
     <button class="quick-card" onclick="showSection('budget')">
-      <div class="quick-card-icon indigo">💰</div>
-      <div class="quick-card-label">الميزانية</div>
+      <div class="quick-card-icon" data-media="budget"></div>
+      <div class="quick-card-label">Budget</div>
       <div class="quick-card-sub">حاسبة العملة</div>
     </button>
     <button class="quick-card" onclick="showSection('packing')">
-      <div class="quick-card-icon teal">🧳</div>
-      <div class="quick-card-label">التجهيز</div>
+      <div class="quick-card-icon" data-media="packing"></div>
+      <div class="quick-card-label">Packing</div>
       <div class="quick-card-sub">قائمة الأمتعة</div>
     </button>
   </div>
@@ -1139,19 +1721,22 @@ input[type="file"] { display: none; }
 
 <!-- ==================== SCHEDULE SECTION ==================== -->
 <div class="section" id="sec-schedule">
-  <div class="section-header">📅 جدول الرحلة</div>
+  <div class="section-head-row">
+    <div class="section-header">📅 جدول الرحلة</div>
+    <button class="mini-btn" type="button" onclick="addScheduleDay()">+ يوم جديد</button>
+  </div>
   <div id="scheduleList"></div>
 </div>
 
 <!-- ==================== HOTELS SECTION ==================== -->
 <div class="section" id="sec-hotels">
-  <div class="section-header">🏨 الفنادق</div>
+  <div class="section-header">Hotels</div>
   <div id="hotelsList"></div>
 </div>
 
 <!-- ==================== RESTAURANTS SECTION ==================== -->
 <div class="section" id="sec-restaurants">
-  <div class="section-header">🍽️ المطاعم</div>
+  <div class="section-header">Restaurants</div>
   <div class="search-bar">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
     <input type="text" id="restSearch" placeholder="ابحث في المطاعم..." oninput="filterRestaurants()">
@@ -1159,15 +1744,25 @@ input[type="file"] { display: none; }
   <div id="restaurantsList"></div>
 </div>
 
+<!-- ==================== CAFES SECTION ==================== -->
+<div class="section" id="sec-cafes">
+  <div class="section-header">Cafes</div>
+  <div class="search-bar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="text" id="cafeSearch" placeholder="ابحث في المقاهي..." oninput="filterCafes()">
+  </div>
+  <div id="cafesList"></div>
+</div>
+
 <!-- ==================== MALLS SECTION ==================== -->
 <div class="section" id="sec-malls">
-  <div class="section-header">🛍️ المولات</div>
+  <div class="section-header">Malls</div>
   <div id="mallsList"></div>
 </div>
 
 <!-- ==================== ACTIVITIES SECTION ==================== -->
 <div class="section" id="sec-activities">
-  <div class="section-header">🏝️ الرحلات والأنشطة</div>
+  <div class="section-header">Activities</div>
   <div id="activitiesList"></div>
 </div>
 
@@ -1176,7 +1771,8 @@ input[type="file"] { display: none; }
   <div class="section-header">💰 الميزانية</div>
 
   <div class="currency-card">
-    <h3>💱 محول العملة</h3>
+    <div class="currency-visual" id="currencyVisual"><span>Money & Currency Exchange</span></div>
+    <h3>💱 محول العملات والأموال</h3>
     <div class="currency-row">
       <input type="number" id="thbInput" placeholder="0" oninput="convertCurrency()">
       <span>بات 🇹🇭</span>
@@ -1226,6 +1822,19 @@ input[type="file"] { display: none; }
 <!-- ==================== PACKING SECTION ==================== -->
 <div class="section" id="sec-packing">
   <div class="section-header">🧳 قائمة التجهيز</div>
+  <div class="progress-card" style="margin-bottom:12px">
+    <div class="progress-ring-wrap">
+      <svg class="progress-ring-svg" viewBox="0 0 64 64">
+        <circle class="progress-ring-bg" cx="32" cy="32" r="28"/>
+        <circle class="progress-ring-fill" id="progressRing" cx="32" cy="32" r="28" stroke-dasharray="175.9" stroke-dashoffset="175.9"/>
+      </svg>
+      <div class="progress-ring-text" id="progressText">0%</div>
+    </div>
+    <div class="progress-info">
+      <h3>Trip Preparation</h3>
+      <p id="progressSub">0 of 0 completed</p>
+    </div>
+  </div>
   <div class="ios-list" id="packingList"></div>
   <div class="add-item-row">
     <input type="text" id="packingInput" placeholder="أضف عنصر جديد..." onkeypress="if(event.key==='Enter')addPackingItem()">
@@ -1296,23 +1905,23 @@ input[type="file"] { display: none; }
   <div class="tab-bar-inner">
     <button class="tab-item active" data-tab="home" onclick="showSection('home')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      الرئيسية
+      Home
     </button>
     <button class="tab-item" data-tab="schedule" onclick="showSection('schedule')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      الجدول
+      Schedule
     </button>
     <button class="tab-item" data-tab="search" onclick="showSection('search')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      بحث
+      Search
     </button>
     <button class="tab-item" data-tab="favorites" onclick="showSection('favorites')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      مفضلة
+      Favorites
     </button>
     <button class="tab-item" data-tab="more" onclick="showSection('more')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-      المزيد
+      More
     </button>
   </div>
 </div>
@@ -1396,75 +2005,103 @@ input[type="file"] { display: none; }
   </div>
 </div>
 
+<div class="modal-overlay" id="placeDetailModal" onclick="closePlaceDetails(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2 id="placeDetailTitle">Place Details</h2>
+      <button class="modal-close" onclick="closePlaceDetails()">✕</button>
+    </div>
+    <div class="place-detail-head">
+      <div class="place-detail-sub" id="placeDetailSub"></div>
+    </div>
+    <div id="placeDetailBody"></div>
+  </div>
+</div>
+
 <!-- ==================== MORE SECTION ==================== -->
 <div class="section" id="sec-more">
-  <div class="section-header">⚙️ المزيد</div>
+  <div class="section-header">More</div>
   <div class="ios-list" style="margin-bottom:12px">
     <div class="ios-list-item" onclick="showSection('hotels')">
       <div class="ios-list-icon" style="background:rgba(0,122,255,0.12)">🏨</div>
-      <div class="ios-list-content"><div class="ios-list-title">الفنادق</div></div>
+      <div class="ios-list-content"><div class="ios-list-title">Hotels</div></div>
       <div class="ios-list-chevron">›</div>
     </div>
     <div class="ios-list-item" onclick="showSection('restaurants')">
       <div class="ios-list-icon" style="background:rgba(255,149,0,0.12)">🍽️</div>
-      <div class="ios-list-content"><div class="ios-list-title">المطاعم</div></div>
+      <div class="ios-list-content"><div class="ios-list-title">Restaurants</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+    <div class="ios-list-item" onclick="showSection('cafes')">
+      <div class="ios-list-icon" style="background:rgba(255,149,0,0.12)">☕</div>
+      <div class="ios-list-content"><div class="ios-list-title">Cafes</div></div>
       <div class="ios-list-chevron">›</div>
     </div>
     <div class="ios-list-item" onclick="showSection('malls')">
       <div class="ios-list-icon" style="background:rgba(175,82,222,0.12)">🛍️</div>
-      <div class="ios-list-content"><div class="ios-list-title">المولات</div></div>
+      <div class="ios-list-content"><div class="ios-list-title">Malls</div></div>
       <div class="ios-list-chevron">›</div>
     </div>
     <div class="ios-list-item" onclick="showSection('activities')">
       <div class="ios-list-icon" style="background:rgba(255,45,85,0.12)">🏝️</div>
-      <div class="ios-list-content"><div class="ios-list-title">الرحلات</div></div>
+      <div class="ios-list-content"><div class="ios-list-title">Activities</div></div>
       <div class="ios-list-chevron">›</div>
     </div>
   </div>
   <div class="ios-list" style="margin-bottom:12px">
     <div class="ios-list-item" onclick="showSection('budget')">
       <div class="ios-list-icon" style="background:rgba(52,199,89,0.12)">💰</div>
-      <div class="ios-list-content"><div class="ios-list-title">الميزانية</div></div>
+      <div class="ios-list-content"><div class="ios-list-title">Budget</div></div>
       <div class="ios-list-chevron">›</div>
     </div>
     <div class="ios-list-item" onclick="showSection('packing')">
       <div class="ios-list-icon" style="background:rgba(90,200,250,0.12)">🧳</div>
-      <div class="ios-list-content"><div class="ios-list-title">قائمة التجهيز</div></div>
+      <div class="ios-list-content"><div class="ios-list-title">Packing List</div></div>
       <div class="ios-list-chevron">›</div>
     </div>
     <div class="ios-list-item" onclick="showSection('visited')">
       <div class="ios-list-icon" style="background:rgba(88,86,214,0.12)">📍</div>
-      <div class="ios-list-content"><div class="ios-list-title">الأماكن المزارة</div></div>
+      <div class="ios-list-content"><div class="ios-list-title">Visited Places</div></div>
       <div class="ios-list-chevron">›</div>
     </div>
   </div>
   <div class="ios-list" style="margin-bottom:12px">
     <div class="ios-list-item" onclick="showSection('gallery')">
       <div class="ios-list-icon" style="background:rgba(255,149,0,0.12)">📷</div>
-      <div class="ios-list-content"><div class="ios-list-title">معرض الصور</div></div>
+      <div class="ios-list-content"><div class="ios-list-title">Photo Gallery</div></div>
       <div class="ios-list-chevron">›</div>
     </div>
     <div class="ios-list-item" onclick="showSection('notes')">
       <div class="ios-list-icon" style="background:rgba(175,82,222,0.12)">📝</div>
-      <div class="ios-list-content"><div class="ios-list-title">الملاحظات</div></div>
+      <div class="ios-list-content"><div class="ios-list-title">Notes</div></div>
       <div class="ios-list-chevron">›</div>
     </div>
   </div>
   <div class="ios-list">
     <div class="ios-list-item" onclick="toggleTheme()">
       <div class="ios-list-icon" style="background:rgba(0,122,255,0.12)">🌙</div>
-      <div class="ios-list-content"><div class="ios-list-title">الوضع الليلي / النهاري</div></div>
+      <div class="ios-list-content"><div class="ios-list-title">Dark / Light Mode</div></div>
+      <div class="ios-list-chevron">›</div>
+    </div>
+    <div class="ios-list-item" onclick="openCityPicker(true)">
+      <div class="ios-list-icon" style="background:rgba(88,86,214,0.12)">🇹🇭</div>
+      <div class="ios-list-content"><div class="ios-list-title">Choose City</div><div class="ios-list-sub" id="cityBadge">📍 Phuket / بوكيت</div></div>
       <div class="ios-list-chevron">›</div>
     </div>
   </div>
 </div>
 
+<script src="data.js?v=20260805-1"></script>
 <script>
 // ============================================
 // DATA
 // ============================================
 
-const TRIP_DATE = "2026-08-15T00:00:00";
+const TRIP_DATE = "2026-08-19T13:40:00";
+const TMD_PHUKET_URL = "https://www.tmd.go.th/en/weather/province/phuket";
+const OPEN_METEO_PHUKET_URL = "https://api.open-meteo.com/v1/forecast?latitude=7.8804&longitude=98.3923&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,weather_code,wind_speed_10m,wind_direction_10m&timezone=Asia%2FBangkok";
+const PLACEHOLDER_IMG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%23007AFF"/><stop offset="1" stop-color="%235856D6"/></linearGradient></defs><rect width="800" height="500" fill="url(%23g)"/><text x="400" y="260" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="64" fill="%23fff">بوكيت 2026</text></svg>';
+function safeImage(src) { return src && src.startsWith('http') ? src : PLACEHOLDER_IMG; }
 
 const scheduleData = [
   {
@@ -1531,32 +2168,7 @@ const hotelsData = [
   }
 ];
 
-const restaurantsData = [
-  { id:"r1", name:"Blu Saffron", nameTh:"บลู แซฟฟรอน", type:"عالمي", halal:false, halalNote:"خيارات بحرية", price:"$$$", hours:"17:00 - 23:00", rating:4.7, distance:"15 دقيقة", img:"https://images.unsplash.com/photo-1544148103-0773bf10d330?w=600&q=80", map:"Blu+Saffron+Phuket" },
-  { id:"r2", name:"La Gritta", nameTh:"ลา กริตต้า", type:"إيطالي فاخر", halal:false, halalNote:"لا", price:"$$$$", hours:"18:00 - 23:00", rating:4.8, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=600&q=80", map:"La+Gritta+Phuket" },
-  { id:"r3", name:"Three Monkeys", nameTh:"ทรี มังกี้ส์", type:"تايلاندي/عالمي", halal:false, halalNote:"لا", price:"$$", hours:"11:00 - 22:00", rating:4.6, distance:"35 دقيقة", img:"https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?w=600&q=80", map:"Three+Monkeys+Phuket" },
-  { id:"r4", name:"Meg Khram", nameTh:"เมก คราม", type:"عشاء رومانسي", halal:null, halalNote:"غير مؤكد", price:"$$$", hours:"18:00 - 23:00", rating:null, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80", map:"Meg+Khram+Phuket" },
-  { id:"r5", name:"Commune", nameTh:"คอมมูน", type:"إفطار/مقهى", halal:null, halalNote:"غير مؤكد", price:"$$", hours:"08:00 - 16:00", rating:null, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1493770348161-369560ae357d?w=600&q=80", map:"Commune+Phuket" },
-  { id:"r6", name:"Fat Mamma", nameTh:"แฟต มัมมา", type:"إيطالي", halal:false, halalNote:"لا", price:"$$", hours:"12:00 - 22:00", rating:4.4, distance:"15 دقيقة", img:"https://images.unsplash.com/photo-1574868235872-1663edcb4569?w=600&q=80", map:"Fat+Mamma+Phuket" },
-  { id:"r7", name:"Amritsr", nameTh:"อัมริทซาร์", type:"هندي", halal:true, halalNote:"حلال", price:"$$", hours:"11:00 - 23:00", rating:4.5, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&q=80", map:"Amritsr+Phuket" },
-  { id:"r8", name:"Juicy Lucy", nameTh:"จูซี่ ลูซี่", type:"برجر أمريكي", halal:false, halalNote:"لا", price:"$$", hours:"11:00 - 22:00", rating:4.7, distance:"35 دقيقة", img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80", map:"Juicy+Lucy+Phuket" },
-  { id:"r9", name:"Efe Old Phuket", nameTh:"เอเฟ่ โอลด์ ภูเก็ต", type:"تركي", halal:true, halalNote:"حلال", price:"$$", hours:"12:00 - 22:00", rating:4.5, distance:"35 دقيقة", img:"https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=600&q=80", map:"Efe+Old+Phuket" },
-  { id:"r10", name:"Layali Beirut", nameTh:"ليالي بيروت", type:"لبناني", halal:true, halalNote:"حلال 100%", price:"$$", hours:"18:00 - 23:30", rating:4.9, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80", map:"Layali+Beirut+Phuket" },
-  { id:"r11", name:"Vero", nameTh:"เวโร่", type:"رومانسي", halal:null, halalNote:"غير مؤكد", price:"$$$", hours:"18:00 - 23:00", rating:null, distance:"15 دقيقة", img:"https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80", map:"Vero+Phuket" },
-  { id:"r12", name:"Day & Night", nameTh:"เดย์ แอนด์ ไนท์", type:"تايلاندي/عالمي", halal:false, halalNote:"لا", price:"$$$", hours:"11:00 - 00:00", rating:4.5, distance:"35 دقيقة", img:"https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80", map:"Day+Night+Phuket" },
-  { id:"r13", name:"Raga", nameTh:"รaga", type:"هندي + مقهى", halal:true, halalNote:"حلال", price:"$$", hours:"08:00 - 22:00", rating:4.4, distance:"30 دقيقة", img:"https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80", map:"Raga+Phuket" },
-  { id:"r14", name:"Prime Burger", nameTh:"ไพร์ม เบอร์เกอร์", type:"برجر", halal:true, halalNote:"حلال", price:"$$", hours:"10:00 - 22:00", rating:4.6, distance:"5 دقائق", img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80", map:"Prime+Burger+Patong" },
-  { id:"r15", name:"Fuga Beach Club", nameTh:"ฟูก้า บีช คลับ", type:"شاطئي", halal:null, halalNote:"غير مؤكد", price:"$$", hours:"10:00 - 22:00", rating:null, distance:"10 دقائق", img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80", map:"Fuga+Beach+Club+Phuket" },
-];
-
-const mallsData = [
-  { id:"m1", name:"Central Patong", nameTh:"เซ็นทรัล ป่าตอง", hours:"10:30 - 22:30", shops:"ماركات عالمية، مطاعم منوعة", restaurants:"مطاعم متنوعة في الطابق العلوي", distance:"5 دقائق", img:"https://images.unsplash.com/photo-1519567281028-11a5b85d38cc?w=600&q=80", map:"Central+Patong" },
-  { id:"m2", name:"Jungceylon", nameTh:"จังซีลอน", hours:"11:00 - 22:00", shops:"Big C, Robinson, Uniqlo, سينما", restaurants:"Food Court + مطاعم", distance:"7 دقائق", img:"https://images.unsplash.com/photo-1567958451986-2de427a4a0be?w=600&q=80", map:"Jungceylon+Patong" },
-  { id:"m3", name:"Premium Phuket Floresta", nameTh:"พรีเมี่ยม ภูเก็ต ฟลอเรสต้า", hours:"10:30 - 22:00", shops:"LV, Gucci, أندروود، ماركات فاخرة", restaurants:"مطاعم فاخرة", distance:"30 دقيقة", img:"https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=600&q=80", map:"Premium+Phuket+Floresta" },
-  { id:"m4", name:"Phuket Old Town", nameTh:"ย่านเมืองเก่าภูเก็ต", hours:"مفتوح (سوق الأحد 16:00 - 22:00)", shops:"هدايا تذكارية، ملابس محلية، مقاهي", restaurants:"مطاعم محلية وعالمية", distance:"35 دقيقة", img:"https://images.unsplash.com/photo-1583492723326-6b63d00192e2?w=600&q=80", map:"Phuket+Old+Town" },
-  { id:"m5", name:"Chillva Market", nameTh:"ตลาดชิลล์วา", hours:"17:00 - 23:00 (يومياً)", shops:"أكل شعبي، حرف يدوية، ملابس", restaurants:"ستريت فود متنوع", distance:"25 دقيقة", img:"https://images.unsplash.com/photo-1555212697-194d092e3b8f?w=600&q=80", map:"Chillva+Market+Phuket" },
-  { id:"m6", name:"Banzaan Fresh Market", nameTh:"ตลาดสดบันซ้าน", hours:"07:00 - 21:00", shops:"فواكه استوائية، أعشاب، توابل، مأكولات بحرية", restaurants:" stalls طعام طازج", distance:"8 دقائق", img:"https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=600&q=80", map:"Banzaan+Fresh+Market" },
-];
+// restaurantsData and mallsData moved to data.js
 
 const activitiesData = [
   { id:"a1", name:"Noah Phi Phi Island", nameTh:"ทัวร์เกาะพีพี", company:"Love Andaman", time:"07:00", duration:"يوم كامل", price:"3,500 THB", bring:"نظارة شمس، كريم واقي، منشفة، كاميرا مقاومة للماء", notes:"حجز مسبق ضروري. يناسب الأزواج والعائلات.", img:"https://images.unsplash.com/photo-1540202404-b71188410214?w=600&q=80", map:"Phi+Phi+Islands" },
@@ -1569,6 +2181,132 @@ const activitiesData = [
   { id:"a8", name:"Coral Island", nameTh:"เกาะเฮ", company:"—", time:"09:00", duration:"نصف يوم", price:"1,500 THB", bring:"ملابس سباحة، سنوركل", notes:"20 دقيقة بالقارب. رياضات مائية متوفرة.", img:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80", map:"Coral+Island+Phuket" },
   { id:"a9", name:"Hanuman World", nameTh:"ฮานูมาน เวิลด์", company:"Hanuman World", time:"09:00", duration:"2-3 ساعات", price:"2,000 THB", bring:"ملابس رياضية، حذاء مغلق", notes:"أكبر زيبلاين في بوكيت. +4 سنوات.", img:"https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80", map:"Hanuman+World+Phuket" },
 ];
+
+const bangkokScheduleData = [
+  {
+    day: 1, date: '15 أغسطس', city: 'Sukhumvit', hotel: 'Skyline Riverside Hotel',
+    items: [
+      { time: '09:00', title: 'الوصول وتسجيل الدخول', sub: 'الفندق', done: false },
+      { time: '12:00', title: 'Terminal 21', sub: 'تسوق وغداء', done: false },
+      { time: '18:00', title: 'Asiatique', sub: 'نهر ومطاعم', done: false }
+    ]
+  },
+  {
+    day: 2, date: '16 أغسطس', city: 'Old Bangkok', hotel: 'Skyline Riverside Hotel',
+    items: [
+      { time: '08:30', title: 'Grand Palace', sub: 'جولة ثقافية', done: false },
+      { time: '11:00', title: 'Wat Pho', sub: 'معبد بوذا', done: false },
+      { time: '19:00', title: 'Chao Phraya Dinner Cruise', sub: 'عشاء على النهر', done: false }
+    ]
+  },
+  {
+    day: 3, date: '17 أغسطس', city: 'Bangkok City', hotel: 'Skyline Riverside Hotel',
+    items: [
+      { time: '10:00', title: 'ICONSIAM', sub: 'مول فاخر', done: false },
+      { time: '14:00', title: 'Chatuchak Market', sub: 'تسوق شعبي', done: false },
+      { time: '20:00', title: 'Rooftop at Mahanakhon', sub: 'إطلالة المدينة', done: false }
+    ]
+  }
+];
+
+const bangkokHotelsData = [
+  {
+    id: 'bh1',
+    name: 'Skyline Riverside Hotel',
+    nameTh: 'สกายไลน์ ริเวอร์ไซด์ โฮเทล',
+    address: 'Chao Phraya Riverside, Bangkok',
+    addressTh: 'ริมแม่น้ำเจ้าพระยา กรุงเทพฯ',
+    phone: '+66 2 555 1234',
+    rating: 4.7,
+    img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80',
+    notes: 'موقع ممتاز قريب من المترو النهري والأسواق الليلية.'
+  }
+];
+
+const bangkokRestaurantsData = [
+  { id:'br1', name:'Sorn', nameTh:'ศรณ์', type:'تايلاندي فاخر', halal:false, halalNote:'لا', price:'$$$$', hours:'17:00 - 23:00', rating:4.8, distance:'20 دقيقة', img:'https://images.unsplash.com/photo-1559847844-5315695dadae?w=600&q=80', map:'Sorn+Bangkok' },
+  { id:'br2', name:'Krua Apsorn', nameTh:'ครัวอัปษร', type:'تايلاندي محلي', halal:false, halalNote:'لا', price:'$$', hours:'10:00 - 20:00', rating:4.5, distance:'25 دقيقة', img:'https://images.unsplash.com/photo-1534939561126-855b8675edd7?w=600&q=80', map:'Krua+Apsorn+Bangkok' },
+  { id:'br3', name:'Yana Restaurant', nameTh:'ยานา', type:'تركي/حلال', halal:true, halalNote:'حلال', price:'$$', hours:'11:00 - 22:00', rating:4.6, distance:'15 دقيقة', img:'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80', map:'Yana+Restaurant+Bangkok' }
+];
+
+const bangkokCafesData = [
+  { id:'bc1', name:'Factory Coffee', nameTh:'แฟคทอรี่ คอฟฟี่', type:'قهوة مختصة', halal:null, halalNote:'غير مؤكد', price:'$$', hours:'08:00 - 18:00', rating:4.7, distance:'18 دقيقة', img:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80', map:'Factory+Coffee+Bangkok' },
+  { id:'bc2', name:'After You', nameTh:'อาฟเตอร์ยู', type:'حلويات ومقهى', halal:null, halalNote:'غير مؤكد', price:'$$', hours:'10:00 - 22:00', rating:4.5, distance:'12 دقيقة', img:'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=600&q=80', map:'After+You+Bangkok' }
+];
+
+const bangkokMallsData = [
+  { id:'bm1', name:'ICONSIAM', nameTh:'ไอคอนสยาม', hours:'10:00 - 22:00', shops:'Luxury brands, fashion, tech', restaurants:'Food hall + riverside dining', distance:'20 دقيقة', img:'https://images.unsplash.com/photo-1519567281028-11a5b85d38cc?w=600&q=80', map:'ICONSIAM+Bangkok' },
+  { id:'bm2', name:'Siam Paragon', nameTh:'สยามพารากอน', hours:'10:00 - 22:00', shops:'ماركات عالمية وسينما', restaurants:'مطاعم عالمية', distance:'15 دقيقة', img:'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&q=80', map:'Siam+Paragon+Bangkok' }
+];
+
+const bangkokActivitiesData = [
+  { id:'ba1', name:'Mahanakhon SkyWalk', nameTh:'มหานคร สกายวอล์ค', company:'King Power', time:'18:00', duration:'1-2 ساعة', price:'1,200 THB', bring:'كاميرا', notes:'أفضل وقت عند الغروب.', img:'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80', map:'Mahanakhon+SkyWalk' },
+  { id:'ba2', name:'Chao Phraya Cruise', nameTh:'ล่องเรือเจ้าพระยา', company:'White Orchid', time:'19:30', duration:'2 ساعات', price:'1,600 THB', bring:'ملابس أنيقة', notes:'عشاء وإطلالة ليلية.', img:'https://images.unsplash.com/photo-1516490981167-dc990a242afe?w=600&q=80', map:'Chao+Phraya+Dinner+Cruise' }
+];
+
+const CITY_CONFIG = {
+  phuket: {
+    key: 'phuket',
+    label: 'Phuket',
+    tripDate: '2026-08-19T13:40:00',
+    heroTitle: 'Phuket Trip 2026',
+    heroSubtitle: 'Islands, beaches, and relaxed vibes 🇹🇭',
+    heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80',
+    weatherLocation: 'Phuket, Thailand',
+    weatherApiUrl: OPEN_METEO_PHUKET_URL,
+    tmdUrl: 'https://www.tmd.go.th/en/weather/province/phuket',
+    quickMedia: {
+      schedule: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=900&q=80',
+      hotels: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=900&q=80',
+      restaurants: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=80',
+      cafes: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=900&q=80',
+      malls: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=900&q=80',
+      activities: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=900&q=80',
+      budget: 'https://images.unsplash.com/photo-1579621970795-87facc2f976d?w=900&q=80',
+      packing: 'https://images.unsplash.com/photo-1553531889-56cc480ac5cb?w=900&q=80'
+    }
+  },
+  bangkok: {
+    key: 'bangkok',
+    label: 'Bangkok',
+    tripDate: '2026-08-25T12:35:00',
+    heroTitle: 'Bangkok Trip 2026',
+    heroSubtitle: 'City lights, markets, and skyline nights ✨',
+    heroImage: 'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=1200&q=80',
+    weatherLocation: 'Bangkok, Thailand',
+    weatherApiUrl: 'https://api.open-meteo.com/v1/forecast?latitude=13.7563&longitude=100.5018&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,weather_code,wind_speed_10m,wind_direction_10m&timezone=Asia%2FBangkok',
+    tmdUrl: 'https://www.tmd.go.th/en/weather/province/bangkok',
+    quickMedia: {
+      schedule: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=900&q=80',
+      hotels: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&q=80',
+      restaurants: 'https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=900&q=80',
+      cafes: 'https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=900&q=80',
+      malls: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=900&q=80',
+      activities: 'https://images.unsplash.com/photo-1528181304800-259b08848526?w=900&q=80',
+      budget: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=900&q=80',
+      packing: 'https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=900&q=80'
+    }
+  }
+};
+
+const CITY_DATASETS = {
+  phuket: {
+    schedule: scheduleData,
+    hotels: hotelsData,
+    restaurants: restaurantsData,
+    cafes: cafesData,
+    malls: mallsData,
+    activities: activitiesData
+  },
+  bangkok: {
+    schedule: bangkokScheduleData,
+    hotels: bangkokHotelsData,
+    restaurants: bangkokRestaurantsData,
+    cafes: bangkokCafesData,
+    malls: bangkokMallsData,
+    activities: bangkokActivitiesData
+  }
+};
 
 const defaultPacking = [
   "جواز السفر","تأشيرة تايلاند","تذاكر الطيران","حجز الفندق (مطبوع)",
@@ -1585,30 +2323,137 @@ const defaultPacking = [
 
 let state = {
   theme: localStorage.getItem('tg_theme') || 'light',
+  selectedCity: localStorage.getItem('tg_city') || '',
   currentSection: localStorage.getItem('tg_section') || 'home',
   favorites: JSON.parse(localStorage.getItem('tg_favorites') || '[]'),
   packing: JSON.parse(localStorage.getItem('tg_packing') || 'null') || defaultPacking.map(t => ({ text: t, done: false })),
   notes: localStorage.getItem('tg_notes') || '',
   budget: JSON.parse(localStorage.getItem('tg_budget') || '{}'),
-  weather: JSON.parse(localStorage.getItem('tg_weather') || '{"temp":32,"desc":"مشمس ☀️","icon":"☀️"}'),
+  weather: {
+    temp: 32,
+    desc: 'جاري التحديث...',
+    icon: '⛅',
+    apparentTemp: null,
+    precipitation: null,
+    rain: null,
+    humidity: null,
+    wind: '',
+    updatedAt: '',
+    sourceName: 'Open-Meteo',
+    sourceUrl: TMD_PHUKET_URL,
+    fetchError: false,
+    ...JSON.parse(localStorage.getItem('tg_weather') || '{}')
+  },
   exchangeRate: parseFloat(localStorage.getItem('tg_rate') || '110'),
   photos: JSON.parse(localStorage.getItem('tg_photos') || '[]'),
-  schedule: JSON.parse(localStorage.getItem('tg_schedule') || 'null') || scheduleData.map(d => ({...d, items: d.items.map(i => ({...i}))})),
+  schedule: [],
   visited: JSON.parse(localStorage.getItem('tg_visited') || '[]'),
 };
 
+function deepClone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function currentCityKey() {
+  return state.selectedCity || 'phuket';
+}
+
+function cityScopedKey(base, cityKey = currentCityKey()) {
+  return `${base}_${cityKey}`;
+}
+
+function getCityConfig(cityKey = currentCityKey()) {
+  return CITY_CONFIG[cityKey] || CITY_CONFIG.phuket;
+}
+
+function getCityData(cityKey = currentCityKey()) {
+  return CITY_DATASETS[cityKey] || CITY_DATASETS.phuket;
+}
+
+function loadCityScopedState(cityKey) {
+  const cityData = getCityData(cityKey);
+  state.schedule = JSON.parse(localStorage.getItem(cityScopedKey('tg_schedule', cityKey)) || 'null') || deepClone(cityData.schedule);
+  state.visited = JSON.parse(localStorage.getItem(cityScopedKey('tg_visited', cityKey)) || '[]');
+  state.weather = {
+    temp: 32,
+    desc: 'جاري التحديث...',
+    icon: '⛅',
+    apparentTemp: null,
+    precipitation: null,
+    rain: null,
+    humidity: null,
+    wind: '',
+    updatedAt: '',
+    sourceName: 'Open-Meteo',
+    sourceUrl: getCityConfig(cityKey).tmdUrl,
+    fetchError: false,
+    ...JSON.parse(localStorage.getItem(cityScopedKey('tg_weather', cityKey)) || '{}')
+  };
+}
+
+function updateHomeCounts() {
+  const cityData = getCityData();
+  const scheduleCount = document.getElementById('homeScheduleCount');
+  const hotelsCount = document.getElementById('homeHotelsCount');
+  const restaurantsCount = document.getElementById('homeRestaurantsCount');
+  const cafesCount = document.getElementById('homeCafesCount');
+  const mallsCount = document.getElementById('homeMallsCount');
+  const activitiesCount = document.getElementById('homeActivitiesCount');
+  if (scheduleCount) scheduleCount.textContent = `${state.schedule.length} أيام`;
+  if (hotelsCount) hotelsCount.textContent = `${cityData.hotels.length} فندق`;
+  if (restaurantsCount) restaurantsCount.textContent = `${cityData.restaurants.length} مطعم`;
+  if (cafesCount) cafesCount.textContent = `${cityData.cafes.length} مقهى`;
+  if (mallsCount) mallsCount.textContent = `${cityData.malls.length} مول`;
+  if (activitiesCount) activitiesCount.textContent = `${cityData.activities.length} نشاط`;
+}
+
+function applyQuickMedia() {
+  const cityConfig = getCityConfig();
+  const media = cityConfig.quickMedia || {};
+  document.querySelectorAll('.quick-card-icon[data-media]').forEach(el => {
+    const key = el.getAttribute('data-media');
+    const src = media[key];
+    if (src) el.style.backgroundImage = `url('${src}')`;
+  });
+
+  const currencyVisual = document.getElementById('currencyVisual');
+  if (currencyVisual && media.budget) {
+    currencyVisual.style.backgroundImage = `url('${media.budget}')`;
+  }
+}
+
+function applyCityIdentity() {
+  const cityConfig = getCityConfig();
+  document.documentElement.setAttribute('data-city', cityConfig.key);
+  document.title = `دليل ${cityConfig.label} — تايلند 2026`;
+  const heroTitle = document.getElementById('heroTitle');
+  const heroSubtitle = document.getElementById('heroSubtitle');
+  const heroImage = document.getElementById('heroImage');
+  const weatherLocation = document.getElementById('weatherLocation');
+  if (heroTitle) heroTitle.textContent = cityConfig.heroTitle;
+  if (heroSubtitle) heroSubtitle.textContent = cityConfig.heroSubtitle;
+  if (heroImage) {
+    heroImage.src = cityConfig.heroImage;
+    heroImage.alt = cityConfig.label;
+  }
+  if (weatherLocation) weatherLocation.textContent = cityConfig.weatherLocation;
+  applyQuickMedia();
+  updateHomeCounts();
+}
+
 function saveState() {
   localStorage.setItem('tg_theme', state.theme);
+  localStorage.setItem('tg_city', state.selectedCity || '');
   localStorage.setItem('tg_section', state.currentSection);
   localStorage.setItem('tg_favorites', JSON.stringify(state.favorites));
   localStorage.setItem('tg_packing', JSON.stringify(state.packing));
   localStorage.setItem('tg_notes', state.notes);
   localStorage.setItem('tg_budget', JSON.stringify(state.budget));
-  localStorage.setItem('tg_weather', JSON.stringify(state.weather));
+  localStorage.setItem(cityScopedKey('tg_weather'), JSON.stringify(state.weather));
   localStorage.setItem('tg_rate', state.exchangeRate);
   localStorage.setItem('tg_photos', JSON.stringify(state.photos));
-  localStorage.setItem('tg_schedule', JSON.stringify(state.schedule));
-  localStorage.setItem('tg_visited', JSON.stringify(state.visited));
+  localStorage.setItem(cityScopedKey('tg_schedule'), JSON.stringify(state.schedule));
+  localStorage.setItem(cityScopedKey('tg_visited'), JSON.stringify(state.visited));
 }
 
 // ============================================
@@ -1617,7 +2462,6 @@ function saveState() {
 
 function applyTheme() {
   document.documentElement.setAttribute('data-theme', state.theme);
-  document.getElementById('themeBtn').textContent = state.theme === 'dark' ? '☀️' : '🌙';
 }
 function toggleTheme() {
   state.theme = state.theme === 'dark' ? 'light' : 'dark';
@@ -1630,10 +2474,10 @@ function toggleTheme() {
 // ============================================
 
 const sectionTitles = {
-  home: 'الرئيسية', schedule: 'الجدول', hotels: 'الفنادق', restaurants: 'المطاعم',
-  malls: 'المولات', activities: 'الرحلات', budget: 'الميزانية', packing: 'التجهيز',
-  favorites: 'المفضلة', notes: 'الملاحظات', gallery: 'معرض الصور', visited: 'الزيارات',
-  search: 'البحث', more: 'المزيد'
+  home: 'Home', schedule: 'Schedule', hotels: 'Hotels', restaurants: 'Restaurants',
+  cafes: 'Cafes', malls: 'Malls', activities: 'Activities', budget: 'Budget', packing: 'Packing',
+  favorites: 'Favorites', notes: 'Notes', gallery: 'Gallery', visited: 'Visited',
+  search: 'Search', more: 'More'
 };
 
 function showSection(name) {
@@ -1641,7 +2485,6 @@ function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.getElementById('sec-' + name)?.classList.add('active');
   document.getElementById('navTitle').textContent = sectionTitles[name] || name;
-  document.getElementById('backBtn').style.visibility = name === 'home' ? 'hidden' : 'visible';
 
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   const tabMap = { home:'home', schedule:'schedule', search:'search', favorites:'favorites', more:'more' };
@@ -1652,6 +2495,7 @@ function showSection(name) {
   if (name === 'schedule') renderSchedule();
   if (name === 'hotels') renderHotels();
   if (name === 'restaurants') renderRestaurants();
+  if (name === 'cafes') renderCafes();
   if (name === 'malls') renderMalls();
   if (name === 'activities') renderActivities();
   if (name === 'budget') loadBudget();
@@ -1666,12 +2510,101 @@ function showSection(name) {
 
 function goBack() { showSection('home'); }
 
+function setCityBadge() {
+  const badge = document.getElementById('cityBadge');
+  if (!badge) return;
+  if (state.selectedCity === 'phuket') badge.textContent = '📍 Phuket / بوكيت';
+  else if (state.selectedCity === 'bangkok') badge.textContent = '📍 Bangkok / بانكوك';
+  else badge.textContent = '📍 Not selected / غير محدد';
+}
+
+function openCityPicker(resetSelection = false) {
+  if (resetSelection) saveState();
+  document.getElementById('appContainer').classList.add('app-hidden');
+  document.getElementById('cityPicker').classList.add('active');
+  showCountryLanding();
+}
+
+function showCountryLanding() {
+  const options = document.getElementById('cityOptions');
+  const note = document.getElementById('cityPickerNote');
+  if (options) options.classList.add('app-hidden');
+  if (note) note.textContent = 'Start by tapping Thailand, then choose your city.';
+}
+
+function showCityOptions() {
+  const options = document.getElementById('cityOptions');
+  const note = document.getElementById('cityPickerNote');
+  if (options) options.classList.remove('app-hidden');
+  if (note) note.textContent = 'Now choose Phuket or Bangkok.';
+}
+
+function openCityOptionsOnly() {
+  saveState();
+  document.getElementById('appContainer').classList.add('app-hidden');
+  document.getElementById('cityPicker').classList.add('active');
+  showCityOptions();
+}
+
+function handleCityPickerShortcut() {
+  const cityPicker = document.getElementById('cityPicker');
+  const appContainer = document.getElementById('appContainer');
+  const cityOptions = document.getElementById('cityOptions');
+
+  // First priority: if user is inside any section, go back to Home first.
+  if (!cityPicker.classList.contains('active') && state.currentSection !== 'home') {
+    showSection('home');
+    return;
+  }
+
+  // From Home: first press opens city options directly.
+  if (!cityPicker.classList.contains('active')) {
+    openCityOptionsOnly();
+    return;
+  }
+
+  // While picker is open: options -> Thailand landing.
+  if (!cityOptions.classList.contains('app-hidden')) {
+    showCountryLanding();
+    return;
+  }
+
+  // If already on Thailand landing, return to app home.
+  cityPicker.classList.remove('active');
+  appContainer.classList.remove('app-hidden');
+  showSection('home');
+}
+
+function enterCity(city) {
+  state.selectedCity = city;
+  loadCityScopedState(city);
+  applyCityIdentity();
+  saveState();
+  setCityBadge();
+  document.getElementById('cityPicker').classList.remove('active');
+  document.getElementById('appContainer').classList.remove('app-hidden');
+  renderWeather();
+  showSection(state.currentSection || 'home');
+  refreshWeather();
+}
+
+function selectCity(city) {
+  const note = document.getElementById('cityPickerNote');
+  if (!CITY_CONFIG[city]) {
+    if (note) note.textContent = 'هذا الخيار غير متاح حالياً.';
+    return;
+  }
+  if (note) note.textContent = `تم اختيار ${CITY_CONFIG[city].label}، جاري فتح الدليل...`;
+  enterCity(city);
+}
+
 // ============================================
 // COUNTDOWN
 // ============================================
 
 function updateCountdown() {
-  const target = new Date(TRIP_DATE);
+  const cityConfig = getCityConfig();
+  const target = new Date(cityConfig.tripDate || TRIP_DATE);
   const now = new Date();
   const diff = target - now;
   if (diff <= 0) {
@@ -1697,23 +2630,307 @@ updateCountdown();
 // WEATHER
 // ============================================
 
-function updateWeather() {
-  const input = document.getElementById('weatherInput').value.trim();
-  if (!input) return;
-  const temp = parseInt(input);
-  if (isNaN(temp)) return;
-  let desc = 'مشمس ☀️', icon = '☀️';
-  if (temp >= 35) { desc = 'حار جداً 🔥'; icon = '🔥'; }
-  else if (temp >= 30) { desc = 'مشمس ☀️'; icon = '☀️'; }
-  else if (temp >= 25) { desc = 'دافئ ⛅'; icon = '⛅'; }
-  else if (temp >= 20) { desc = 'معتدل 🌤️'; icon = '🌤️'; }
-  else { desc = 'بارد 🌧️'; icon = '🌧️'; }
-  state.weather = { temp, desc, icon };
+function windDirectionToArabic(deg) {
+  if (deg === null || deg === undefined || Number.isNaN(deg)) return '';
+  const directions = ['شمال', 'شمال شرقي', 'شرق', 'جنوب شرقي', 'جنوب', 'جنوب غربي', 'غرب', 'شمال غربي'];
+  return directions[Math.round(deg / 45) % 8];
+}
+
+function mapWeatherCodeToArabic(code, isDay) {
+  const night = isDay === 0;
+  const mapping = {
+    0: { desc: night ? 'صحو ليلاً' : 'صحو', icon: night ? '🌙' : '☀️' },
+    1: { desc: night ? 'غيوم ليلية' : 'غائم جزئياً', icon: night ? '☁️' : '🌤️' },
+    2: { desc: night ? 'غيوم ليلية' : 'غائم جزئياً', icon: '☁️' },
+    3: { desc: night ? 'غيوم ليلية' : 'غائم', icon: '☁️' },
+    45: { desc: 'ضباب', icon: '🌫️' },
+    48: { desc: 'ضباب كثيف', icon: '🌫️' },
+    51: { desc: 'رذاذ خفيف', icon: '🌦️' },
+    53: { desc: 'رذاذ', icon: '🌦️' },
+    55: { desc: 'رذاذ كثيف', icon: '🌧️' },
+    61: { desc: 'مطر خفيف', icon: '🌦️' },
+    63: { desc: 'مطر', icon: '🌧️' },
+    65: { desc: 'مطر غزير', icon: '🌧️' },
+    66: { desc: 'مطر متجمد خفيف', icon: '🌨️' },
+    67: { desc: 'مطر متجمد', icon: '🌨️' },
+    71: { desc: 'ثلوج خفيفة', icon: '🌨️' },
+    73: { desc: 'ثلوج', icon: '🌨️' },
+    75: { desc: 'ثلوج كثيفة', icon: '❄️' },
+    80: { desc: 'زخات خفيفة', icon: '🌦️' },
+    81: { desc: 'زخات مطر', icon: '🌧️' },
+    82: { desc: 'زخات غزيرة', icon: '⛈️' },
+    95: { desc: 'عاصفة رعدية', icon: '⛈️' },
+    96: { desc: 'عاصفة مع برد', icon: '⛈️' },
+    99: { desc: 'عاصفة قوية مع برد', icon: '⛈️' }
+  };
+  return mapping[code] || { desc: 'طقس متغير', icon: '🌤️' };
+}
+
+function getWeatherTheme(code, isDay) {
+  if ([95, 96, 99].includes(code)) return 'storm';
+  if ([51, 53, 55, 61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return 'rain';
+  if ([71, 73, 75].includes(code)) return 'mist';
+  if ([45, 48].includes(code)) return 'mist';
+  if ([1, 2, 3].includes(code)) return isDay === 0 ? 'cloudy-night' : 'cloudy';
+  if (code === 0 && isDay === 0) return 'night';
+  if (code === 0) return 'sunny';
+  return isDay === 0 ? 'night' : 'cloudy';
+}
+
+function formatWeatherTemp(value) {
+  if (!Number.isFinite(Number(value))) return '--';
+  return Number(value).toFixed(1).replace(/\.0$/, '');
+}
+
+function formatWeatherUpdatedAt(rawValue) {
+  if (!rawValue) return '';
+  const withZone = /([zZ]|[+\-]\d{2}:\d{2})$/.test(rawValue) ? rawValue : `${rawValue}+07:00`;
+  const date = new Date(withZone);
+  if (Number.isNaN(date.getTime())) return String(rawValue).replace('T', ' ');
+  return new Intl.DateTimeFormat('ar-KW', {
+    timeZone: 'Asia/Bangkok',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  }).format(date);
+}
+
+function getBangkokHourNow() {
+  const hourText = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Bangkok',
+    hour: '2-digit',
+    hourCycle: 'h23'
+  }).format(new Date());
+  return parseInt(hourText, 10);
+}
+
+function parseWeatherHour(rawValue) {
+  if (!rawValue || typeof rawValue !== 'string') return null;
+  const match = rawValue.match(/T(\d{2}):/);
+  return match ? parseInt(match[1], 10) : null;
+}
+
+function getTimeOfDayTheme(hour, isDay) {
+  const safeHour = Number.isFinite(hour) ? hour : getBangkokHourNow();
+  if (isDay === 0 || safeHour < 5 || safeHour >= 18) return 'night';
+  if (safeHour < 11) return 'morning';
+  return 'noon';
+}
+
+function parseOpenMeteoWeather(payload) {
+  const current = payload?.current;
+  if (!current || typeof current.temperature_2m !== 'number') {
+    throw new Error('Open-Meteo current weather not found');
+  }
+
+  const mapped = mapWeatherCodeToArabic(current.weather_code, current.is_day);
+  const weatherTheme = getWeatherTheme(current.weather_code, current.is_day);
+  const weatherHour = parseWeatherHour(current.time);
+  const timeOfDayTheme = getTimeOfDayTheme(weatherHour, current.is_day);
+  const direction = windDirectionToArabic(current.wind_direction_10m);
+  const windParts = [];
+  if (direction) windParts.push(direction);
+  if (typeof current.wind_speed_10m === 'number') windParts.push(`${current.wind_speed_10m} كم/س`);
+
+  return {
+    temp: current.temperature_2m,
+    code: current.weather_code,
+    isDay: current.is_day,
+    weatherHour,
+    timeOfDayTheme,
+    weatherTheme,
+    desc: mapped.desc,
+    icon: mapped.icon,
+    apparentTemp: typeof current.apparent_temperature === 'number' ? current.apparent_temperature : null,
+    precipitation: typeof current.precipitation === 'number' ? current.precipitation : null,
+    rain: typeof current.rain === 'number' ? current.rain : null,
+    humidity: typeof current.relative_humidity_2m === 'number' ? current.relative_humidity_2m : null,
+    wind: windParts.join(' - '),
+    updatedAt: formatWeatherUpdatedAt(current.time),
+    sourceName: 'Open-Meteo',
+    sourceUrl: TMD_PHUKET_URL,
+    fetchError: false
+  };
+}
+
+function renderWeather() {
+  const weather = state.weather || {};
+  const cityConfig = getCityConfig();
+  const weatherCard = document.getElementById('weatherCard');
+  const homeSection = document.getElementById('sec-home');
+  const temp = formatWeatherTemp(weather.temp);
+  const weatherTheme = weather.weatherTheme || getWeatherTheme(weather.code, weather.isDay);
+  const timeOfDayTheme = weather.timeOfDayTheme || getTimeOfDayTheme(weather.weatherHour, weather.isDay);
+
+  if (weatherCard) {
+    weatherCard.classList.remove('weather-sunny', 'weather-cloudy', 'weather-cloudy-night', 'weather-rain', 'weather-storm', 'weather-mist', 'weather-night');
+    weatherCard.classList.add(`weather-${weatherTheme}`);
+    weatherCard.classList.remove('tod-morning', 'tod-noon', 'tod-night');
+    weatherCard.classList.add(`tod-${timeOfDayTheme}`);
+  }
+
+  if (homeSection) {
+    homeSection.classList.remove('home-weather-sunny', 'home-weather-cloudy', 'home-weather-cloudy-night', 'home-weather-rain', 'home-weather-storm', 'home-weather-mist', 'home-weather-night');
+    homeSection.classList.add(`home-weather-${weatherTheme}`);
+    homeSection.classList.remove('home-tod-morning', 'home-tod-noon', 'home-tod-night');
+    homeSection.classList.add(`home-tod-${timeOfDayTheme}`);
+  }
+
   document.getElementById('weatherTemp').innerHTML = temp + '<span>°</span>';
-  document.getElementById('weatherDesc').textContent = desc;
-  document.getElementById('weatherIcon').textContent = icon;
-  document.getElementById('weatherInput').value = '';
-  saveState();
+  document.getElementById('weatherDesc').textContent = weather.desc || 'جاري التحديث...';
+  document.getElementById('weatherIcon').textContent = weather.icon || '⛅';
+  document.getElementById('weatherSourceLink').href = weather.sourceUrl || cityConfig.tmdUrl;
+  document.getElementById('weatherSourceLink').textContent = `TMD ${cityConfig.label}`;
+  document.getElementById('weatherMeta').textContent = weather.fetchError
+    ? 'تعذر تحديث القراءة الحية الآن، المعروض آخر قراءة محفوظة.'
+    : (weather.updatedAt ? `آخر تحديث حي: ${weather.updatedAt} عبر ${weather.sourceName}` : 'جاري جلب الطقس الحقيقي...');
+
+  const stats = [];
+  if (weather.apparentTemp !== null && weather.apparentTemp !== undefined) stats.push(`المحسوس ${formatWeatherTemp(weather.apparentTemp)}°`);
+  if (weather.precipitation !== null && weather.precipitation !== undefined) stats.push(`الهطول ${weather.precipitation} مم`);
+  if (weather.rain !== null && weather.rain !== undefined) stats.push(`المطر ${weather.rain} مم`);
+  if (weather.humidity !== null && weather.humidity !== undefined) stats.push(`الرطوبة ${weather.humidity}%`);
+  if (weather.wind) stats.push(`الرياح ${weather.wind}`);
+  document.getElementById('weatherStats').innerHTML = stats.map(item => `<span class="weather-pill">${item}</span>`).join('');
+}
+
+async function refreshWeather() {
+  const refreshBtn = document.getElementById('weatherRefreshBtn');
+  if (refreshBtn) {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = 'جاري التحديث...';
+  }
+  document.getElementById('weatherMeta').textContent = 'جاري التحديث الحي...';
+  try {
+    const response = await fetch(getCityConfig().weatherApiUrl, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Weather request failed');
+    const payload = await response.json();
+    const weather = parseOpenMeteoWeather(payload);
+    weather.sourceUrl = getCityConfig().tmdUrl;
+    state.weather = { ...state.weather, ...weather, fetchError: false };
+    saveState();
+    renderWeather();
+  } catch (error) {
+    state.weather = { ...state.weather, fetchError: true };
+    saveState();
+    renderWeather();
+  } finally {
+    if (refreshBtn) {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = 'تحديث مباشر';
+    }
+  }
+}
+
+function updateWeather() {
+  refreshWeather();
+}
+
+function getPhuketNowParts() {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Bangkok',
+    weekday: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  }).formatToParts(new Date());
+
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  const weekdays = {
+    Sunday: 0,
+    Monday: 1,
+    Tuesday: 2,
+    Wednesday: 3,
+    Thursday: 4,
+    Friday: 5,
+    Saturday: 6
+  };
+
+  return {
+    weekday: weekdays[values.weekday] ?? 0,
+    minutes: (parseInt(values.hour, 10) * 60) + parseInt(values.minute, 10)
+  };
+}
+
+function timeStringToMinutes(value) {
+  const match = (value || '').match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return null;
+  return (parseInt(match[1], 10) * 60) + parseInt(match[2], 10);
+}
+
+function formatMinutesToTime(value) {
+  const hours = Math.floor(value / 60) % 24;
+  const minutes = value % 60;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
+function getOpenStatus(hoursText) {
+  const raw = (hoursText || '').trim();
+  const now = getPhuketNowParts();
+  const rangeMatch = raw.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+  const sundayOnly = /الأحد|Sunday/i.test(raw) && !/يومي|daily/i.test(raw);
+  const alwaysOpen = /^مفتوح/.test(raw) && !rangeMatch;
+
+  if (alwaysOpen) {
+    return {
+      isOpen: true,
+      className: 'tag-green',
+      label: 'Open Now',
+      detail: 'Available all day'
+    };
+  }
+
+  if (rangeMatch) {
+    const openMinutes = timeStringToMinutes(rangeMatch[1]);
+    const closeMinutes = timeStringToMinutes(rangeMatch[2]);
+    if (openMinutes === null || closeMinutes === null) {
+      return { isOpen: null, className: 'tag-gray', label: 'Hours Unclear', detail: raw };
+    }
+
+    if (sundayOnly && now.weekday !== 0) {
+      return {
+        isOpen: false,
+        className: 'tag-red',
+        label: 'Closed Today',
+        detail: `Opens Sunday ${rangeMatch[1]} - ${rangeMatch[2]}`
+      };
+    }
+
+    const overnight = closeMinutes <= openMinutes;
+    const isOpen = overnight
+      ? now.minutes >= openMinutes || now.minutes < closeMinutes
+      : now.minutes >= openMinutes && now.minutes < closeMinutes;
+
+    return {
+      isOpen,
+      className: isOpen ? 'tag-green' : 'tag-red',
+      label: isOpen ? 'Open Now' : 'Closed Now',
+      detail: isOpen ? `Closes ${formatMinutesToTime(closeMinutes)}` : `Opens ${formatMinutesToTime(openMinutes)}`
+    };
+  }
+
+  if (/مفتوح/.test(raw)) {
+    return {
+      isOpen: true,
+      className: 'tag-green',
+      label: 'Open Now',
+      detail: raw
+    };
+  }
+
+  return {
+    isOpen: null,
+    className: 'tag-gray',
+    label: 'Check Hours',
+    detail: raw || 'No business hours listed'
+  };
+}
+
+function refreshBusinessStatus() {
+  if (state.currentSection === 'restaurants') renderRestaurants(document.getElementById('restSearch')?.value || '');
+  if (state.currentSection === 'cafes') renderCafes(document.getElementById('cafeSearch')?.value || '');
+  if (state.currentSection === 'malls') renderMalls();
 }
 
 // ============================================
@@ -1728,7 +2945,7 @@ function updateProgress() {
   const offset = circumference - (pct / 100) * circumference;
   document.getElementById('progressRing').style.strokeDashoffset = offset;
   document.getElementById('progressText').textContent = pct + '%';
-  document.getElementById('progressSub').textContent = `${done} من ${total} تم الإنجاز`;
+  document.getElementById('progressSub').textContent = `${done} of ${total} completed`;
 }
 
 // ============================================
@@ -1740,16 +2957,29 @@ function renderSchedule() {
   container.innerHTML = state.schedule.map((day, di) => `
     <div class="day-card">
       <div class="day-header">
-        <h3>اليوم ${day.day} — ${day.date}</h3>
-        <p>${day.city} • ${day.hotel}</p>
+        <div class="day-header-top">
+          <div>
+            <h3>اليوم ${day.day} — ${day.date}</h3>
+            <p>${day.city} • ${day.hotel}</p>
+          </div>
+          <div class="day-header-actions">
+            <button class="mini-btn gray" type="button" onclick="editScheduleDay(${di})">تعديل</button>
+            <button class="mini-btn" type="button" onclick="addScheduleItem(${di})">+ نشاط</button>
+            <button class="mini-btn gray" type="button" onclick="deleteScheduleDay(${di})">حذف</button>
+          </div>
+        </div>
       </div>
       <div class="day-body">
         ${day.items.map((item, ii) => `
           <div class="day-item">
-            <div class="day-time">${item.time}</div>
             <div class="day-content">
+              <div class="day-time">${item.time}</div>
               <div class="day-content-title">${item.title}</div>
               <div class="day-content-sub">${item.sub}</div>
+              <div class="day-item-actions">
+                <button class="mini-btn gray" type="button" onclick="editScheduleItem(${di},${ii})">تعديل</button>
+                <button class="mini-btn gray" type="button" onclick="deleteScheduleItem(${di},${ii})">حذف</button>
+              </div>
             </div>
             <div class="day-check ${item.done ? 'checked' : ''}" onclick="toggleSchedule(${di},${ii})"></div>
           </div>
@@ -1765,75 +2995,290 @@ function toggleSchedule(dayIdx, itemIdx) {
   renderSchedule();
 }
 
+function renumberScheduleDays() {
+  state.schedule.forEach((day, index) => {
+    day.day = index + 1;
+  });
+}
+
+function addScheduleDay() {
+  const date = prompt('تاريخ اليوم الجديد؟ مثال: 20 أغسطس');
+  if (!date) return;
+  const city = prompt('المدينة أو المنطقة؟', 'بوكيت') || 'بوكيت';
+  const hotel = prompt('الفندق أو الملاحظة؟', 'Oceanfront Beach Resort') || 'Oceanfront Beach Resort';
+  state.schedule.push({
+    day: state.schedule.length + 1,
+    date: date.trim(),
+    city: city.trim(),
+    hotel: hotel.trim(),
+    items: []
+  });
+  saveState();
+  renderSchedule();
+}
+
+function editScheduleDay(dayIdx) {
+  const day = state.schedule[dayIdx];
+  if (!day) return;
+  const date = prompt('عدّل التاريخ', day.date);
+  if (date === null) return;
+  const city = prompt('عدّل المدينة أو المنطقة', day.city);
+  if (city === null) return;
+  const hotel = prompt('عدّل الفندق أو الملاحظة', day.hotel);
+  if (hotel === null) return;
+  day.date = date.trim() || day.date;
+  day.city = city.trim() || day.city;
+  day.hotel = hotel.trim() || day.hotel;
+  saveState();
+  renderSchedule();
+}
+
+function deleteScheduleDay(dayIdx) {
+  if (!confirm('حذف هذا اليوم كاملًا من الجدول؟')) return;
+  state.schedule.splice(dayIdx, 1);
+  renumberScheduleDays();
+  saveState();
+  renderSchedule();
+}
+
+function buildScheduleSuggestions() {
+  const { restaurants, cafes, malls, activities } = getCityData();
+  return {
+    restaurants: restaurants.map(item => ({
+      title: item.name,
+      sub: `مطعم • ${item.type}`
+    })),
+    cafes: cafes.map(item => ({
+      title: item.name,
+      sub: `مقهى • ${item.type}`
+    })),
+    malls: malls.map(item => ({
+      title: item.name,
+      sub: `مول • ${item.shops}`
+    })),
+    activities: activities.map(item => ({
+      title: item.name,
+      sub: item.company ? `رحلة • ${item.company}` : 'رحلة'
+    }))
+  };
+}
+
+function pickSuggestionItem(list, label) {
+  if (!list.length) return null;
+  const lines = list.map((item, idx) => `${idx + 1}. ${item.title}`).join('\n');
+  const input = prompt(`اختر ${label} بالرقم:\n${lines}`);
+  if (!input) return null;
+  const index = parseInt(input, 10) - 1;
+  if (Number.isNaN(index) || index < 0 || index >= list.length) {
+    alert('الاختيار غير صحيح.');
+    return null;
+  }
+  return list[index];
+}
+
+function pickScheduleSuggestion() {
+  const source = prompt(
+    'اختر مصدر النشاط:\n1) المطاعم\n2) المقاهي\n3) المولات\n4) الرحلات\n5) إدخال يدوي',
+    '1'
+  );
+  if (!source) return null;
+  if (source.trim() === '5') return { manual: true };
+
+  const suggestions = buildScheduleSuggestions();
+  if (source.trim() === '1') return pickSuggestionItem(suggestions.restaurants, 'مطعم');
+  if (source.trim() === '2') return pickSuggestionItem(suggestions.cafes, 'مقهى');
+  if (source.trim() === '3') return pickSuggestionItem(suggestions.malls, 'مول');
+  if (source.trim() === '4') return pickSuggestionItem(suggestions.activities, 'رحلة');
+
+  alert('الاختيار غير صحيح.');
+  return null;
+}
+
+function addScheduleItem(dayIdx) {
+  const day = state.schedule[dayIdx];
+  if (!day) return;
+  const time = prompt('وقت النشاط؟ مثال: 14:00', '12:00');
+  if (!time) return;
+
+  const picked = pickScheduleSuggestion();
+  if (!picked) return;
+
+  let title = '';
+  let sub = '';
+
+  if (picked.manual) {
+    title = (prompt('اسم النشاط؟') || '').trim();
+    if (!title) return;
+    sub = (prompt('وصف مختصر أو مكان النشاط؟', 'نشاط جديد') || 'نشاط جديد').trim();
+  } else {
+    title = (picked.title || '').trim();
+    sub = (picked.sub || '').trim();
+    const customSub = prompt('وصف مختصر أو مكان النشاط؟ (اتركه كما هو أو عدله)', sub);
+    if (customSub === null) return;
+    sub = (customSub || sub || 'نشاط جديد').trim();
+  }
+
+  day.items.push({ time: time.trim(), title, sub, done: false });
+  saveState();
+  renderSchedule();
+}
+
+function editScheduleItem(dayIdx, itemIdx) {
+  const item = state.schedule[dayIdx]?.items[itemIdx];
+  if (!item) return;
+  const time = prompt('عدّل الوقت', item.time);
+  if (time === null) return;
+  const title = prompt('عدّل اسم النشاط', item.title);
+  if (title === null) return;
+  const sub = prompt('عدّل الوصف المختصر', item.sub);
+  if (sub === null) return;
+  item.time = time.trim() || item.time;
+  item.title = title.trim() || item.title;
+  item.sub = sub.trim() || item.sub;
+  saveState();
+  renderSchedule();
+}
+
+function deleteScheduleItem(dayIdx, itemIdx) {
+  if (!confirm('حذف هذا النشاط من الجدول؟')) return;
+  state.schedule[dayIdx]?.items.splice(itemIdx, 1);
+  saveState();
+  renderSchedule();
+}
+
 // ============================================
 // HOTELS
 // ============================================
 
 function renderHotels() {
   const container = document.getElementById('hotelsList');
-  container.innerHTML = hotelsData.map(h => `
+  const { hotels } = getCityData();
+  container.innerHTML = hotels.map(h => {
+    const imgUrl = safeImage(h.img);
+    return `
     <div class="detail-card">
-      <img src="${h.img}" alt="${h.name}" class="detail-card-img" onerror="this.style.display='none'">
+      <img src="${imgUrl}" alt="${h.name}" class="detail-card-img clickable" onerror="this.style.display='none'" onclick="openPlaceDetails('hotel','${h.id}')">
       <div class="detail-card-body">
         <div class="detail-card-title">${h.name}</div>
         <div class="detail-card-sub">${h.nameTh}</div>
-        <div class="detail-row"><span class="detail-row-label">التقييم</span><span class="detail-row-value">⭐ ${h.rating}</span></div>
-        <div class="detail-row"><span class="detail-row-label">العنوان</span><span class="detail-row-value">${h.address}</span></div>
-        <div class="detail-row"><span class="detail-row-label">العنوان (تايلندي)</span><span class="detail-row-value" style="font-size:13px">${h.addressTh}</span></div>
-        <div class="detail-row"><span class="detail-row-label">الهاتف</span><span class="detail-row-value">${h.phone}</span></div>
-        <div class="detail-row"><span class="detail-row-label">ملاحظات</span><span class="detail-row-value" style="font-size:13px">${h.notes}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Rating</span><span class="detail-row-value">⭐ ${h.rating}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Address</span><span class="detail-row-value">${h.address}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Thai Address</span><span class="detail-row-value" style="font-size:13px">${h.addressTh}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Phone</span><span class="detail-row-value">${h.phone}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Notes</span><span class="detail-row-value" style="font-size:13px">${h.notes}</span></div>
         <div class="action-row">
-          <button class="action-btn blue" onclick="callNumber('${h.phone.replace(/[^0-9+]/g,'')}')">📞 اتصال</button>
-          <button class="action-btn green" onclick="copyText('${h.name}, ${h.address}')">📋 نسخ</button>
-          <button class="action-btn gray" onclick="openMap('${h.map}')">🗺️ خريطة</button>
+          <button class="action-btn orange" onclick="openPlaceDetails('hotel','${h.id}')">📸 Details</button>
+          <button class="action-btn blue" onclick="callNumber('${h.phone.replace(/[^0-9+]/g,'')}')">📞 Call</button>
+          <button class="action-btn green" onclick="copyText('${h.name}, ${h.address}')">📋 Copy</button>
+          <button class="action-btn gray" onclick="openMap('${h.map}')">🗺️ Map</button>
         </div>
       </div>
     </div>
-  `).join('');
+    `;
+  }).join('');
 }
-
 // ============================================
 // RESTAURANTS
 // ============================================
 
 function renderRestaurants(filter = '') {
   const container = document.getElementById('restaurantsList');
-  let items = restaurantsData;
+  const { restaurants } = getCityData();
+  let items = restaurants;
   if (filter) {
     const q = filter.toLowerCase();
     items = items.filter(r => r.name.toLowerCase().includes(q) || r.type.includes(q) || (r.halalNote && r.halalNote.includes(q)));
   }
-  container.innerHTML = items.map(r => `
+  container.innerHTML = items.map(r => {
+    const imgUrl = safeImage(r.img);
+    const status = getOpenStatus(r.hours);
+    return `
     <div class="detail-card">
-      <img src="${r.img}" alt="${r.name}" class="detail-card-img" onerror="this.style.display='none'">
+      <img src="${imgUrl}" alt="${r.name}" class="detail-card-img clickable" onerror="this.style.display='none'" onclick="openPlaceDetails('restaurant','${r.id}')">
       <div class="detail-card-body">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div>
             <div class="detail-card-title">${r.name}</div>
-            <div class="detail-card-sub">${r.nameTh}</div>
+            <div class="detail-card-sub-row">
+              <div class="detail-card-sub">${r.nameTh}</div>
+              <button class="sub-copy-btn" onclick="copyText('${r.nameTh}')">Copy Thai</button>
+            </div>
           </div>
           <button class="fav-btn ${isFav('r', r.id) ? 'active' : ''}" onclick="toggleFav('r','${r.id}')">${isFav('r', r.id) ? '❤️' : '🤍'}</button>
         </div>
         <div style="margin:8px 0">
-          ${r.halal === true ? '<span class="tag-pill tag-green">✅ حلال</span>' : r.halal === false ? '<span class="tag-pill tag-red">❌ غير حلال</span>' : '<span class="tag-pill tag-gray">⚪ غير مؤكد</span>'}
+          ${r.halal === true ? '<span class="tag-pill tag-green">✅ Halal</span>' : r.halal === false ? '<span class="tag-pill tag-red">❌ Not Halal</span>' : '<span class="tag-pill tag-gray">⚪ Unconfirmed</span>'}
+          <span class="tag-pill ${status.className}">${status.label}</span>
           <span class="tag-pill tag-blue">${r.type}</span>
           <span class="tag-pill tag-orange">${r.price}</span>
           ${r.rating ? `<span class="tag-pill tag-gray">⭐ ${r.rating}</span>` : ''}
         </div>
-        <div class="detail-row"><span class="detail-row-label">الساعات</span><span class="detail-row-value">${r.hours}</span></div>
-        <div class="detail-row"><span class="detail-row-label">المسافة</span><span class="detail-row-value">${r.distance}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Hours</span><span class="detail-row-value">${r.hours}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Now</span><span class="detail-row-value">${status.detail} <span class="tag-pill ${status.className}">${status.label}</span></span></div>
+        <div class="detail-row"><span class="detail-row-label">Distance</span><span class="detail-row-value">${r.distance}</span></div>
         <div class="action-row">
-          <button class="action-btn green" onclick="copyText('${r.nameTh}')">📋 نسخ (تايلندي)</button>
-          <button class="action-btn gray" onclick="openMap('${r.map}')">🗺️ خريطة</button>
-          <button class="action-btn ${isVisited(r.name) ? 'green' : 'blue'}" onclick="toggleVisit('${r.name}')">${isVisited(r.name) ? '✅ زُرت' : '✓ زيارة'}</button>
+          <button class="action-btn orange" onclick="openPlaceDetails('restaurant','${r.id}')">📸 Details</button>
+          <button class="action-btn gray" onclick="openMap('${r.map}')">🗺️ Map</button>
+          <button class="action-btn ${isVisited(r.name) ? 'green' : 'blue'}" onclick="toggleVisit('${r.name}')">${isVisited(r.name) ? '✅ Visited' : '✓ Visit'}</button>
         </div>
       </div>
     </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function filterRestaurants() {
   renderRestaurants(document.getElementById('restSearch').value);
+}
+
+function renderCafes(filter = '') {
+  const container = document.getElementById('cafesList');
+  const { cafes } = getCityData();
+  let items = cafes;
+  if (filter) {
+    const q = filter.toLowerCase();
+    items = items.filter(r => r.name.toLowerCase().includes(q) || r.type.toLowerCase().includes(q) || (r.halalNote && r.halalNote.toLowerCase().includes(q)));
+  }
+  container.innerHTML = items.map(r => {
+    const imgUrl = safeImage(r.img);
+    const status = getOpenStatus(r.hours);
+    return `
+    <div class="detail-card">
+      <img src="${imgUrl}" alt="${r.name}" class="detail-card-img clickable" onerror="this.style.display='none'" onclick="openPlaceDetails('cafe','${r.id}')">
+      <div class="detail-card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="detail-card-title">${r.name}</div>
+            <div class="detail-card-sub-row">
+              <div class="detail-card-sub">${r.nameTh}</div>
+              <button class="sub-copy-btn" onclick="copyText('${r.nameTh}')">Copy Thai</button>
+            </div>
+          </div>
+          <button class="fav-btn ${isFav('r', r.id) ? 'active' : ''}" onclick="toggleFav('r','${r.id}')">${isFav('r', r.id) ? '❤️' : '🤍'}</button>
+        </div>
+        <div style="margin:8px 0">
+          ${r.halal === true ? '<span class="tag-pill tag-green">✅ Halal</span>' : r.halal === false ? '<span class="tag-pill tag-red">❌ Not Halal</span>' : '<span class="tag-pill tag-gray">⚪ Unconfirmed</span>'}
+          <span class="tag-pill ${status.className}">${status.label}</span>
+          <span class="tag-pill tag-blue">${r.type}</span>
+          <span class="tag-pill tag-orange">${r.price}</span>
+          ${r.rating ? `<span class="tag-pill tag-gray">⭐ ${r.rating}</span>` : ''}
+        </div>
+        <div class="detail-row"><span class="detail-row-label">Hours</span><span class="detail-row-value">${r.hours}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Now</span><span class="detail-row-value">${status.detail} <span class="tag-pill ${status.className}">${status.label}</span></span></div>
+        <div class="detail-row"><span class="detail-row-label">Distance</span><span class="detail-row-value">${r.distance}</span></div>
+        <div class="action-row">
+          <button class="action-btn orange" onclick="openPlaceDetails('cafe','${r.id}')">📸 Details</button>
+          <button class="action-btn gray" onclick="openMap('${r.map}')">🗺️ Map</button>
+          <button class="action-btn ${isVisited(r.name) ? 'green' : 'blue'}" onclick="toggleVisit('${r.name}')">${isVisited(r.name) ? '✅ Visited' : '✓ Visit'}</button>
+        </div>
+      </div>
+    </div>
+    `;
+  }).join('');
+}
+
+function filterCafes() {
+  renderCafes(document.getElementById('cafeSearch').value);
 }
 
 // ============================================
@@ -1842,9 +3287,13 @@ function filterRestaurants() {
 
 function renderMalls() {
   const container = document.getElementById('mallsList');
-  container.innerHTML = mallsData.map(m => `
+  const { malls } = getCityData();
+  container.innerHTML = malls.map(m => {
+    const imgUrl = safeImage(m.img);
+    const status = getOpenStatus(m.hours);
+    return `
     <div class="detail-card">
-      <img src="${m.img}" alt="${m.name}" class="detail-card-img" onerror="this.style.display='none'">
+      <img src="${imgUrl}" alt="${m.name}" class="detail-card-img clickable" onerror="this.style.display='none'" onclick="openPlaceDetails('mall','${m.id}')">
       <div class="detail-card-body">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div>
@@ -1853,17 +3302,23 @@ function renderMalls() {
           </div>
           <button class="fav-btn ${isFav('m', m.id) ? 'active' : ''}" onclick="toggleFav('m','${m.id}')">${isFav('m', m.id) ? '❤️' : '🤍'}</button>
         </div>
-        <div class="detail-row"><span class="detail-row-label">الساعات</span><span class="detail-row-value">${m.hours}</span></div>
-        <div class="detail-row"><span class="detail-row-label">المحلات</span><span class="detail-row-value" style="font-size:13px">${m.shops}</span></div>
-        <div class="detail-row"><span class="detail-row-label">المطاعم</span><span class="detail-row-value" style="font-size:13px">${m.restaurants}</span></div>
-        <div class="detail-row"><span class="detail-row-label">المسافة</span><span class="detail-row-value">${m.distance}</span></div>
+        <div style="margin:8px 0">
+          <span class="tag-pill ${status.className}">${status.label}</span>
+        </div>
+        <div class="detail-row"><span class="detail-row-label">Hours</span><span class="detail-row-value">${m.hours}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Now</span><span class="detail-row-value">${status.detail} <span class="tag-pill ${status.className}">${status.label}</span></span></div>
+        <div class="detail-row"><span class="detail-row-label">Shops</span><span class="detail-row-value" style="font-size:13px">${m.shops}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Restaurants</span><span class="detail-row-value" style="font-size:13px">${m.restaurants}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Distance</span><span class="detail-row-value">${m.distance}</span></div>
         <div class="action-row">
-          <button class="action-btn gray" onclick="openMap('${m.map}')">🗺️ خريطة</button>
-          <button class="action-btn ${isVisited(m.name) ? 'green' : 'blue'}" onclick="toggleVisit('${m.name}')">${isVisited(m.name) ? '✅ زُرت' : '✓ زيارة'}</button>
+          <button class="action-btn orange" onclick="openPlaceDetails('mall','${m.id}')">📸 Details</button>
+          <button class="action-btn gray" onclick="openMap('${m.map}')">🗺️ Map</button>
+          <button class="action-btn ${isVisited(m.name) ? 'green' : 'blue'}" onclick="toggleVisit('${m.name}')">${isVisited(m.name) ? '✅ Visited' : '✓ Visit'}</button>
         </div>
       </div>
     </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 // ============================================
@@ -1872,9 +3327,12 @@ function renderMalls() {
 
 function renderActivities() {
   const container = document.getElementById('activitiesList');
-  container.innerHTML = activitiesData.map(a => `
+  const { activities } = getCityData();
+  container.innerHTML = activities.map(a => {
+    const imgUrl = safeImage(a.img);
+    return `
     <div class="detail-card">
-      <img src="${a.img}" alt="${a.name}" class="detail-card-img" onerror="this.style.display='none'">
+      <img src="${imgUrl}" alt="${a.name}" class="detail-card-img clickable" onerror="this.style.display='none'" onclick="openPlaceDetails('activity','${a.id}')">
       <div class="detail-card-body">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div>
@@ -1883,19 +3341,21 @@ function renderActivities() {
           </div>
           <button class="fav-btn ${isFav('a', a.id) ? 'active' : ''}" onclick="toggleFav('a','${a.id}')">${isFav('a', a.id) ? '❤️' : '🤍'}</button>
         </div>
-        <div class="detail-row"><span class="detail-row-label">الشركة</span><span class="detail-row-value">${a.company}</span></div>
-        <div class="detail-row"><span class="detail-row-label">وقت الانطلاق</span><span class="detail-row-value">${a.time}</span></div>
-        <div class="detail-row"><span class="detail-row-label">المدة</span><span class="detail-row-value">${a.duration}</span></div>
-        <div class="detail-row"><span class="detail-row-label">السعر</span><span class="detail-row-value" style="color:var(--ios-green);font-weight:700">${a.price}</span></div>
-        <div class="detail-row"><span class="detail-row-label">يجب إحضاره</span><span class="detail-row-value" style="font-size:13px">${a.bring}</span></div>
-        <div class="detail-row"><span class="detail-row-label">ملاحظات</span><span class="detail-row-value" style="font-size:13px">${a.notes}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Company</span><span class="detail-row-value">${a.company}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Departure</span><span class="detail-row-value">${a.time}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Duration</span><span class="detail-row-value">${a.duration}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Price</span><span class="detail-row-value" style="color:var(--ios-green);font-weight:700">${a.price}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Bring</span><span class="detail-row-value" style="font-size:13px">${a.bring}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Notes</span><span class="detail-row-value" style="font-size:13px">${a.notes}</span></div>
         <div class="action-row">
-          <button class="action-btn gray" onclick="openMap('${a.map}')">🗺️ خريطة</button>
-          <button class="action-btn ${isVisited(a.name) ? 'green' : 'blue'}" onclick="toggleVisit('${a.name}')">${isVisited(a.name) ? '✅ تمت' : '✓ تم'}</button>
+          <button class="action-btn orange" onclick="openPlaceDetails('activity','${a.id}')">📸 Details</button>
+          <button class="action-btn gray" onclick="openMap('${a.map}')">🗺️ Map</button>
+          <button class="action-btn ${isVisited(a.name) ? 'green' : 'blue'}" onclick="toggleVisit('${a.name}')">${isVisited(a.name) ? '✅ Done' : '✓ Mark Done'}</button>
         </div>
       </div>
     </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 // ============================================
@@ -1993,17 +3453,19 @@ function isFav(type, id) {
 
 function toggleFav(type, id) {
   const idx = state.favorites.findIndex(f => f.type === type && f.id === id);
+  const { restaurants, cafes, malls, activities } = getCityData();
   if (idx >= 0) {
     state.favorites.splice(idx, 1);
   } else {
     let item;
-    if (type === 'r') item = restaurantsData.find(r => r.id === id);
-    else if (type === 'm') item = mallsData.find(m => m.id === id);
-    else if (type === 'a') item = activitiesData.find(a => a.id === id);
+    if (type === 'r') item = restaurants.find(r => r.id === id) || cafes.find(r => r.id === id);
+    else if (type === 'm') item = malls.find(m => m.id === id);
+    else if (type === 'a') item = activities.find(a => a.id === id);
     if (item) state.favorites.push({ type, id, name: item.name, sub: item.type || item.company || '' });
   }
   saveState();
   if (state.currentSection === 'restaurants') renderRestaurants(document.getElementById('restSearch')?.value || '');
+  if (state.currentSection === 'cafes') renderCafes(document.getElementById('cafeSearch')?.value || '');
   if (state.currentSection === 'malls') renderMalls();
   if (state.currentSection === 'activities') renderActivities();
   if (state.currentSection === 'favorites') renderFavorites();
@@ -2057,10 +3519,11 @@ function toggleVisit(name) {
 
 function renderVisited() {
   const container = document.getElementById('visitedList');
+  const { restaurants, malls, activities } = getCityData();
   const allPlaces = [
-    ...restaurantsData.map(r => r.name),
-    ...mallsData.map(m => m.name),
-    ...activitiesData.map(a => a.name)
+    ...restaurants.map(r => r.name),
+    ...malls.map(m => m.name),
+    ...activities.map(a => a.name)
   ];
   const total = allPlaces.length;
   const done = state.visited.length;
@@ -2091,16 +3554,17 @@ function doGlobalSearch() {
   const container = document.getElementById('searchResults');
   if (!q) { container.innerHTML = ''; return; }
 
+  const { restaurants, malls, activities } = getCityData();
   const results = [];
-  restaurantsData.forEach(r => {
+  restaurants.forEach(r => {
     if (r.name.toLowerCase().includes(q) || r.type.toLowerCase().includes(q) || r.nameTh.includes(q))
       results.push({ type: 'مطعم', name: r.name, sub: r.type, icon: '🍽️' });
   });
-  mallsData.forEach(m => {
+  malls.forEach(m => {
     if (m.name.toLowerCase().includes(q) || m.shops.toLowerCase().includes(q))
       results.push({ type: 'مول', name: m.name, sub: m.shops.substring(0, 40) + '...', icon: '🛍️' });
   });
-  activitiesData.forEach(a => {
+  activities.forEach(a => {
     if (a.name.toLowerCase().includes(q) || a.company.toLowerCase().includes(q))
       results.push({ type: 'نشاط', name: a.name, sub: a.company, icon: '🏝️' });
   });
@@ -2131,6 +3595,151 @@ function openEmergency() {
 function closeEmergency(e) {
   if (!e || e.target === document.getElementById('emergencyModal')) {
     document.getElementById('emergencyModal').classList.remove('active');
+  }
+}
+
+function getPlaceTypeConfig(type) {
+  const cityLabel = getCityConfig().label;
+  const configs = {
+    hotel: {
+      title: 'Hotel',
+      fallbackQueries: [
+        `${cityLabel} luxury hotel exterior`,
+        `${cityLabel} hotel lobby interior`,
+        `${cityLabel} hotel room`
+      ]
+    },
+    restaurant: {
+      title: 'Restaurant',
+      fallbackQueries: [
+        `${cityLabel} restaurant exterior`,
+        `${cityLabel} restaurant interior`,
+        `${cityLabel} food dishes`
+      ]
+    },
+    cafe: {
+      title: 'Cafe',
+      fallbackQueries: [
+        `${cityLabel} cafe exterior`,
+        `${cityLabel} cafe interior`,
+        `${cityLabel} coffee specialty`
+      ]
+    },
+    mall: {
+      title: 'Mall',
+      fallbackQueries: [
+        `${cityLabel} shopping mall exterior`,
+        `${cityLabel} mall interior`,
+        `${cityLabel} shopping stores`
+      ]
+    },
+    activity: {
+      title: 'Activity',
+      fallbackQueries: [
+        `${cityLabel} activity location`,
+        `${cityLabel} travel experience`,
+        `${cityLabel} attraction landscape`
+      ]
+    }
+  };
+  return configs[type];
+}
+
+function getPlaceByTypeAndId(type, id) {
+  const cityData = getCityData();
+  const buckets = {
+    hotel: cityData.hotels,
+    restaurant: cityData.restaurants,
+    cafe: cityData.cafes,
+    mall: cityData.malls,
+    activity: cityData.activities
+  };
+  const list = buckets[type] || [];
+  return list.find(item => item.id === id) || null;
+}
+
+function buildPlaceGallery(item, type) {
+  const preset = Array.isArray(item.images) ? item.images.filter(Boolean) : [];
+  if (preset.length) return preset;
+
+  const cfg = getPlaceTypeConfig(type);
+  const dynamic = (cfg?.fallbackQueries || []).map(q => `https://source.unsplash.com/1200x800/?${encodeURIComponent(q)}`);
+  return [item.img, ...dynamic].filter(Boolean).slice(0, 4);
+}
+
+function escapeHtml(text) {
+  return String(text ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function openPlaceDetails(type, id) {
+  const item = getPlaceByTypeAndId(type, id);
+  if (!item) return;
+
+  const modal = document.getElementById('placeDetailModal');
+  const titleEl = document.getElementById('placeDetailTitle');
+  const subEl = document.getElementById('placeDetailSub');
+  const bodyEl = document.getElementById('placeDetailBody');
+  if (!modal || !titleEl || !subEl || !bodyEl) return;
+
+  const cfg = getPlaceTypeConfig(type);
+  const gallery = buildPlaceGallery(item, type);
+  const galleryHtml = `
+    <div class="place-gallery">
+      ${gallery.map((src, idx) => `<img src="${escapeHtml(safeImage(src))}" alt="${escapeHtml(item.name)} ${idx + 1}" onerror="this.style.display='none'">`).join('')}
+    </div>
+  `;
+
+  let rows = '';
+  if (type === 'hotel') {
+    rows += `<div class="detail-row"><span class="detail-row-label">Rating</span><span class="detail-row-value">⭐ ${item.rating ?? '-'}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Address</span><span class="detail-row-value">${escapeHtml(item.address || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Phone</span><span class="detail-row-value">${escapeHtml(item.phone || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Notes</span><span class="detail-row-value">${escapeHtml(item.notes || '-')}</span></div>`;
+  }
+  if (type === 'restaurant' || type === 'cafe') {
+    const status = getOpenStatus(item.hours || '');
+    rows += `<div class="detail-row"><span class="detail-row-label">Type</span><span class="detail-row-value">${escapeHtml(item.type || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Rating</span><span class="detail-row-value">⭐ ${item.rating ?? '-'}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Hours</span><span class="detail-row-value">${escapeHtml(item.hours || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Now</span><span class="detail-row-value">${escapeHtml(status.label)} • ${escapeHtml(status.detail)}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Distance</span><span class="detail-row-value">${escapeHtml(item.distance || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Price</span><span class="detail-row-value">${escapeHtml(item.price || '-')}</span></div>`;
+  }
+  if (type === 'mall') {
+    const status = getOpenStatus(item.hours || '');
+    rows += `<div class="detail-row"><span class="detail-row-label">Hours</span><span class="detail-row-value">${escapeHtml(item.hours || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Now</span><span class="detail-row-value">${escapeHtml(status.label)} • ${escapeHtml(status.detail)}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Shops</span><span class="detail-row-value">${escapeHtml(item.shops || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Restaurants</span><span class="detail-row-value">${escapeHtml(item.restaurants || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Distance</span><span class="detail-row-value">${escapeHtml(item.distance || '-')}</span></div>`;
+  }
+  if (type === 'activity') {
+    rows += `<div class="detail-row"><span class="detail-row-label">Company</span><span class="detail-row-value">${escapeHtml(item.company || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Start</span><span class="detail-row-value">${escapeHtml(item.time || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Duration</span><span class="detail-row-value">${escapeHtml(item.duration || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Price</span><span class="detail-row-value">${escapeHtml(item.price || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Bring</span><span class="detail-row-value">${escapeHtml(item.bring || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Notes</span><span class="detail-row-value">${escapeHtml(item.notes || '-')}</span></div>`;
+  }
+
+  const mapButton = item.map ? `<button class="action-btn gray" onclick="openMap('${escapeHtml(item.map)}')">🗺️ Map</button>` : '';
+  const copyNameButton = `<button class="action-btn green" onclick="copyText('${escapeHtml(item.name)}')">📋 Copy</button>`;
+
+  titleEl.textContent = item.name || 'Place Details';
+  subEl.textContent = `${cfg?.title || 'Place'} • ${item.nameTh || getCityConfig().label}`;
+  bodyEl.innerHTML = `${galleryHtml}<div class="detail-card" style="margin-bottom:0"><div class="detail-card-body" style="padding:0">${rows}<div class="action-row">${copyNameButton}${mapButton}</div></div></div>`;
+
+  modal.classList.add('active');
+}
+
+function closePlaceDetails(e) {
+  if (!e || e.target === document.getElementById('placeDetailModal')) {
+    document.getElementById('placeDetailModal').classList.remove('active');
   }
 }
 
@@ -2199,13 +3808,17 @@ function addPhoto(input) {
 // ============================================
 
 applyTheme();
-document.getElementById('weatherTemp').innerHTML = state.weather.temp + '<span>°</span>';
-document.getElementById('weatherDesc').textContent = state.weather.desc;
-document.getElementById('weatherIcon').textContent = state.weather.icon;
+setCityBadge();
 document.getElementById('notesArea').value = state.notes;
 updateProgress();
+setInterval(refreshWeather, 10 * 60 * 1000);
+setInterval(refreshBusinessStatus, 60 * 1000);
 
-showSection(state.currentSection);
+if (!state.selectedCity) {
+  openCityPicker();
+} else {
+  enterCity(state.selectedCity);
+}
 
 if ('serviceWorker' in navigator) {
   const swCode = `self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>e.respondWith(fetch(e.request).catch(()=>new Response('Offline'))));`;
