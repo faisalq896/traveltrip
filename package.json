@@ -1,0 +1,22 @@
+{
+  "name": "thailand-trip-guide",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A mobile-first Thailand travel guide.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "format": "prettier --write index.html data.js assets/css/app.css assets/js/app.js tests/*.mjs README.md",
+    "format:check": "prettier --check index.html data.js assets/css/app.css assets/js/app.js tests/*.mjs README.md",
+    "lint": "eslint data.js assets/js/app.js tests/*.mjs",
+    "test": "node --test tests/*.mjs",
+    "verify": "npm run format:check && npm run lint && npm run test"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "globals": "^15.0.0",
+    "prettier": "^3.0.0"
+  }
+}

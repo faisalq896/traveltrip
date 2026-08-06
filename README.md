@@ -1,4 +1,29 @@
-# دليل فيصل — بوكيت 2026
+# دليل فيصل — تايلاند 2026
+
+## هيكل المشروع
+
+- `index.html` — هيكل الصفحة ونقاط تحميل الملفات.
+- `assets/css/app.css` — جميع أنماط الواجهة.
+- `assets/js/app.js` — منطق التطبيق وإدارة الحالة.
+- `data.js` — بيانات المطاعم والمقاهي والمولات.
+- `assets/images/` — مخصص للصور المحلية مستقبلاً.
+
+## تطوير المشروع
+
+يتطلب تشغيل أدوات الجودة Node.js 20 أو أحدث. بعد تثبيته، نفّذ:
+
+```powershell
+npm install
+npm run verify
+```
+
+الأوامر المتاحة:
+
+- `npm run format` — تنسيق الملفات.
+- `npm run format:check` — التحقق من التنسيق دون تعديل.
+- `npm run lint` — فحص أخطاء JavaScript.
+- `npm test` — تشغيل اختبارات السلامة الأساسية.
+- `npm run verify` — تشغيل جميع الفحوصات.
 
 هذا الموقع جاهز للنشر على GitHub Pages.
 
@@ -10,7 +35,7 @@
 ```powershell
 cd "C:\Users\faisal  PC\phuket-guide"
 git init
-git add index.html README.md
+git add index.html data.js assets README.md
 git commit -m "Initial commit"
 ```
 
