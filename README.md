@@ -64,3 +64,19 @@ https://USERNAME.github.io/phuket-guide/
 - `README.md` — تعليمات النشر.
 
 > ملاحظة: إذا أردت اسم نطاق مخصص، أضف ملف `CNAME` بالمجلد الجذر.
+
+## Vercel: تقدير أسعار الجدول بالذكاء الاصطناعي
+
+عند نشر المشروع كاملاً على Vercel، يصبح المسار `api/travel-price` متاحاً تلقائياً. أضف المتغيرات التالية من **Vercel → Project → Settings → Environment Variables** ولا تضع المفتاح داخل `index.html` أو `app.js`:
+
+- `OPENAI_API_KEY`: مفتاح OpenAI السري.
+- `TRAVELTRIP_ALLOWED_ORIGINS`: عنوان أو عناوين الموقع المسموح بها مفصولة بفاصلة، مثل `https://faisalq896.github.io,https://your-project.vercel.app`.
+- `OPENAI_MODEL` (اختياري): اسم النموذج؛ الافتراضي `gpt-5-mini`.
+
+إذا بقيت الواجهة على GitHub Pages واستضفت الـAPI في Vercel فقط، أضف قبل تحميل `app.js` إعداداً عاماً يتضمن رابط Vercel الكامل:
+
+```html
+<script>window.TRAVELTRIP_CONFIG = { aiPriceEndpoint: 'https://YOUR-PROJECT.vercel.app/api/travel-price' };</script>
+```
+
+الموقع يعرض تقديراً محلياً فورياً عند اختيار المكان، ثم يستبدله بتقدير المساعد عند نجاح الاتصال. لا يتم إرسال أي بيانات شخصية؛ فقط اسم المكان والمدينة والفئة والسعر الموجود في الدليل إن وجد.

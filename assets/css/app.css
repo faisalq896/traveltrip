@@ -2198,6 +2198,12 @@ body {
 @keyframes weatherRing { 0%, 100% { transform: scale(0.92); opacity: 0.28; } 50% { transform: scale(1.05); opacity: 0.74; } }
 @media (prefers-reduced-motion: reduce) { .weather-ring { animation: none; } .quick-card:hover { transform: none; } }
 
+.app-update { position: fixed; z-index: 5000; right: 16px; left: 16px; bottom: calc(78px + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 16px; color: #fff; background: #173d59; box-shadow: 0 12px 30px rgba(0,0,0,.25); font-weight: 750; }
+.app-update button { min-height: 40px; padding: 8px 12px; border: 0; border-radius: 11px; color: #173d59; background: #fff; font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid #007aff; outline-offset: 3px; }
+body.modal-open { overflow: hidden; }
+.emergency-verify { margin: 0 0 12px; color: var(--premium-muted); font-size: .78rem; line-height: 1.55; }
+
 /* Home directory: one clear, travel-relevant visual for every destination. */
 .home-directory-panel .quick-card-icon {
   isolation: isolate;
@@ -2346,6 +2352,9 @@ body {
 .budget-health.warning strong { color: #e58a16; }.budget-health.warning i { background: rgba(229,138,22,.15); }.budget-health.warning b { background: #e58a16; }
 .budget-health.over strong { color: var(--ios-red); }.budget-health.over i { background: rgba(255,59,48,.15); }.budget-health.over b { background: var(--ios-red); }
 .place-data-status { display: block; width: 100%; color: var(--premium-muted); font-size: .7rem; font-weight: 650; }
+.today-card,.expense-card { margin:16px 0; padding:16px; border:1px solid var(--premium-line); border-radius:22px; background:var(--ios-surface); box-shadow:0 10px 24px rgba(18,73,112,.07); }.today-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.today-item,.expense-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--premium-line)}.today-item span{flex:1}.today-item small,.expense-item small{display:block;color:var(--premium-muted);font-size:.7rem}.today-item button,.expense-item button{border:0;background:transparent;color:var(--ios-blue);font:inherit;cursor:pointer}.today-empty{padding:12px 0;color:var(--premium-muted)}.today-empty button{margin-inline-start:8px;border:0;color:var(--ios-blue);background:transparent;font:inherit}.expense-form{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.expense-form input,.expense-form select{min-height:42px;padding:8px;border:1px solid var(--premium-line);border-radius:10px;background:var(--ios-surface);color:var(--premium-ink);font:inherit}.expense-form button{grid-column:1/-1}.expense-total{padding:9px 0;color:var(--premium-muted)}.expense-total strong{color:var(--premium-ink)}
+.schedule-price-estimate{display:grid;gap:3px;margin-top:10px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--ios-blue) 25%,var(--premium-line));border-radius:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--ios-blue) 9%,var(--ios-surface)),var(--ios-surface));color:var(--premium-muted);font-size:.8rem}.schedule-price-estimate strong{color:var(--premium-ink);font-size:1rem}.schedule-price-estimate small{color:var(--premium-muted);font-size:.73rem}
+.day-item-price{display:inline-flex;margin-top:7px;padding:4px 8px;border-radius:999px;background:color-mix(in srgb,var(--ios-blue) 10%,var(--ios-surface));color:var(--ios-blue);font-size:.72rem;font-weight:700}
 [data-theme="dark"] .trip-map-card { background: var(--ios-surface-elevated); }.travel-ai-card { background: linear-gradient(135deg, rgba(226,247,255,.92), rgba(242,238,255,.95)); }[data-theme="dark"] .travel-ai-card { background: linear-gradient(135deg, #183f52, #37315c); }
 .day-card { overflow: visible; border: 1px solid rgba(19,92,135,0.1); border-radius: 24px; margin-bottom: 18px; box-shadow: 0 12px 28px rgba(20,74,110,0.08); }
 .day-header { border-radius: 23px 23px 0 0; padding: 17px 16px; background: linear-gradient(125deg, #123f6c, #167b9f 58%, #5d63bd); }

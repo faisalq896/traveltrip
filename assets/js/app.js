@@ -380,7 +380,10 @@ function sanitizeSchedule(value, fallback, key) {
       time: safeText(item.time, 20),
       title: safeText(item.title, 160),
       sub: safeText(item.sub, 240),
-      done: Boolean(item.done)
+      done: Boolean(item.done),
+      estimatedCost: Number.isFinite(Number(item.estimatedCost)) && Number(item.estimatedCost) >= 0 ? Math.round(Number(item.estimatedCost)) : null,
+      estimatedCostHigh: Number.isFinite(Number(item.estimatedCostHigh)) && Number(item.estimatedCostHigh) >= 0 ? Math.round(Number(item.estimatedCostHigh)) : null,
+      costSource: item.costSource === 'ai' ? 'ai' : item.costSource === 'local' ? 'local' : ''
     }))
   }));
   if (schedule.length !== value.length) recordStorageRecovery(key);
@@ -431,8 +434,9 @@ let state = {
   notes: safeText(readStoredText('tg_notes', ''), 20000),
   budget: sanitizeBudget(readStoredJson('tg_budget', {}), 'tg_budget'),
   budgetLimit: Math.max(0, Number(readStoredText('tg_budget_limit', '0')) || 0),
+  expenses: Array.isArray(readStoredJson('tg_expenses', [])) ? readStoredJson('tg_expenses', []).filter(item => isPlainObject(item) && Number(item.amount) >= 0) : [],
   weather: {
-    temp: 32,
+    temp: null,
     desc: 'جاري التحديث...',
     icon: '⛅',
     apparentTemp: null,
@@ -485,7 +489,7 @@ function loadCityScopedState(cityKey) {
   state.schedule = sanitizeSchedule(readStoredJson(scheduleKey, null), cityData.schedule, scheduleKey);
   state.visited = sanitizeTextArray(readStoredJson(visitedKey, []), visitedKey);
   state.weather = {
-    temp: 32,
+    temp: null,
     desc: 'جاري التحديث...',
     icon: '⛅',
     apparentTemp: null,
@@ -519,6 +523,7 @@ function updateHomeCounts() {
 }
 
 function updateHomeSummary() {
+  renderTodayCard();
   const cityConfig = getCityConfig();
   const title = document.getElementById('homeWelcomeTitle');
   const cityChip = document.getElementById('heroPlaceChip');
@@ -560,7 +565,7 @@ function applyCityIdentity() {
   const cityHeroSubtitle = english ? (cityConfig.key === 'bangkok' ? 'City lights, markets, and skyline nights' : 'Islands, beaches, and unforgettable moments') : cityConfig.heroSubtitle;
   const cityWeatherLocation = english ? `${cityName}, Thailand` : cityConfig.weatherLocation;
   document.documentElement.setAttribute('data-city', cityConfig.key);
-  document.title = english ? `${cityName} Travel Guide — 2026` : `دليل ${cityConfig.label} — تايلند 2026`;
+  document.title = english ? `TravelTrip — ${cityName}` : `TravelTrip — ${cityConfig.label}`;
   const heroTitle = document.getElementById('heroTitle');
   const heroSubtitle = document.getElementById('heroSubtitle');
   const heroImage = document.getElementById('heroImage');
@@ -612,6 +617,7 @@ function saveState() {
     ['tg_notes', state.notes],
     ['tg_budget', JSON.stringify(state.budget)],
     ['tg_budget_limit', String(state.budgetLimit)],
+    ['tg_expenses', JSON.stringify(state.expenses)],
     [cityScopedKey('tg_weather'), JSON.stringify(state.weather)],
     ['tg_rate', String(state.exchangeRate)],
     [cityScopedKey('tg_schedule'), JSON.stringify(state.schedule)],
@@ -1169,7 +1175,10 @@ async function refreshWeather() {
   }
   document.getElementById('weatherMeta').textContent = 'جاري التحديث الحي...';
   try {
-    const response = await fetch(getCityConfig().weatherApiUrl, { cache: 'no-store' });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 9000);
+    const response = await fetch(getCityConfig().weatherApiUrl, { cache: 'no-store', signal: controller.signal });
+    clearTimeout(timeout);
     if (!response.ok) throw new Error('Weather request failed');
     const payload = await response.json();
     const weather = parseOpenMeteoWeather(payload);
@@ -1347,6 +1356,7 @@ function renderSchedule() {
               <div class="day-time">${escapeHtml(item.time)}</div>
               <div class="day-content-title">${escapeHtml(localizeContent(item.title))}</div>
               <div class="day-content-sub">${escapeHtml(localizeContent(item.sub))}</div>
+              ${item.estimatedCost !== null && item.estimatedCost !== undefined ? `<div class="day-item-price">${ui('تقريباً', 'Estimated')} ${Number(item.estimatedCost).toLocaleString()}${item.estimatedCostHigh && item.estimatedCostHigh !== item.estimatedCost ? `–${Number(item.estimatedCostHigh).toLocaleString()}` : ''} THB</div>` : ''}
               <div class="day-item-actions">
                 <button class="mini-btn gray" type="button" onclick="editScheduleItem(${di},${ii})">${t('edit')}</button>
                 <button class="mini-btn gray" type="button" onclick="deleteScheduleItem(${di},${ii})">${t('delete')}</button>
@@ -1362,6 +1372,17 @@ function renderSchedule() {
   refreshTravelAssistant();
   updateHomeSummary();
 }
+
+function renderTodayCard() {
+  const meta = document.getElementById('todayMeta'), list = document.getElementById('todayItems'); if (!meta || !list) return;
+  const today = new Date(); const day = state.schedule.find(entry => scheduleDateToIso(entry.date) === today.toISOString().slice(0,10));
+  meta.textContent = `${today.toLocaleDateString(state.language === 'en' ? 'en-GB' : 'ar-KW')} · ${state.language === 'en' ? getCityConfig().key : getCityConfig().label}`;
+  if (!day?.items?.length) { list.innerHTML = `<div class="today-empty">لا توجد أنشطة مضافة لهذا اليوم <button type="button" onclick="addScheduleDay()">إضافة نشاط</button></div>`; return; }
+  list.innerHTML = day.items.slice().sort((a,b) => a.time.localeCompare(b.time)).map(item => `<div class="today-item"><b>${escapeHtml(item.time)}</b><span>${escapeHtml(item.title)}<small>${escapeHtml(item.sub || '')}</small></span><button type="button" onclick="openMap('${escapeHtml(item.title)}')">خريطة</button></div>`).join('');
+}
+function startMyDay() { const first = getPlannedStops().find(item => !item.done); alert(first ? `طقس اليوم: ${state.weather.desc || 'جارٍ التحميل'}\nأول نشاط: ${first.title} — ${first.time}\nخذ معك: ${state.weather.rain > 0 ? 'مظلة خفيفة' : 'ماء وواقي شمس'}` : 'أضف نشاطاً أولاً إلى جدولك.'); }
+function showRainPlan() { const indoor = [...malls, ...cafes, ...restaurants].slice(0,3); alert(`الخطة البديلة للمطر:\n${indoor.map(item => `• ${item.name}`).join('\n')}\nلن يتم تغيير جدولك إلا بعد اختيارك.`); }
+function showNowSuggestions() { const picks = [...restaurants, ...cafes, ...malls, ...activities].filter(item => getOpenStatus(item.hours || '').isOpen !== false).sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0,5); alert(`وين نروح الحين؟\n${picks.map(item => `• ${item.name} — ${item.type || item.company || 'مكان مقترح'}`).join('\n')}`); }
 
 function getPlannedStops() {
   return state.schedule.flatMap(day => day.items.map(item => ({ ...item, day: day.day }))).filter(item => item.title);
@@ -1474,6 +1495,7 @@ function closeScheduleEditor(event) {
   if (!event || event.target === document.getElementById('scheduleEditorModal')) {
     document.getElementById('scheduleEditorModal').classList.remove('active');
     scheduleEditorState = null;
+    document.body.classList.remove('modal-open');
   }
 }
 
@@ -1529,10 +1551,15 @@ function openScheduleEditor(kind, dayIdx, itemIdx = null) {
       </div>
       <div class="itinerary-field-row"><label class="itinerary-field">${ui('الوقت', 'Time')}<input name="time" type="time" required value="${escapeHtml(item?.time || '12:00')}"></label><label class="itinerary-field">${t('day')}<select name="targetDay">${dayOptions}</select></label></div>
       <label class="itinerary-field">${ui('اسم النشاط', 'Activity name')}<input name="title" required value="${escapeHtml(item?.title || '')}" placeholder="${ui('ماذا تريد أن تفعل؟', 'What would you like to do?')}"></label>
-      <label class="itinerary-field">${ui('التفاصيل', 'Details')}<textarea name="sub" rows="3" placeholder="${ui('المكان أو ملاحظة سريعة', 'Place or a quick note')}">${escapeHtml(item?.sub || '')}</textarea></label>`;
+      <label class="itinerary-field">${ui('التفاصيل', 'Details')}<textarea name="sub" rows="3" placeholder="${ui('المكان أو ملاحظة سريعة', 'Place or a quick note')}">${escapeHtml(item?.sub || '')}</textarea></label>
+      <input type="hidden" name="estimatedCost" value="${Number(item?.estimatedCost) || ''}">
+      <input type="hidden" name="estimatedCostHigh" value="${Number(item?.estimatedCostHigh) || ''}">
+      <input type="hidden" name="costSource" value="${escapeHtml(item?.costSource || '')}">
+      <div id="schedulePriceEstimate" class="schedule-price-estimate" aria-live="polite">${item?.estimatedCost ? renderSchedulePriceEstimate({ low: item.estimatedCost, high: item.estimatedCostHigh || item.estimatedCost, source: item.costSource }) : ui('اختر مكاناً لإظهار السعر التقريبي.', 'Choose a place to see an estimated price.')}</div>`;
   }
   form.onsubmit = saveScheduleEditor;
   modal.classList.add('active');
+  document.body.classList.add('modal-open');
 }
 
 function selectSchedulePlace(type, id, button) {
@@ -1542,6 +1569,65 @@ function selectSchedulePlace(type, id, button) {
   form.elements.title.value = place.name;
   form.elements.sub.value = place.type || place.company || place.address || '';
   document.querySelectorAll('.itinerary-place-card').forEach(card => card.classList.toggle('selected', card === button));
+  estimateSchedulePlacePrice(place, type);
+}
+
+function getLocalPriceEstimate(place, type) {
+  const directPrice = String(place?.price || '').match(/([\d,]+)\s*(?:THB|฿|بات)/i);
+  if (directPrice) {
+    const value = Number(directPrice[1].replaceAll(',', ''));
+    if (Number.isFinite(value) && value > 0) return { low: Math.round(value * .9), high: Math.round(value * 1.15), source: 'local' };
+  }
+  const priceLevel = String(place?.price || '').replace(/[^$]/g, '').length;
+  const bands = {
+    restaurant: [[180, 380], [350, 700], [650, 1400], [1200, 2800]],
+    cafe: [[90, 180], [150, 320], [280, 550], [450, 900]],
+    mall: [[0, 0]],
+    activity: [[500, 1200], [1200, 2600], [2500, 5000], [4500, 8500]]
+  };
+  const options = bands[type] || bands.activity;
+  const [low, high] = options[Math.max(0, Math.min((priceLevel || 2) - 1, options.length - 1))];
+  return { low, high, source: 'local' };
+}
+
+function renderSchedulePriceEstimate({ low, high, source, note }) {
+  if (!low && !high) return ui('الدخول أو التسوق لا يملك سعراً ثابتاً. أضف ميزانيتك المتوقعة يدوياً.', 'Entry or shopping has no fixed price. Add your expected budget manually.');
+  const range = low === high ? `${low.toLocaleString()} THB` : `${low.toLocaleString()}–${high.toLocaleString()} THB`;
+  const label = source === 'ai' ? ui('تقدير المساعد الذكي', 'AI estimate') : ui('تقدير مبدئي', 'Starting estimate');
+  return `<span>${label}</span><strong>${range}</strong>${note ? `<small>${escapeHtml(note)}</small>` : ''}`;
+}
+
+async function estimateSchedulePlacePrice(place, type) {
+  const form = document.getElementById('scheduleEditorForm');
+  const display = document.getElementById('schedulePriceEstimate');
+  if (!form || !display) return;
+  const localEstimate = getLocalPriceEstimate(place, type);
+  const applyEstimate = estimate => {
+    form.elements.estimatedCost.value = estimate.low || '';
+    form.elements.estimatedCostHigh.value = estimate.high || '';
+    form.elements.costSource.value = estimate.source || 'local';
+    display.innerHTML = renderSchedulePriceEstimate(estimate);
+  };
+  applyEstimate(localEstimate);
+
+  const endpoint = window.TRAVELTRIP_CONFIG?.aiPriceEndpoint || './api/travel-price';
+  if (!navigator.onLine || !endpoint) return;
+  display.innerHTML = `${renderSchedulePriceEstimate(localEstimate)}<small>${ui('جارٍ تحسين التقدير…', 'Refining estimate…')}</small>`;
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ place: place.name, city: getCityConfig().label, category: type, priceHint: place.price || '' })
+    });
+    if (!response.ok) throw new Error('Price estimate unavailable');
+    const data = await response.json();
+    const low = Number(data.low);
+    const high = Number(data.high);
+    if (!Number.isFinite(low) || !Number.isFinite(high) || low < 0 || high < low) throw new Error('Invalid price estimate');
+    applyEstimate({ low: Math.round(low), high: Math.round(high), source: 'ai', note: data.note || '' });
+  } catch {
+    applyEstimate(localEstimate);
+  }
 }
 
 function filterSchedulePlaces(category, button) {
@@ -1611,7 +1697,14 @@ function saveScheduleEditor(event) {
     if (conflict) { warning.hidden = false; warning.textContent = 'يوجد نشاط آخر في الوقت نفسه. عدّل الوقت قبل الحفظ.'; return; }
     const editedItem = editor.itemIdx !== null ? state.schedule[editor.dayIdx].items[editor.itemIdx] : null;
     if (editedItem) state.schedule[editor.dayIdx].items.splice(editor.itemIdx, 1);
-    state.schedule[targetDayIdx].items.push({ time, title, sub, done: editedItem?.done || false });
+    const estimatedCost = Number(data.get('estimatedCost'));
+    const estimatedCostHigh = Number(data.get('estimatedCostHigh'));
+    state.schedule[targetDayIdx].items.push({
+      time, title, sub, done: editedItem?.done || false,
+      estimatedCost: Number.isFinite(estimatedCost) && estimatedCost >= 0 ? Math.round(estimatedCost) : null,
+      estimatedCostHigh: Number.isFinite(estimatedCostHigh) && estimatedCostHigh >= 0 ? Math.round(estimatedCostHigh) : null,
+      costSource: data.get('costSource') === 'ai' ? 'ai' : data.get('costSource') === 'local' ? 'local' : ''
+    });
     sortScheduleItems(state.schedule[targetDayIdx]);
     if (editor.dayIdx !== targetDayIdx && state.schedule[editor.dayIdx]) sortScheduleItems(state.schedule[editor.dayIdx]);
   }
@@ -1921,6 +2014,21 @@ function renderActivities() {
 // BUDGET
 // ============================================
 
+function toggleExpenseForm() { document.getElementById('expenseForm')?.toggleAttribute('hidden'); }
+function saveExpense(event) {
+  event.preventDefault(); const data = new FormData(event.target); const amount = Number(data.get('amount'));
+  if (!Number.isFinite(amount) || amount <= 0) return;
+  state.expenses.unshift({ id: `${Date.now()}_${Math.random().toString(36).slice(2)}`, amount, category: String(data.get('category')), payment: String(data.get('payment')), note: safeText(String(data.get('note')), 120), city: currentCityKey(), date: new Date().toISOString().slice(0,10) });
+  event.target.reset(); event.target.hidden = true; saveState(); renderExpenses();
+}
+function deleteExpense(id) { state.expenses = state.expenses.filter(item => item.id !== id); saveState(); renderExpenses(); }
+function renderExpenses() {
+  const list = document.getElementById('expenseList'), summary = document.getElementById('expenseSummary'); if (!list || !summary) return;
+  const expenses = state.expenses.filter(item => item.city === currentCityKey()); const total = expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  summary.innerHTML = `<div class="expense-total">المصروف: <strong>${total.toLocaleString()} بات</strong>${state.budgetLimit ? ` · المتبقي: ${Math.max(0,state.budgetLimit-total).toLocaleString()} بات` : ''}</div>`;
+  list.innerHTML = expenses.slice(0,12).map(item => `<div class="expense-item"><span><strong>${escapeHtml(item.category)}</strong> · ${escapeHtml(item.note || item.payment)}<small>${escapeHtml(item.date)}</small></span><b>${Number(item.amount).toLocaleString()} بات</b><button type="button" aria-label="حذف المصروف" onclick="deleteExpense('${item.id}')">×</button></div>`).join('');
+}
+
 function loadBudget() {
   const b = state.budget;
   if (b.hotel) document.getElementById('b-hotel').value = b.hotel;
@@ -1936,6 +2044,7 @@ function loadBudget() {
   document.getElementById('budgetLimit').value = state.budgetLimit || '';
   document.getElementById('rateInput').value = state.exchangeRate;
   calcBudget();
+  renderExpenses();
   renderBudgetHealth(Object.values(state.budget).reduce((sum, amount) => sum + (Number(amount) || 0), 0));
 }
 
@@ -2207,10 +2316,12 @@ function doGlobalSearch() {
 
 function openEmergency() {
   document.getElementById('emergencyModal').classList.add('active');
+  document.body.classList.add('modal-open');
 }
 function closeEmergency(e) {
   if (!e || e.target === document.getElementById('emergencyModal')) {
     document.getElementById('emergencyModal').classList.remove('active');
+    document.body.classList.remove('modal-open');
   }
 }
 
@@ -2388,11 +2499,13 @@ function openPlaceDetails(type, id) {
   bodyEl.querySelector('[data-refresh-place]')?.addEventListener('click', () => refreshPlaceIntelligence(type, id));
 
   modal.classList.add('active');
+  document.body.classList.add('modal-open');
 }
 
 function closePlaceDetails(e) {
   if (!e || e.target === document.getElementById('placeDetailModal')) {
     document.getElementById('placeDetailModal').classList.remove('active');
+    document.body.classList.remove('modal-open');
   }
 }
 
@@ -2863,11 +2976,43 @@ if (!state.selectedCity) {
 }
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  let pendingWorker;
+  navigator.serviceWorker.register('./sw.js').then(registration => {
+    const showUpdate = worker => {
+      pendingWorker = worker;
+      document.getElementById('appUpdate')?.removeAttribute('hidden');
+    };
+    if (registration.waiting) showUpdate(registration.waiting);
+    registration.addEventListener('updatefound', () => {
+      const worker = registration.installing;
+      worker?.addEventListener('statechange', () => {
+        if (worker.state === 'installed' && navigator.serviceWorker.controller) showUpdate(worker);
+      });
+    });
+  }).catch(() => {});
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!sessionStorage.getItem('traveltrip_sw_reloaded')) {
+      sessionStorage.setItem('traveltrip_sw_reloaded', '1');
+      window.location.reload();
+    }
+  });
+}
+
+function applyAppUpdate() {
+  if (navigator.serviceWorker.controller) sessionStorage.removeItem('traveltrip_sw_reloaded');
+  const registrationPromise = navigator.serviceWorker.getRegistration();
+  registrationPromise.then(registration => (registration?.waiting)?.postMessage({ type: 'SKIP_WAITING' }));
 }
 
 document.addEventListener('input', event => {
   if (event.target.closest('#sec-budget')) {
     queueMicrotask(() => renderBudgetHealth(Object.values(state.budget).reduce((sum, amount) => sum + (Number(amount) || 0), 0)));
   }
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  closeEmergency();
+  closePlaceDetails();
+  closeScheduleEditor();
 });

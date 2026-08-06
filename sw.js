@@ -1,8 +1,12 @@
-const CACHE_NAME = 'trip-guide-v2';
-const APP_SHELL = ['./', './index.html', './data.js', './assets/js/app.js', './assets/css/app.css', './manifest.webmanifest'];
+const CACHE_NAME = 'traveltrip-v3';
+const APP_SHELL = ['./', './index.html', './data.js', './assets/js/app.js', './assets/css/app.css', './manifest.webmanifest', './assets/icons/app-icon.svg'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
@@ -11,8 +15,10 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  event.respondWith(caches.match(event.request, { ignoreSearch: true }).then(cached => cached || fetch(event.request).then(response => {
-    if (new URL(event.request.url).origin === self.location.origin) caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+    if (response.ok) caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
     return response;
-  }).catch(() => caches.match('./index.html'))));
+  }).catch(() => event.request.mode === 'navigate' ? caches.match('./index.html') : cached)));
 });

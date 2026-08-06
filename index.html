@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -15,9 +15,9 @@
 <link rel="apple-touch-icon" href="assets/icons/app-icon.svg">
 <title>دليل تايلند — بوكيت 2026</title>
     <link rel="stylesheet" href="assets/css/app.css?v=20260806-16">
-<base target="_blank">
 </head>
 <body>
+<div class="app-update" id="appUpdate" hidden role="status"><span>يوجد تحديث جديد للتطبيق</span><button type="button" onclick="applyAppUpdate()">تحديث الآن</button></div>
 
 <div class="city-picker" id="cityPicker">
   <div class="onboarding-aurora onboarding-aurora-one"></div>
@@ -97,8 +97,8 @@
     <div class="weather-top">
       <div class="weather-copy">
         <div class="weather-kicker" id="weatherKicker">LIVE WEATHER</div>
-        <div class="weather-temp" id="weatherTemp">32<span>°</span></div>
-        <div class="weather-desc" id="weatherDesc">مشمس ☀️</div>
+        <div class="weather-temp" id="weatherTemp">--</div>
+        <div class="weather-desc" id="weatherDesc">جارٍ تحميل الطقس…</div>
         <div class="weather-location" id="weatherLocation">بوكيت، تايلند</div>
       </div>
       <div class="weather-visual">
@@ -112,7 +112,7 @@
     <div class="weather-stats" id="weatherStats"></div>
     <div class="weather-actions">
       <button type="button" id="weatherRefreshBtn" onclick="refreshWeather()">تحديث مباشر</button>
-      <a id="weatherSourceLink" href="https://www.tmd.go.th/en/weather/province/phuket">مصدر TMD</a>
+      <a id="weatherSourceLink" href="https://www.tmd.go.th/en/weather/province/phuket" target="_blank" rel="noopener noreferrer">مصدر TMD</a>
     </div>
   </div>
 
@@ -122,6 +122,12 @@
     <div class="countdown-box"><div class="countdown-num" id="cd-minutes">--</div><div class="countdown-label">دقيقة</div></div>
     <div class="countdown-box"><div class="countdown-num" id="cd-seconds">--</div><div class="countdown-label">ثانية</div></div>
   </div>
+
+  <section class="today-card" id="todayCard">
+    <div class="premium-card-head"><div><span>TODAY</span><h2>جدول اليوم</h2></div><button class="mini-btn" type="button" onclick="startMyDay()">ابدأ يومي</button></div>
+    <p id="todayMeta"></p><div id="todayItems"></div>
+    <div class="today-actions"><button class="action-btn gray" type="button" onclick="showRainPlan()">خطة بديلة للمطر</button><button class="action-btn blue" type="button" onclick="showNowSuggestions()">وين نروح الحين؟</button></div>
+  </section>
 
   <section class="home-directory-panel">
     <div class="home-section-row">
@@ -325,6 +331,11 @@
       <input id="tripDataImport" type="file" accept="application/json" onchange="importTripData(this)">
     </div>
   </div>
+  <div class="budget-card expense-card">
+    <div class="premium-card-head"><div><span>SPENDING</span><h3>المصروف الفعلي</h3></div><button class="mini-btn" type="button" onclick="toggleExpenseForm()">تسجيل مصروف</button></div>
+    <form id="expenseForm" class="expense-form" hidden onsubmit="saveExpense(event)"><input required name="amount" type="number" min="0" step="0.01" placeholder="المبلغ"><select name="category"><option>مطاعم</option><option>مواصلات</option><option>تسوق</option><option>أنشطة</option><option>فندق</option><option>طيران</option><option>أخرى</option></select><select name="payment"><option>كاش</option><option>بطاقة</option><option>تحويل</option></select><input name="note" maxlength="120" placeholder="ملاحظة"><button class="action-btn blue">حفظ المصروف</button></form>
+    <div id="expenseSummary"></div><div id="expenseList"></div>
+  </div>
   <div class="budget-card">
     <h3>إعادة الضبط</h3>
     <p class="detail-card-sub">يمكنك إعادة بيانات المدينة الحالية إلى الخطة الافتراضية، أو مسح بيانات التطبيق بالكامل من هذا الجهاز.</p>
@@ -433,6 +444,7 @@
       </div>
     </div>
 
+    <p class="emergency-verify">يرجى التحقق من البيانات الرسمية قبل السفر. آخر مراجعة داخل التطبيق: أغسطس 2026.</p>
     <div class="embassy-card">
       <h3>🇸🇦 السفارة السعودية — بانكوك</h3>
       <div class="detail-row"><span class="detail-row-label">الهاتف</span><span class="detail-row-value">+66 2 274 2222</span></div>
@@ -555,6 +567,6 @@
 </div>
 
 <script src="data.js?v=20260806-15"></script>
-  <script src="assets/js/app.js?v=20260806-23"></script>
+  <script src="assets/js/app.js?v=20260806-24"></script>
 </body>
 </html>
