@@ -43,7 +43,8 @@ export default async function handler(req, res) {
 
   const prompt = `Estimate the typical current per-person visitor cost in Thai baht for this Thailand travel selection.\nPlace: ${place}\nCity: ${city}\nCategory: ${category}\nExisting price hint: ${priceHint || 'none'}\nReturn JSON only with: low (integer THB), high (integer THB), note (Arabic, max 16 words). Use a realistic range. For malls without a fixed entry cost, return 0 for both values and say that spending varies. Do not invent a booking or live availability.`;
   try {
-    const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const configuredModel = cleanText(process.env.GEMINI_MODEL) || 'gemini-3.6-flash';
+    const model = configuredModel === 'gemini-2.5-flash' ? 'gemini-3.6-flash' : configuredModel;
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
       method: 'POST',
       headers: {
@@ -53,7 +54,6 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0.2,
           maxOutputTokens: 120,
           responseMimeType: 'application/json'
         }

@@ -36,6 +36,13 @@ test('GitHub Pages uses the public serverless price endpoint', async () => {
   assert.ok(html.includes('https://traveltrip-traveltrip.vercel.app/api/travel-price'), 'the static site must not call a nonexistent GitHub Pages API path');
 });
 
+test('Gemini endpoint uses the current stable Flash model', async () => {
+  const endpoint = await readProjectFile('api/travel-price.js');
+
+  assert.ok(endpoint.includes("'gemini-3.6-flash'"), 'the endpoint must use a currently available Gemini model');
+  assert.ok(!endpoint.includes('temperature:'), 'new Gemini models must not receive deprecated sampling parameters');
+});
+
 test('client-side source files have valid JavaScript syntax', async () => {
   const [dataSource, appSource] = await Promise.all([readProjectFile('data.js'), readProjectFile('assets/js/app.js')]);
 
