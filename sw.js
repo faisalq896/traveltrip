@@ -1,10 +1,9 @@
-const CACHE_NAME = 'traveltrip-v4';
+const CACHE_NAME = 'traveltrip-v5';
 const APP_SHELL = ['./', './index.html', './data.js', './assets/js/app.js', './assets/css/app.css', './manifest.webmanifest', './assets/icons/app-icon.svg'];
 
 self.addEventListener('install', event => {
-  // Keep the existing app active until the user explicitly accepts the update.
-  // Calling skipWaiting here caused unexpected refreshes while people were using the app.
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
+  // Activate silently. The client deliberately does not reload, so an update never interrupts a trip.
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('message', event => {

@@ -17,11 +17,16 @@ test('the app shell loads data before application logic', async () => {
   assert.ok(html.indexOf(dataReference) < html.indexOf(appReference), 'data must load before application logic');
 });
 
-test('service worker waits for an explicit update confirmation', async () => {
-  const worker = await readProjectFile('sw.js');
+test('service worker updates silently without interrupting the current trip', async () => {
+  const [worker, appSource, html] = await Promise.all([
+    readProjectFile('sw.js'),
+    readProjectFile('assets/js/app.js'),
+    readProjectFile('index.html')
+  ]);
 
-  assert.ok(worker.includes("event.data?.type === 'SKIP_WAITING'"), 'service worker must support explicit activation');
-  assert.ok(!worker.includes("then(() => self.skipWaiting())"), 'service worker must not force a refresh during installation');
+  assert.ok(worker.includes('self.skipWaiting()'), 'service worker must activate the new cache silently');
+  assert.ok(!appSource.includes("serviceWorker.addEventListener('controllerchange'"), 'the app must never reload when a service worker activates');
+  assert.ok(!html.includes('id="appUpdate"'), 'the update prompt must not be shown');
 });
 
 test('client-side source files have valid JavaScript syntax', async () => {

@@ -3017,35 +3017,8 @@ if (!state.selectedCity) {
   enterCity(state.selectedCity);
 }
 
-let refreshForAppUpdate = false;
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').then(registration => {
-    const showUpdate = worker => {
-      if (!worker) return;
-      document.getElementById('appUpdate')?.removeAttribute('hidden');
-    };
-    if (registration.waiting) showUpdate(registration.waiting);
-    registration.addEventListener('updatefound', () => {
-      const worker = registration.installing;
-      worker?.addEventListener('statechange', () => {
-        if (worker.state === 'installed' && navigator.serviceWorker.controller) showUpdate(worker);
-      });
-    });
-  }).catch(() => {});
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!refreshForAppUpdate) return;
-    refreshForAppUpdate = false;
-    window.location.reload();
-  });
-}
-
-function applyAppUpdate() {
-  navigator.serviceWorker.getRegistration().then(registration => {
-    const worker = registration?.waiting;
-    if (!worker) return registration?.update();
-    refreshForAppUpdate = true;
-    worker.postMessage({ type: 'SKIP_WAITING' });
-  });
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
 
 document.addEventListener('input', event => {
