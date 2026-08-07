@@ -33,7 +33,7 @@ export default async function handler(req, res) {
   if (!setCorsHeaders(req, res)) return res.status(403).json({ error: 'Origin is not allowed.' });
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed.' });
-  if (!process.env.OPENAI_API_KEY) return res.status(503).json({ error: 'AI estimation is not configured.' });
+  if (!process.env.GEMINI_API_KEY) return res.status(503).json({ error: 'Gemini price estimation is not configured.' });
 
   const place = cleanText(req.body?.place);
   const city = cleanText(req.body?.city);
@@ -43,17 +43,20 @@ export default async function handler(req, res) {
 
   const prompt = `Estimate the typical current per-person visitor cost in Thai baht for this Thailand travel selection.\nPlace: ${place}\nCity: ${city}\nCategory: ${category}\nExisting price hint: ${priceHint || 'none'}\nReturn JSON only with: low (integer THB), high (integer THB), note (Arabic, max 16 words). Use a realistic range. For malls without a fixed entry cost, return 0 for both values and say that spending varies. Do not invent a booking or live availability.`;
   try {
-    const response = await fetch('https://api.openai.com/v1/responses', {
+    const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'x-goog-api-key': process.env.GEMINI_API_KEY
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || 'gpt-5-mini',
-        input: prompt,
-        max_output_tokens: 120,
-        store: false
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 120,
+          responseMimeType: 'application/json'
+        }
       })
     });
     if (!response.ok) {
@@ -61,16 +64,16 @@ export default async function handler(req, res) {
       const providerError = providerPayload?.error || {};
       const status = response.status === 401 || response.status === 429 ? response.status : 502;
       const reason = response.status === 401
-        ? 'OpenAI API key is invalid or inactive.'
+        ? 'Gemini API key is invalid or inactive.'
         : response.status === 429
-          ? 'OpenAI account has no available API quota or billing limit was reached.'
+          ? 'Gemini free-tier rate limit was reached. Try again later.'
           : providerError.type === 'invalid_request_error'
-            ? 'OpenAI rejected the requested model or request configuration.'
-            : 'AI provider request failed.';
+            ? 'Gemini rejected the requested model or request configuration.'
+            : 'Gemini provider request failed.';
       return res.status(status).json({ error: reason });
     }
     const payload = await response.json();
-    const result = readJson(payload.output_text);
+    const result = readJson(payload.candidates?.[0]?.content?.parts?.[0]?.text);
     const low = Number(result?.low);
     const high = Number(result?.high);
     if (!Number.isFinite(low) || !Number.isFinite(high) || low < 0 || high < low || high > 100000) {
