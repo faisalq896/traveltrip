@@ -56,7 +56,19 @@ export default async function handler(req, res) {
         store: false
       })
     });
-    if (!response.ok) return res.status(502).json({ error: 'AI provider request failed.' });
+    if (!response.ok) {
+      const providerPayload = await response.json().catch(() => ({}));
+      const providerError = providerPayload?.error || {};
+      const status = response.status === 401 || response.status === 429 ? response.status : 502;
+      const reason = response.status === 401
+        ? 'OpenAI API key is invalid or inactive.'
+        : response.status === 429
+          ? 'OpenAI account has no available API quota or billing limit was reached.'
+          : providerError.type === 'invalid_request_error'
+            ? 'OpenAI rejected the requested model or request configuration.'
+            : 'AI provider request failed.';
+      return res.status(status).json({ error: reason });
+    }
     const payload = await response.json();
     const result = readJson(payload.output_text);
     const low = Number(result?.low);
