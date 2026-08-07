@@ -1,4 +1,4 @@
-const CACHE_NAME = 'traveltrip-v6';
+const CACHE_NAME = 'traveltrip-v7';
 const APP_SHELL = ['./', './index.html', './data.js', './assets/js/app.js', './assets/css/app.css', './manifest.webmanifest', './assets/icons/app-icon.svg'];
 
 self.addEventListener('install', event => {

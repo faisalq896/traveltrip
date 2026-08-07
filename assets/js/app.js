@@ -1391,7 +1391,6 @@ function renderSchedule() {
     </div>
   `).join('');
   renderTripMap();
-  refreshTravelAssistant();
   updateHomeSummary();
 }
 
@@ -1411,7 +1410,8 @@ function showRainPlan() {
   const answer = document.getElementById('travelAiAnswer');
   if (!answer) return;
   answer.hidden = false;
-  answer.innerHTML = `<strong>${ui('خطة بديلة للمطر', 'Rainy-day plan')}</strong>${indoor.map(item => `<button type="button" onclick="openMap('${escapeHtml(item.name)}')"><span>${escapeHtml(item.name)}</span><small>${escapeHtml(localizeContent(item.type || item.hours || 'مكان داخلي'))}</small></button>`).join('')}`;
+  answer.innerHTML = `<strong>${ui('خطة بديلة للمطر', 'Rainy-day plan')}</strong>${indoor.map(item => `<button type="button" data-map-query="${escapeHtml(item.name)}"><span>${escapeHtml(item.name)}</span><small>${escapeHtml(localizeContent(item.type || item.hours || 'مكان داخلي'))}</small></button>`).join('')}`;
+  answer.querySelectorAll('[data-map-query]').forEach(button => button.addEventListener('click', () => openMap(button.dataset.mapQuery)));
   answer.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 function showNowSuggestions() {
@@ -1422,7 +1422,8 @@ function showNowSuggestions() {
   const answer = document.getElementById('travelAiAnswer');
   if (!answer) return;
   answer.hidden = false;
-  answer.innerHTML = `<strong>${ui('أماكن مناسبة الآن', 'Good places right now')}</strong>${picks.map(item => `<button type="button" onclick="openMap('${escapeHtml(item.name)}')"><span>${escapeHtml(item.name)}</span><small>${escapeHtml(localizeContent(item.type || item.company || 'مكان مقترح'))}</small></button>`).join('')}`;
+  answer.innerHTML = `<strong>${ui('أماكن مناسبة الآن', 'Good places right now')}</strong>${picks.map(item => `<button type="button" data-map-query="${escapeHtml(item.name)}"><span>${escapeHtml(item.name)}</span><small>${escapeHtml(localizeContent(item.type || item.company || 'مكان مقترح'))}</small></button>`).join('')}`;
+  answer.querySelectorAll('[data-map-query]').forEach(button => button.addEventListener('click', () => openMap(button.dataset.mapQuery)));
 }
 
 function getPlannedStops() {
@@ -1448,23 +1449,6 @@ function refreshTripMap() {
   meta.textContent = featured.length
     ? ui(`${featured.length} محطات قادمة — اضغط أي محطة لعرضها.`, `${featured.length} upcoming stops — tap a stop to view it.`)
     : ui('خريطة تفاعلية جاهزة لرحلتك.', 'Your interactive trip map is ready.');
-}
-
-function getAssistantSuggestion() {
-  const { activities, restaurants, cafes, malls } = getCityData();
-  const cityName = state.selectedCity === 'bangkok' ? 'Bangkok' : 'Phuket';
-  const weather = state.weather || {};
-  const planned = getPlannedStops();
-  const catalog = [...activities, ...restaurants, ...cafes, ...malls];
-  const alreadyPlanned = new Set(planned.map(item => item.title));
-  const pool = catalog.filter(item => !alreadyPlanned.has(item.name));
-  const rainy = Number(weather.rain) > 0 || [51, 53, 55, 61, 63, 65, 80, 81, 82, 95].includes(Number(weather.code));
-  const preferred = rainy ? [...malls, ...cafes, ...restaurants] : [...activities, ...restaurants, ...cafes, ...malls];
-  const place = preferred.find(item => !alreadyPlanned.has(item.name)) || pool[0];
-  const weatherHint = rainy
-    ? ui('الطقس يميل للمطر، لذلك رشّحت لك محطة مريحة داخلية أو قريبة.', 'Rain is likely, so this suggestion is comfortable indoors or nearby.')
-    : ui('الجو مناسب للاستكشاف، لذلك رشّحت لك محطة تضيف تجربة جديدة ليومك.', 'The weather suits exploring, so this adds a fresh experience to your day.');
-  return { place, text: place ? `${weatherHint} ${ui(`اقتراحي في ${cityName}: ${place.name}.`, `My ${cityName} pick: ${place.name}.`)}` : ui('أضف بيانات إلى خطتك لنصنع اقتراحاً جديداً.', 'Add trip details so I can make a fresh suggestion.') };
 }
 
 async function askTravelAssistant(event) {
@@ -1600,29 +1584,6 @@ async function shareTripPdf() {
     documentNode.remove();
     if (button) { button.disabled = false; button.textContent = originalText; }
   }
-}
-
-function refreshTravelAssistant() {
-  const result = getAssistantSuggestion();
-  const text = document.getElementById('travelAiText');
-  const action = document.getElementById('travelAiAction');
-  if (!text || !action) return;
-  text.textContent = result.text;
-  action.disabled = !result.place;
-  action.dataset.placeName = result.place?.name || '';
-  action.dataset.placeSub = result.place?.type || result.place?.company || '';
-}
-
-function applyAssistantSuggestion() {
-  const button = document.getElementById('travelAiAction');
-  const title = button?.dataset.placeName;
-  if (!title) return;
-  if (!state.schedule.length) state.schedule.push({ day: 1, date: suggestedScheduleDate(), city: getCityConfig().label, hotel: '', items: [] });
-  const targetDay = state.schedule.find(day => day.items.length < 5) || state.schedule.at(-1);
-  targetDay.items.push({ time: '16:00', title, sub: button.dataset.placeSub || '', done: false });
-  sortScheduleItems(targetDay);
-  saveState();
-  renderSchedule();
 }
 
 function toggleSchedule(dayIdx, itemIdx) {
