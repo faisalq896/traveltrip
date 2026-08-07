@@ -24,9 +24,16 @@ test('service worker updates silently without interrupting the current trip', as
     readProjectFile('index.html')
   ]);
 
-  assert.ok(worker.includes('self.skipWaiting()'), 'service worker must activate the new cache silently');
+  assert.ok(!worker.includes('self.skipWaiting()'), 'service worker must not replace a running version mid-session');
+  assert.ok(worker.includes("event.request.mode === 'navigate'"), 'page navigations must check the network for a new version');
   assert.ok(!appSource.includes("serviceWorker.addEventListener('controllerchange'"), 'the app must never reload when a service worker activates');
   assert.ok(!html.includes('id="appUpdate"'), 'the update prompt must not be shown');
+});
+
+test('GitHub Pages uses the public serverless price endpoint', async () => {
+  const html = await readProjectFile('index.html');
+
+  assert.ok(html.includes('https://traveltrip-traveltrip.vercel.app/api/travel-price'), 'the static site must not call a nonexistent GitHub Pages API path');
 });
 
 test('client-side source files have valid JavaScript syntax', async () => {
