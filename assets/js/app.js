@@ -413,6 +413,28 @@ function sanitizeExchangeRate(value) {
   return Number.isFinite(rate) && rate > 0 && rate <= 100000 ? rate : 110;
 }
 
+function sanitizeExpenses(value, key) {
+  if (!Array.isArray(value)) {
+    recordStorageRecovery(key);
+    return [];
+  }
+  const expenses = value.filter(item => isPlainObject(item)).map(item => {
+    const amount = Number(item.amount);
+    if (!Number.isFinite(amount) || amount < 0 || amount > 10000000) return null;
+    return {
+      id: safeText(String(item.id || ''), 80) || `expense-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      amount: Math.round(amount * 100) / 100,
+      category: safeText(item.category, 40),
+      payment: safeText(item.payment, 40),
+      note: safeText(item.note, 300),
+      city: CITY_CONFIG[item.city] ? item.city : 'phuket',
+      date: safeText(item.date, 20)
+    };
+  }).filter(Boolean);
+  if (expenses.length !== value.length) recordStorageRecovery(key);
+  return expenses;
+}
+
 const legacyFavorites = sanitizeFavorites(readStoredJson('tg_favorites', []), 'tg_favorites');
 const savedPacking = sanitizePacking(readStoredJson('tg_packing', null), 'tg_packing');
 const savedTheme = readStoredText('tg_theme', 'light');
@@ -434,7 +456,7 @@ let state = {
   notes: safeText(readStoredText('tg_notes', ''), 20000),
   budget: sanitizeBudget(readStoredJson('tg_budget', {}), 'tg_budget'),
   budgetLimit: Math.max(0, Number(readStoredText('tg_budget_limit', '0')) || 0),
-  expenses: Array.isArray(readStoredJson('tg_expenses', [])) ? readStoredJson('tg_expenses', []).filter(item => isPlainObject(item) && Number(item.amount) >= 0) : [],
+  expenses: sanitizeExpenses(readStoredJson('tg_expenses', []), 'tg_expenses'),
   weather: {
     temp: null,
     desc: 'جاري التحديث...',
@@ -2585,11 +2607,14 @@ function buildTripExport() {
     includesPhotos: false,
     global: {
       theme: state.theme,
+      language: state.language,
       selectedCity: state.selectedCity,
       currentSection: state.currentSection,
       packing: state.packing,
       notes: state.notes,
       budget: state.budget,
+      budgetLimit: state.budgetLimit,
+      expenses: state.expenses,
       exchangeRate: state.exchangeRate
     },
     cities
@@ -2627,11 +2652,14 @@ function normalizeImportedGlobalState(value) {
   const section = validSections.has(value.currentSection) ? value.currentSection : 'home';
   return {
     theme: value.theme === 'dark' ? 'dark' : 'light',
+    language: value.language === 'ar' ? 'ar' : 'en',
     selectedCity,
     currentSection: section,
     packing,
     notes: safeText(value.notes, 20000),
     budget: sanitizeBudget(value.budget, 'import_budget'),
+    budgetLimit: Math.max(0, Number(value.budgetLimit) || 0),
+    expenses: sanitizeExpenses(value.expenses, 'import_expenses'),
     exchangeRate: sanitizeExchangeRate(value.exchangeRate)
   };
 }
@@ -2685,11 +2713,15 @@ async function importTripData(input) {
 
   const globalSaved = [
     ['tg_theme', globalState.theme],
+    ['tg_language', globalState.language],
+    ['tg_language_initialized', '1'],
     ['tg_city', globalState.selectedCity || ''],
     ['tg_section', globalState.currentSection],
     ['tg_packing', JSON.stringify(globalState.packing)],
     ['tg_notes', globalState.notes],
     ['tg_budget', JSON.stringify(globalState.budget)],
+    ['tg_budget_limit', String(globalState.budgetLimit)],
+    ['tg_expenses', JSON.stringify(globalState.expenses)],
     ['tg_rate', String(globalState.exchangeRate)]
   ].every(([key, value]) => writeStoredValue(key, value));
   const citiesSaved = Object.entries(citySnapshots).every(([cityKey, snapshot]) => writeCitySnapshot(cityKey, snapshot));
@@ -2699,14 +2731,18 @@ async function importTripData(input) {
   }
 
   state.theme = globalState.theme;
+  state.language = globalState.language;
   state.selectedCity = globalState.selectedCity;
   state.currentSection = globalState.currentSection;
   state.packing = globalState.packing;
   state.notes = globalState.notes;
   state.budget = globalState.budget;
+  state.budgetLimit = globalState.budgetLimit;
+  state.expenses = globalState.expenses;
   state.exchangeRate = globalState.exchangeRate;
   loadCityScopedState(state.selectedCity || 'phuket');
   applyTheme();
+  applyLanguage();
   applyCityIdentity();
   setCityBadge();
   document.getElementById('notesArea').value = state.notes;
@@ -2729,6 +2765,8 @@ function resetCurrentCityData() {
     return;
   }
   loadCityScopedState(cityKey);
+  state.expenses = state.expenses.filter(expense => expense.city !== cityKey);
+  saveState();
   applyCityIdentity();
   renderWeather();
   showSection('settings');
@@ -2745,7 +2783,7 @@ async function resetAllAppData() {
     cityScopedKey('tg_visited', cityKey),
     cityScopedKey('tg_weather', cityKey)
   ]);
-  const globalKeys = ['tg_theme', 'tg_city', 'tg_section', 'tg_favorites', 'tg_packing', 'tg_notes', 'tg_budget', 'tg_weather', 'tg_rate', 'tg_photos'];
+  const globalKeys = ['tg_theme', 'tg_language', 'tg_language_initialized', 'tg_city', 'tg_section', 'tg_favorites', 'tg_packing', 'tg_notes', 'tg_budget', 'tg_budget_limit', 'tg_expenses', 'tg_weather', 'tg_rate', 'tg_photos'];
   const stateRemoved = [...globalKeys, ...cityKeys].every(removeStoredValue);
   try {
     await clearPhotoLibrary();
@@ -2755,18 +2793,22 @@ async function resetAllAppData() {
   if (!stateRemoved) notifyStorageIssue('تمت إعادة ضبط التطبيق، لكن تعذر حذف بعض البيانات من تخزين الجهاز.');
 
   state.theme = 'light';
+  state.language = 'en';
   state.selectedCity = '';
   state.currentSection = 'home';
   state.favorites = [];
   state.packing = defaultPacking.map(text => ({ text, done: false }));
   state.notes = '';
   state.budget = {};
+  state.budgetLimit = 0;
+  state.expenses = [];
   state.weather = {};
   state.exchangeRate = 110;
   state.photos = [];
   state.schedule = [];
   state.visited = [];
   applyTheme();
+  applyLanguage();
   document.getElementById('notesArea').value = '';
   openCityPicker();
   alert('تم مسح جميع بيانات التطبيق من هذا الجهاز.');
@@ -2975,11 +3017,11 @@ if (!state.selectedCity) {
   enterCity(state.selectedCity);
 }
 
+let refreshForAppUpdate = false;
 if ('serviceWorker' in navigator) {
-  let pendingWorker;
   navigator.serviceWorker.register('./sw.js').then(registration => {
     const showUpdate = worker => {
-      pendingWorker = worker;
+      if (!worker) return;
       document.getElementById('appUpdate')?.removeAttribute('hidden');
     };
     if (registration.waiting) showUpdate(registration.waiting);
@@ -2991,17 +3033,19 @@ if ('serviceWorker' in navigator) {
     });
   }).catch(() => {});
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!sessionStorage.getItem('traveltrip_sw_reloaded')) {
-      sessionStorage.setItem('traveltrip_sw_reloaded', '1');
-      window.location.reload();
-    }
+    if (!refreshForAppUpdate) return;
+    refreshForAppUpdate = false;
+    window.location.reload();
   });
 }
 
 function applyAppUpdate() {
-  if (navigator.serviceWorker.controller) sessionStorage.removeItem('traveltrip_sw_reloaded');
-  const registrationPromise = navigator.serviceWorker.getRegistration();
-  registrationPromise.then(registration => (registration?.waiting)?.postMessage({ type: 'SKIP_WAITING' }));
+  navigator.serviceWorker.getRegistration().then(registration => {
+    const worker = registration?.waiting;
+    if (!worker) return registration?.update();
+    refreshForAppUpdate = true;
+    worker.postMessage({ type: 'SKIP_WAITING' });
+  });
 }
 
 document.addEventListener('input', event => {
