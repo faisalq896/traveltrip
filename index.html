@@ -151,7 +151,7 @@
     <div class="itinerary-kicker">خطتك، بتفاصيلها الجميلة</div>
     <div class="section-head-row">
       <div><div class="section-header">خطة رحلتك</div><p>كل يوم، في مكانه ووقته المناسب.</p></div>
-      <div class="itinerary-head-actions"><button class="mini-btn ai-launch-mini" type="button" onclick="openTravelAi()">✦ مساعد AI</button><button class="mini-btn" type="button" onclick="addScheduleDay()">+ يوم</button></div>
+      <div class="itinerary-head-actions"><button class="mini-btn pdf-share-mini" id="shareTripPdfButton" type="button" onclick="shareTripPdf()">↗ مشاركة PDF</button><button class="mini-btn ai-launch-mini" type="button" onclick="openTravelAi()">✦ مساعد AI</button><button class="mini-btn" type="button" onclick="addScheduleDay()">+ يوم</button></div>
     </div>
     <div class="itinerary-stats">
       <div><strong id="scheduleDaysStat">0</strong><span>أيام</span></div>
@@ -589,11 +589,12 @@
 </div>
 
 <script src="data.js?v=20260806-15"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.14.0/html2pdf.bundle.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
     window.TRAVELTRIP_CONFIG = {
       aiPriceEndpoint: 'https://traveltrip-traveltrip.vercel.app/api/travel-price'
     };
   </script>
-  <script src="assets/js/app.js?v=20260808-1"></script>
+  <script src="assets/js/app.js?v=20260808-2"></script>
 </body>
 </html>

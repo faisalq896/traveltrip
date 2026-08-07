@@ -2249,6 +2249,7 @@ body.modal-open { overflow: hidden; }
 .itinerary-page-intro .mini-btn { color: #174989; background: #fff; box-shadow: none; }
 .itinerary-head-actions { display: flex; gap: 7px; align-items: center; }
 .itinerary-page-intro .ai-launch-mini { color: #fff; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.24); }
+.itinerary-page-intro .pdf-share-mini { color: #fff; background: rgba(9,32,60,0.24); border: 1px solid rgba(255,255,255,0.22); }
 .itinerary-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .itinerary-stats div { padding: 10px 7px; border: 1px solid rgba(255,255,255,0.15); border-radius: 15px; background: rgba(255,255,255,0.12); text-align: center; }
 .itinerary-stats strong { display: block; font-size: 18px; letter-spacing: -0.03em; }
@@ -2293,6 +2294,21 @@ body.modal-open { overflow: hidden; }
 .ai-composer { position: sticky; bottom: 0; z-index: 2; padding: 11px 0 4px; background: color-mix(in srgb, var(--ios-surface) 94%, transparent); backdrop-filter: blur(16px); }
 .ai-disclaimer { margin: 6px 0 0; color: var(--premium-muted); font-size: 0.64rem; text-align: center; }
 @media (max-width: 420px) { .itinerary-head-actions { align-items: stretch; flex-direction: column; } .ai-suggestion-card { grid-template-columns: 1fr; } .ai-suggestion-card button { width: 100%; } }
+.trip-pdf-document { position: fixed; left: -20000px; top: 0; z-index: -1; width: 794px; color: #14283b; background: #f4f8fb; font-family: Arial, Tahoma, sans-serif; }
+.trip-pdf-document * { box-sizing: border-box; }
+.pdf-cover { position: relative; display: flex; min-height: 1122px; padding: 64px; flex-direction: column; color: #fff; background: linear-gradient(145deg,#0c2848 0%,#0a7698 54%,#6455bd 100%); page-break-after: always; overflow: hidden; }
+.pdf-cover::before,.pdf-cover::after { content: ''; position: absolute; border: 46px solid rgba(255,255,255,0.07); border-radius: 50%; }
+.pdf-cover::before { width: 390px; height: 390px; top: -190px; left: -110px; }.pdf-cover::after { width: 520px; height: 520px; right: -260px; bottom: -190px; }
+.pdf-brand { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 900; letter-spacing: 0.12em; }
+.pdf-brand span { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 13px; color: #6054d8; background: #fff; }
+.pdf-cover-copy { position: relative; z-index: 1; margin: auto 0; }.pdf-cover-copy p { margin: 0 0 8px; color: rgba(255,255,255,0.72); font-size: 18px; }.pdf-cover-copy h1 { margin: 0; font-size: 72px; line-height: 1; }.pdf-cover-copy strong { display: block; margin-top: 18px; font-size: 23px; }
+.pdf-cover-meta { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }.pdf-cover-meta div { padding: 17px; border: 1px solid rgba(255,255,255,0.18); border-radius: 18px; background: rgba(255,255,255,0.1); }.pdf-cover-meta b,.pdf-cover-meta span { display: block; }.pdf-cover-meta b { font-size: 27px; }.pdf-cover-meta span { margin-top: 4px; color: rgba(255,255,255,0.7); font-size: 12px; }
+.pdf-cover footer { position: relative; z-index: 1; display: flex; justify-content: space-between; margin-top: 30px; color: rgba(255,255,255,0.65); font-size: 11px; direction: ltr; }
+.pdf-summary,.pdf-day,.pdf-closing { margin: 42px; padding: 28px; border-radius: 25px; background: #fff; box-shadow: 0 12px 32px rgba(20,63,92,0.08); page-break-inside: avoid; }
+.pdf-summary > div:first-child span,.pdf-day header span { color: #0b83a7; font-size: 11px; font-weight: 900; letter-spacing: 0.08em; }.pdf-summary h2 { margin: 7px 0 23px; font-size: 27px; }.pdf-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }.pdf-summary-grid p { margin: 0; padding: 15px; border-radius: 14px; background: #f1f7fa; }.pdf-summary-grid b,.pdf-summary-grid p { display: block; }.pdf-summary-grid b { margin-bottom: 5px; font-size: 18px; }.pdf-summary-grid p { color: #668094; font-size: 11px; }
+.pdf-day header { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 18px; border-bottom: 2px solid #edf3f6; }.pdf-day header h2 { margin: 4px 0 0; font-size: 26px; }.pdf-day header p { margin: 0; color: #6b8293; font-size: 12px; line-height: 1.6; text-align: end; }
+.pdf-stops article { display: grid; grid-template-columns: 64px minmax(0,1fr) 24px; gap: 15px; align-items: start; padding: 15px 0; border-bottom: 1px solid #edf2f5; }.pdf-stops article:last-child { border-bottom: 0; }.pdf-stops time { padding: 7px; border-radius: 9px; color: #08799d; background: #e7f6fa; font-size: 12px; font-weight: 900; text-align: center; direction: ltr; }.pdf-stops h3 { margin: 0; font-size: 16px; }.pdf-stops p { margin: 4px 0; color: #6a8192; font-size: 11px; }.pdf-stops small { color: #5e54c9; font-size: 10px; }.pdf-stops article > b { color: #25a967; font-size: 18px; }.pdf-empty { color: #7c909e; text-align: center; }
+.pdf-closing { display: flex; min-height: 320px; align-items: center; justify-content: center; flex-direction: column; text-align: center; background: linear-gradient(145deg,#eaf8fb,#f0efff); }.pdf-closing .pdf-brand { color: #173551; }.pdf-closing .pdf-brand span { color: #fff; background: linear-gradient(135deg,#0b89ad,#6555d0); }.pdf-closing h2 { margin: 25px 0 8px; font-size: 30px; }.pdf-closing p { max-width: 520px; color: #60798c; line-height: 1.8; }
 .itinerary-sheet .modal-header { align-items: flex-start; }
 .itinerary-field { display: block; color: var(--premium-muted); font-size: 12px; font-weight: 750; margin: 0 0 14px; }
 .itinerary-field input, .itinerary-field select, .itinerary-field textarea {

@@ -1547,6 +1547,61 @@ function addTravelAiSuggestion(index) {
   if (button) { button.disabled = true; button.textContent = ui('✓ تمت الإضافة', '✓ Added'); }
 }
 
+function buildTripPdfDocument() {
+  const city = getCityConfig();
+  const totalStops = state.schedule.reduce((total, day) => total + day.items.length, 0);
+  const completedStops = state.schedule.reduce((total, day) => total + day.items.filter(item => item.done).length, 0);
+  const estimatedTotal = state.schedule.reduce((total, day) => total + day.items.reduce((sum, item) => sum + (Number(item.estimatedCost) || 0), 0), 0);
+  const days = state.schedule.map(day => `
+    <section class="pdf-day">
+      <header><div><span>${ui('اليوم', 'Day')} ${escapeHtml(day.day)}</span><h2>${escapeHtml(localizeContent(day.date))}</h2></div><p>${escapeHtml(localizeContent(day.city))}<br>${escapeHtml(localizeContent(day.hotel || ui('بدون فندق محدد', 'No hotel selected')))}</p></header>
+      <div class="pdf-stops">${day.items.length ? day.items.map(item => `<article><time>${escapeHtml(item.time)}</time><div><h3>${escapeHtml(localizeContent(item.title))}</h3><p>${escapeHtml(localizeContent(item.sub || ''))}</p>${item.estimatedCost !== null && item.estimatedCost !== undefined ? `<small>${ui('التكلفة التقديرية', 'Estimated cost')}: ${Number(item.estimatedCost).toLocaleString()} THB</small>` : ''}</div><b>${item.done ? '✓' : ''}</b></article>`).join('') : `<p class="pdf-empty">${ui('لا توجد محطات مضافة.', 'No stops added.')}</p>`}</div>
+    </section>`).join('');
+  const wrapper = document.createElement('div');
+  wrapper.className = 'trip-pdf-document';
+  wrapper.dir = state.language === 'ar' ? 'rtl' : 'ltr';
+  wrapper.innerHTML = `
+    <section class="pdf-cover">
+      <div class="pdf-brand"><span>✦</span> TRAVELTRIP</div>
+      <div class="pdf-cover-copy"><p>${ui('خطتك الخاصة إلى', 'Your personal trip to')}</p><h1>${escapeHtml(state.language === 'en' ? city.key.toUpperCase() : city.label)}</h1><strong>${ui('رحلة مرتبة. ذكريات أجمل.', 'A clearer plan. Better memories.')}</strong></div>
+      <div class="pdf-cover-meta"><div><b>${state.schedule.length}</b><span>${ui('أيام', 'Days')}</span></div><div><b>${totalStops}</b><span>${ui('محطات', 'Stops')}</span></div><div><b>${completedStops}</b><span>${ui('منجز', 'Done')}</span></div></div>
+      <footer><span>${new Date().toLocaleDateString(state.language === 'en' ? 'en-GB' : 'ar-KW')}</span><span>faisalq896.github.io/traveltrip</span></footer>
+    </section>
+    <section class="pdf-summary"><div><span>${ui('ملخص الرحلة', 'TRIP SUMMARY')}</span><h2>${ui('كل تفاصيل رحلتك في مكان واحد', 'Everything for your trip in one place')}</h2></div><div class="pdf-summary-grid"><p><b>${city.label}</b>${ui('الوجهة', 'Destination')}</p><p><b>${state.schedule.length}</b>${ui('عدد الأيام', 'Trip days')}</p><p><b>${estimatedTotal.toLocaleString()} THB</b>${ui('تكلفة الأنشطة التقديرية', 'Estimated activities')}</p><p><b>${state.weather.temp ?? '--'}°</b>${ui('آخر درجة حرارة محفوظة', 'Last saved temperature')}</p></div></section>
+    ${days}
+    <section class="pdf-closing"><div class="pdf-brand"><span>✦</span> TRAVELTRIP</div><h2>${ui('رحلة سعيدة وآمنة', 'Have a safe and wonderful trip')}</h2><p>${ui('شارك هذه الخطة مع رفقاء الرحلة وخلو كل شخص يعرف المحطة القادمة.', 'Share this plan with your travel companions so everyone knows what comes next.')}</p></section>`;
+  return wrapper;
+}
+
+async function shareTripPdf() {
+  const button = document.getElementById('shareTripPdfButton');
+  if (!state.schedule.length) { notifyStorageIssue(ui('أضف يوماً واحداً على الأقل قبل إنشاء PDF.', 'Add at least one day before creating a PDF.')); return; }
+  if (typeof window.html2pdf !== 'function') { notifyStorageIssue(ui('تعذر تحميل أداة PDF. تحقق من الإنترنت وحاول مرة أخرى.', 'The PDF tool could not load. Check your connection and try again.')); return; }
+  const originalText = button?.textContent;
+  if (button) { button.disabled = true; button.textContent = ui('جاري إنشاء PDF...', 'Creating PDF...'); }
+  const documentNode = buildTripPdfDocument();
+  document.body.appendChild(documentNode);
+  try {
+    const filename = `TRAVELTRIP-${currentCityKey()}-${new Date().toISOString().slice(0, 10)}.pdf`;
+    const worker = window.html2pdf().set({ margin: 0, filename, image: { type: 'jpeg', quality: 0.96 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#f4f8fb' }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'], avoid: ['.pdf-day', '.pdf-stops article'] } }).from(documentNode).toPdf();
+    const blob = await worker.outputPdf('blob');
+    const file = new File([blob], filename, { type: 'application/pdf' });
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ title: ui('خطة رحلتي من TRAVELTRIP', 'My TRAVELTRIP itinerary'), text: ui('هذه خطة الرحلة كاملة بصيغة PDF.', 'Here is the complete trip plan as a PDF.'), files: [file] });
+    } else {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url; link.download = filename; link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    }
+  } catch (error) {
+    if (error?.name !== 'AbortError') notifyStorageIssue(ui('تعذر إنشاء ملف PDF الآن. حاول مرة أخرى.', 'Could not create the PDF. Please try again.'));
+  } finally {
+    documentNode.remove();
+    if (button) { button.disabled = false; button.textContent = originalText; }
+  }
+}
+
 function refreshTravelAssistant() {
   const result = getAssistantSuggestion();
   const text = document.getElementById('travelAiText');
