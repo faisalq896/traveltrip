@@ -54,7 +54,8 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          maxOutputTokens: 120,
+          maxOutputTokens: 512,
+          thinkingConfig: { thinkingLevel: 'minimal' },
           responseMimeType: 'application/json'
         }
       })
@@ -78,7 +79,11 @@ export default async function handler(req, res) {
       });
     }
     const payload = await response.json();
-    const result = readJson(payload.candidates?.[0]?.content?.parts?.[0]?.text);
+    const responseText = (payload.candidates?.[0]?.content?.parts || [])
+      .filter(part => !part.thought && typeof part.text === 'string')
+      .map(part => part.text)
+      .join('\n');
+    const result = readJson(responseText);
     const low = Number(result?.low);
     const high = Number(result?.high);
     if (!Number.isFinite(low) || !Number.isFinite(high) || low < 0 || high < low || high > 100000) {
