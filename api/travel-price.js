@@ -71,7 +71,11 @@ export default async function handler(req, res) {
           : providerError.type === 'invalid_request_error'
             ? 'Gemini rejected the requested model or request configuration.'
             : 'Gemini provider request failed.';
-      return res.status(status).json({ error: reason, providerStatus: providerStatus || 'UNKNOWN' });
+      return res.status(status).json({
+        error: reason,
+        providerStatus: providerStatus || 'UNKNOWN',
+        providerMessage: cleanText(providerError.message).slice(0, 180)
+      });
     }
     const payload = await response.json();
     const result = readJson(payload.candidates?.[0]?.content?.parts?.[0]?.text);
