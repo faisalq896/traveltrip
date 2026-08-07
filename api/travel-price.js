@@ -62,6 +62,7 @@ export default async function handler(req, res) {
     if (!response.ok) {
       const providerPayload = await response.json().catch(() => ({}));
       const providerError = providerPayload?.error || {};
+      const providerStatus = cleanText(providerError.status).replace(/[^A-Z_]/g, '');
       const status = response.status === 401 || response.status === 429 ? response.status : 502;
       const reason = response.status === 401
         ? 'Gemini API key is invalid or inactive.'
@@ -70,7 +71,7 @@ export default async function handler(req, res) {
           : providerError.type === 'invalid_request_error'
             ? 'Gemini rejected the requested model or request configuration.'
             : 'Gemini provider request failed.';
-      return res.status(status).json({ error: reason });
+      return res.status(status).json({ error: reason, providerStatus: providerStatus || 'UNKNOWN' });
     }
     const payload = await response.json();
     const result = readJson(payload.candidates?.[0]?.content?.parts?.[0]?.text);
