@@ -1407,6 +1407,7 @@ function showRainPlan() {
   const { malls, cafes, restaurants } = getCityData();
   const indoor = [...malls, ...cafes, ...restaurants].filter(item => getOpenStatus(item.hours || '').isOpen !== false).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 5);
   showSection('schedule');
+  openTravelAi();
   const answer = document.getElementById('travelAiAnswer');
   if (!answer) return;
   answer.hidden = false;
@@ -1417,6 +1418,7 @@ function showNowSuggestions() {
   const { restaurants, cafes, malls, activities } = getCityData();
   const picks = [...restaurants, ...cafes, ...malls, ...activities].filter(item => getOpenStatus(item.hours || '').isOpen !== false).sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0,5);
   showSection('schedule');
+  openTravelAi();
   const answer = document.getElementById('travelAiAnswer');
   if (!answer) return;
   answer.hidden = false;
@@ -1481,14 +1483,68 @@ async function askTravelAssistant(event) {
   try {
     const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, city: getCityConfig().label, weather: state.weather, schedule: state.schedule }) });
     const payload = await response.json().catch(() => ({}));
-    if (!response.ok || !payload.answer) throw new Error(payload.error || 'Assistant unavailable');
-    answer.textContent = payload.answer;
+    if (!response.ok || (!payload.answer && !payload.summary)) throw new Error(payload.error || 'Assistant unavailable');
+    renderTravelAiAnswer(payload);
   } catch {
     answer.textContent = ui('تعذر الوصول إلى المساعد الآن. حاول مرة أخرى بعد قليل.', 'The assistant is unavailable right now. Please try again shortly.');
   } finally {
     button.disabled = false;
     button.textContent = ui('اسأل المساعد', 'Ask assistant');
   }
+}
+
+function openTravelAi() {
+  const modal = document.getElementById('travelAiModal');
+  if (!modal) return;
+  modal.classList.add('active');
+  document.body.classList.add('modal-open');
+  setTimeout(() => document.getElementById('travelAiQuestion')?.focus(), 180);
+}
+
+function closeTravelAi(event) {
+  if (!event || event.target === document.getElementById('travelAiModal')) {
+    document.getElementById('travelAiModal')?.classList.remove('active');
+    document.body.classList.remove('modal-open');
+  }
+}
+
+function useTravelAiPrompt(prompt) {
+  const input = document.getElementById('travelAiQuestion');
+  if (!input) return;
+  input.value = prompt;
+  input.focus();
+}
+
+function renderTravelAiAnswer(payload) {
+  const answer = document.getElementById('travelAiAnswer');
+  if (!answer) return;
+  const suggestions = Array.isArray(payload.suggestions) ? payload.suggestions.slice(0, 4) : [];
+  const tips = Array.isArray(payload.tips) ? payload.tips.slice(0, 4) : [];
+  answer.hidden = false;
+  answer.innerHTML = `
+    <div class="ai-response-label"><span>✦</span>${ui('إجابة المساعد الذكي', 'AI assistant response')}</div>
+    <div class="ai-response-summary">${escapeHtml(payload.summary || payload.answer || '')}</div>
+    ${suggestions.length ? `<div class="ai-response-section"><strong>${ui('اقتراحات مناسبة لك', 'Suggestions for you')}</strong><div class="ai-suggestion-grid">${suggestions.map((item, index) => `<article class="ai-suggestion-card"><div><span>${escapeHtml(item.time || '16:00')}</span><h3>${escapeHtml(item.title || '')}</h3><p>${escapeHtml(item.reason || item.details || '')}</p></div><button type="button" onclick="addTravelAiSuggestion(${index})">+ ${ui('أضف للجدول', 'Add to itinerary')}</button></article>`).join('')}</div></div>` : ''}
+    ${tips.length ? `<div class="ai-response-section ai-tip-list"><strong>${ui('نصائح سريعة', 'Quick tips')}</strong>${tips.map(tip => `<p>• ${escapeHtml(tip)}</p>`).join('')}</div>` : ''}
+    ${payload.warning ? `<div class="ai-response-warning">${escapeHtml(payload.warning)}</div>` : ''}`;
+  answer.dataset.suggestions = JSON.stringify(suggestions);
+  answer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function addTravelAiSuggestion(index) {
+  const answer = document.getElementById('travelAiAnswer');
+  let suggestions = [];
+  try { suggestions = JSON.parse(answer?.dataset.suggestions || '[]'); } catch { suggestions = []; }
+  const suggestion = suggestions[index];
+  if (!suggestion?.title) return;
+  if (!state.schedule.length) state.schedule.push({ day: 1, date: suggestedScheduleDate(), city: getCityConfig().label, hotel: '', items: [] });
+  const targetDay = state.schedule.find(day => day.items.length < 6) || state.schedule.at(-1);
+  targetDay.items.push({ time: /^\d{2}:\d{2}$/.test(suggestion.time || '') ? suggestion.time : '16:00', title: safeText(suggestion.title, 120), sub: safeText(suggestion.details || suggestion.reason || ui('اقتراح من مساعد AI', 'AI assistant suggestion'), 240), done: false });
+  sortScheduleItems(targetDay);
+  saveState();
+  renderSchedule();
+  const button = answer?.querySelectorAll('.ai-suggestion-card button')[index];
+  if (button) { button.disabled = true; button.textContent = ui('✓ تمت الإضافة', '✓ Added'); }
 }
 
 function refreshTravelAssistant() {
@@ -3076,4 +3132,5 @@ document.addEventListener('keydown', event => {
   closeEmergency();
   closePlaceDetails();
   closeScheduleEditor();
+  closeTravelAi();
 });

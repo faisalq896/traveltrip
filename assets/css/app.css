@@ -2247,6 +2247,8 @@ body.modal-open { overflow: hidden; }
 .itinerary-page-intro .section-header { margin: 0; color: #fff; font-size: 29px; }
 .itinerary-page-intro p { margin-top: 3px; color: rgba(255,255,255,0.74); font-size: 13px; }
 .itinerary-page-intro .mini-btn { color: #174989; background: #fff; box-shadow: none; }
+.itinerary-head-actions { display: flex; gap: 7px; align-items: center; }
+.itinerary-page-intro .ai-launch-mini { color: #fff; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.24); }
 .itinerary-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .itinerary-stats div { padding: 10px 7px; border: 1px solid rgba(255,255,255,0.15); border-radius: 15px; background: rgba(255,255,255,0.12); text-align: center; }
 .itinerary-stats strong { display: block; font-size: 18px; letter-spacing: -0.03em; }
@@ -2263,6 +2265,34 @@ body.modal-open { overflow: hidden; }
 .travel-ai-answer button:last-child { border-bottom: 0; }
 .travel-ai-answer button small { color: var(--premium-muted); }
 @media (max-width: 480px) { .travel-ai-question { grid-template-columns: 1fr; } .travel-ai-question .action-btn { width: 100%; } }
+.travel-ai-card { position: relative; overflow: hidden; }
+.ai-card-orbit { position: absolute; inset-inline-end: -18px; top: -25px; display: grid; width: 105px; height: 105px; place-items: center; border: 1px solid rgba(105,91,255,0.18); border-radius: 50%; color: rgba(105,91,255,0.24); font-size: 34px; }
+.ai-live-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 999px; color: #594fd0; background: rgba(101,85,230,0.1); font-size: 0.68rem; font-weight: 850; }
+.ai-live-badge i { width: 7px; height: 7px; border-radius: 50%; background: #34c759; box-shadow: 0 0 0 4px rgba(52,199,89,0.13); }
+.ai-primary-launch { margin-top: 15px; }
+.travel-ai-sheet { max-height: min(86vh, 760px); padding: 0 18px calc(18px + var(--safe-bottom)); overflow-y: auto; }
+.ai-sheet-hero { position: sticky; top: 0; z-index: 3; display: grid; grid-template-columns: 46px minmax(0,1fr) 38px; gap: 11px; align-items: center; padding: 19px 0 15px; background: color-mix(in srgb, var(--ios-surface) 94%, transparent); backdrop-filter: blur(16px); }
+.ai-sheet-hero h2 { color: var(--premium-ink); font-size: 1.25rem; }
+.ai-sheet-hero p { color: var(--premium-muted); font-size: 0.72rem; }
+.ai-hero-mark { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 15px; color: #fff; background: linear-gradient(135deg,#6555e6,#148bc2); box-shadow: 0 10px 24px rgba(75,82,206,0.28); font-size: 21px; }
+.ai-quick-prompts { display: flex; gap: 7px; margin: 5px 0 14px; padding-bottom: 3px; overflow-x: auto; }
+.ai-quick-prompts button { flex: 0 0 auto; padding: 9px 11px; border: 1px solid var(--premium-line); border-radius: 999px; color: var(--premium-ink); background: var(--ios-surface); font: 750 0.72rem inherit; cursor: pointer; }
+.ai-conversation { min-height: 110px; background: linear-gradient(145deg,rgba(101,85,230,0.07),rgba(20,139,194,0.06)); }
+.ai-response-label { display: flex; align-items: center; gap: 7px; margin-bottom: 9px; color: #5a50ce; font-size: 0.7rem; font-weight: 900; letter-spacing: 0.02em; }
+.ai-response-summary { color: var(--premium-ink); font-size: 0.9rem; font-weight: 650; line-height: 1.8; }
+.ai-response-section { margin-top: 15px; padding-top: 13px; border-top: 1px solid var(--premium-line); }
+.ai-response-section > strong { color: var(--premium-ink); font-size: 0.8rem; }
+.ai-suggestion-grid { display: grid; gap: 8px; margin-top: 9px; }
+.ai-suggestion-card { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; padding: 11px; border: 1px solid var(--premium-line); border-radius: 14px; background: var(--ios-surface); }
+.ai-suggestion-card span { color: var(--ios-blue); font-size: 0.68rem; font-weight: 850; }
+.ai-suggestion-card h3 { margin: 2px 0; color: var(--premium-ink); font-size: 0.86rem; }
+.ai-suggestion-card p { color: var(--premium-muted); font-size: 0.7rem; line-height: 1.5; }
+.ai-suggestion-card button { width: auto; padding: 8px 9px; border: 0; border-radius: 10px; color: #fff; background: linear-gradient(135deg,#6555e6,#148bc2); font: 800 0.67rem inherit; }
+.ai-tip-list p { margin-top: 5px; color: var(--premium-muted); font-size: 0.76rem; }
+.ai-response-warning { margin-top: 12px; padding: 9px 11px; border-radius: 11px; color: #8a5b00; background: rgba(255,179,0,0.12); font-size: 0.72rem; }
+.ai-composer { position: sticky; bottom: 0; z-index: 2; padding: 11px 0 4px; background: color-mix(in srgb, var(--ios-surface) 94%, transparent); backdrop-filter: blur(16px); }
+.ai-disclaimer { margin: 6px 0 0; color: var(--premium-muted); font-size: 0.64rem; text-align: center; }
+@media (max-width: 420px) { .itinerary-head-actions { align-items: stretch; flex-direction: column; } .ai-suggestion-card { grid-template-columns: 1fr; } .ai-suggestion-card button { width: 100%; } }
 .itinerary-sheet .modal-header { align-items: flex-start; }
 .itinerary-field { display: block; color: var(--premium-muted); font-size: 12px; font-weight: 750; margin: 0 0 14px; }
 .itinerary-field input, .itinerary-field select, .itinerary-field textarea {

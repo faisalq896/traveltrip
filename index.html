@@ -151,7 +151,7 @@
     <div class="itinerary-kicker">خطتك، بتفاصيلها الجميلة</div>
     <div class="section-head-row">
       <div><div class="section-header">خطة رحلتك</div><p>كل يوم، في مكانه ووقته المناسب.</p></div>
-      <button class="mini-btn" type="button" onclick="addScheduleDay()">+ يوم</button>
+      <div class="itinerary-head-actions"><button class="mini-btn ai-launch-mini" type="button" onclick="openTravelAi()">✦ مساعد AI</button><button class="mini-btn" type="button" onclick="addScheduleDay()">+ يوم</button></div>
     </div>
     <div class="itinerary-stats">
       <div><strong id="scheduleDaysStat">0</strong><span>أيام</span></div>
@@ -166,14 +166,10 @@
     <iframe id="tripMapFrame" title="Trip map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
   </section>
   <section class="travel-ai-card" id="travelAiCard">
-    <div class="premium-card-head"><div><span>TRIP INTELLIGENCE</span><h2 id="travelAiTitle">مساعد الرحلة الذكي</h2></div><button type="button" class="mini-btn" onclick="refreshTravelAssistant()">اقتراح جديد</button></div>
-    <p id="travelAiText"></p>
-    <form class="travel-ai-question" onsubmit="askTravelAssistant(event)">
-      <input id="travelAiQuestion" type="text" maxlength="300" placeholder="اسأل عن جدولك، المطر، الأماكن أو الميزانية..." required>
-      <button id="travelAiAsk" type="submit" class="action-btn blue">اسأل المساعد</button>
-    </form>
-    <div class="travel-ai-answer" id="travelAiAnswer" hidden aria-live="polite"></div>
-    <div class="travel-ai-actions"><button type="button" class="action-btn blue" onclick="applyAssistantSuggestion()" id="travelAiAction">أضف الاقتراح للجدول</button><button type="button" class="action-btn gray" onclick="showSection('activities')">استكشف الأنشطة</button></div>
+    <div class="ai-card-orbit" aria-hidden="true">✦</div>
+    <div class="premium-card-head"><div><span>POWERED BY GEMINI</span><h2 id="travelAiTitle">مساعدك الذكي للرحلة</h2></div><span class="ai-live-badge"><i></i> AI متصل</span></div>
+    <p id="travelAiText">اسأل عن جدولك أو الطقس أو الميزانية، وخذ اقتراحات تقدر تضيفها مباشرة إلى خطتك.</p>
+    <button type="button" class="action-btn blue ai-primary-launch" onclick="openTravelAi()">✦ افتح مساعد الرحلة</button>
   </section>
   <div id="scheduleList"></div>
 </div>
@@ -570,12 +566,34 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="travelAiModal" onclick="closeTravelAi(event)">
+  <div class="modal-sheet travel-ai-sheet" onclick="event.stopPropagation()">
+    <div class="ai-sheet-hero">
+      <div class="ai-hero-mark">✦</div>
+      <div><div class="itinerary-kicker">POWERED BY GEMINI</div><h2>مساعد الرحلة الذكي</h2><p>يفهم مدينتك، طقسها وجدولك الحالي.</p></div>
+      <button class="modal-close" type="button" onclick="closeTravelAi()">✕</button>
+    </div>
+    <div class="ai-quick-prompts">
+      <button type="button" onclick="useTravelAiPrompt('رتب لي يومي بطريقة مريحة بدون ازدحام')">رتب يومي</button>
+      <button type="button" onclick="useTravelAiPrompt('اقترح لي خطة مناسبة إذا نزل مطر')">خطة للمطر</button>
+      <button type="button" onclick="useTravelAiPrompt('راجع جدولي واقترح نشاطاً مميزاً ناقصاً')">شنو ناقص جدولي؟</button>
+      <button type="button" onclick="useTravelAiPrompt('ساعدني أخفف تكلفة الرحلة بدون ما أخسر التجربة')">وفّر بالميزانية</button>
+    </div>
+    <div class="travel-ai-answer ai-conversation" id="travelAiAnswer" hidden aria-live="polite"></div>
+    <form class="travel-ai-question ai-composer" onsubmit="askTravelAssistant(event)">
+      <input id="travelAiQuestion" type="text" maxlength="300" placeholder="مثال: شنو أفضل خطة ليوم ممطر؟" required>
+      <button id="travelAiAsk" type="submit" class="action-btn blue"><span>✦</span> اسأل</button>
+    </form>
+    <p class="ai-disclaimer">اقتراحات AI إرشادية؛ تأكد من أوقات العمل والحجوزات قبل الذهاب.</p>
+  </div>
+</div>
+
 <script src="data.js?v=20260806-15"></script>
   <script>
     window.TRAVELTRIP_CONFIG = {
       aiPriceEndpoint: 'https://traveltrip-traveltrip.vercel.app/api/travel-price'
     };
   </script>
-  <script src="assets/js/app.js?v=20260807-4"></script>
+  <script src="assets/js/app.js?v=20260808-1"></script>
 </body>
 </html>
