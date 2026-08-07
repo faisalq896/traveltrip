@@ -1403,8 +1403,25 @@ function renderTodayCard() {
   list.innerHTML = day.items.slice().sort((a,b) => a.time.localeCompare(b.time)).map(item => `<div class="today-item"><b>${escapeHtml(item.time)}</b><span>${escapeHtml(item.title)}<small>${escapeHtml(item.sub || '')}</small></span><button type="button" onclick="openMap('${escapeHtml(item.title)}')">خريطة</button></div>`).join('');
 }
 function startMyDay() { const first = getPlannedStops().find(item => !item.done); alert(first ? `طقس اليوم: ${state.weather.desc || 'جارٍ التحميل'}\nأول نشاط: ${first.title} — ${first.time}\nخذ معك: ${state.weather.rain > 0 ? 'مظلة خفيفة' : 'ماء وواقي شمس'}` : 'أضف نشاطاً أولاً إلى جدولك.'); }
-function showRainPlan() { const indoor = [...malls, ...cafes, ...restaurants].slice(0,3); alert(`الخطة البديلة للمطر:\n${indoor.map(item => `• ${item.name}`).join('\n')}\nلن يتم تغيير جدولك إلا بعد اختيارك.`); }
-function showNowSuggestions() { const picks = [...restaurants, ...cafes, ...malls, ...activities].filter(item => getOpenStatus(item.hours || '').isOpen !== false).sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0,5); alert(`وين نروح الحين؟\n${picks.map(item => `• ${item.name} — ${item.type || item.company || 'مكان مقترح'}`).join('\n')}`); }
+function showRainPlan() {
+  const { malls, cafes, restaurants } = getCityData();
+  const indoor = [...malls, ...cafes, ...restaurants].filter(item => getOpenStatus(item.hours || '').isOpen !== false).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 5);
+  showSection('schedule');
+  const answer = document.getElementById('travelAiAnswer');
+  if (!answer) return;
+  answer.hidden = false;
+  answer.innerHTML = `<strong>${ui('خطة بديلة للمطر', 'Rainy-day plan')}</strong>${indoor.map(item => `<button type="button" onclick="openMap('${escapeHtml(item.name)}')"><span>${escapeHtml(item.name)}</span><small>${escapeHtml(localizeContent(item.type || item.hours || 'مكان داخلي'))}</small></button>`).join('')}`;
+  answer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function showNowSuggestions() {
+  const { restaurants, cafes, malls, activities } = getCityData();
+  const picks = [...restaurants, ...cafes, ...malls, ...activities].filter(item => getOpenStatus(item.hours || '').isOpen !== false).sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0,5);
+  showSection('schedule');
+  const answer = document.getElementById('travelAiAnswer');
+  if (!answer) return;
+  answer.hidden = false;
+  answer.innerHTML = `<strong>${ui('أماكن مناسبة الآن', 'Good places right now')}</strong>${picks.map(item => `<button type="button" onclick="openMap('${escapeHtml(item.name)}')"><span>${escapeHtml(item.name)}</span><small>${escapeHtml(localizeContent(item.type || item.company || 'مكان مقترح'))}</small></button>`).join('')}`;
+}
 
 function getPlannedStops() {
   return state.schedule.flatMap(day => day.items.map(item => ({ ...item, day: day.day }))).filter(item => item.title);
@@ -1432,6 +1449,7 @@ function refreshTripMap() {
 }
 
 function getAssistantSuggestion() {
+  const { activities, restaurants, cafes, malls } = getCityData();
   const cityName = state.selectedCity === 'bangkok' ? 'Bangkok' : 'Phuket';
   const weather = state.weather || {};
   const planned = getPlannedStops();
@@ -1445,6 +1463,32 @@ function getAssistantSuggestion() {
     ? ui('الطقس يميل للمطر، لذلك رشّحت لك محطة مريحة داخلية أو قريبة.', 'Rain is likely, so this suggestion is comfortable indoors or nearby.')
     : ui('الجو مناسب للاستكشاف، لذلك رشّحت لك محطة تضيف تجربة جديدة ليومك.', 'The weather suits exploring, so this adds a fresh experience to your day.');
   return { place, text: place ? `${weatherHint} ${ui(`اقتراحي في ${cityName}: ${place.name}.`, `My ${cityName} pick: ${place.name}.`)}` : ui('أضف بيانات إلى خطتك لنصنع اقتراحاً جديداً.', 'Add trip details so I can make a fresh suggestion.') };
+}
+
+async function askTravelAssistant(event) {
+  event.preventDefault();
+  const input = document.getElementById('travelAiQuestion');
+  const button = document.getElementById('travelAiAsk');
+  const answer = document.getElementById('travelAiAnswer');
+  const question = input?.value.trim();
+  if (!question || !button || !answer) return;
+  const priceEndpoint = window.TRAVELTRIP_CONFIG?.aiPriceEndpoint || './api/travel-price';
+  const endpoint = priceEndpoint.replace(/\/travel-price(?:\?.*)?$/, '/travel-assistant');
+  button.disabled = true;
+  button.textContent = ui('جاري التفكير...', 'Thinking...');
+  answer.hidden = false;
+  answer.textContent = ui('أراجع جدولك والطقس الآن...', 'Reviewing your itinerary and weather...');
+  try {
+    const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, city: getCityConfig().label, weather: state.weather, schedule: state.schedule }) });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.answer) throw new Error(payload.error || 'Assistant unavailable');
+    answer.textContent = payload.answer;
+  } catch {
+    answer.textContent = ui('تعذر الوصول إلى المساعد الآن. حاول مرة أخرى بعد قليل.', 'The assistant is unavailable right now. Please try again shortly.');
+  } finally {
+    button.disabled = false;
+    button.textContent = ui('اسأل المساعد', 'Ask assistant');
+  }
 }
 
 function refreshTravelAssistant() {

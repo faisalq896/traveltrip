@@ -168,6 +168,11 @@
   <section class="travel-ai-card" id="travelAiCard">
     <div class="premium-card-head"><div><span>TRIP INTELLIGENCE</span><h2 id="travelAiTitle">مساعد الرحلة الذكي</h2></div><button type="button" class="mini-btn" onclick="refreshTravelAssistant()">اقتراح جديد</button></div>
     <p id="travelAiText"></p>
+    <form class="travel-ai-question" onsubmit="askTravelAssistant(event)">
+      <input id="travelAiQuestion" type="text" maxlength="300" placeholder="اسأل عن جدولك، المطر، الأماكن أو الميزانية..." required>
+      <button id="travelAiAsk" type="submit" class="action-btn blue">اسأل المساعد</button>
+    </form>
+    <div class="travel-ai-answer" id="travelAiAnswer" hidden aria-live="polite"></div>
     <div class="travel-ai-actions"><button type="button" class="action-btn blue" onclick="applyAssistantSuggestion()" id="travelAiAction">أضف الاقتراح للجدول</button><button type="button" class="action-btn gray" onclick="showSection('activities')">استكشف الأنشطة</button></div>
   </section>
   <div id="scheduleList"></div>
@@ -571,6 +576,6 @@
       aiPriceEndpoint: 'https://traveltrip-traveltrip.vercel.app/api/travel-price'
     };
   </script>
-  <script src="assets/js/app.js?v=20260807-3"></script>
+  <script src="assets/js/app.js?v=20260807-4"></script>
 </body>
 </html>

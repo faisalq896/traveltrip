@@ -2253,6 +2253,16 @@ body.modal-open { overflow: hidden; }
 .itinerary-stats span { color: rgba(255,255,255,0.72); font-size: 10px; font-weight: 700; }
 .itinerary-kicker { color: var(--ios-blue); font-size: 10px; font-weight: 800; letter-spacing: 0.04em; margin-bottom: 3px; }
 .itinerary-page-intro .itinerary-kicker { color: rgba(255,255,255,0.7); }
+.travel-ai-question { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; margin: 14px 0; }
+.travel-ai-question input { min-width: 0; padding: 12px 14px; border: 1px solid var(--premium-line); border-radius: 14px; color: var(--premium-ink); background: var(--ios-surface); font: 600 0.82rem inherit; outline: none; }
+.travel-ai-question input:focus { border-color: var(--ios-blue); box-shadow: 0 0 0 4px rgba(0,122,255,0.11); }
+.travel-ai-question .action-btn { width: auto; margin: 0; white-space: nowrap; }
+.travel-ai-answer { margin: 10px 0 14px; padding: 13px; border: 1px solid rgba(0,122,255,0.16); border-radius: 16px; color: var(--premium-ink); background: rgba(0,122,255,0.06); line-height: 1.7; white-space: pre-wrap; }
+.travel-ai-answer strong { display: block; margin-bottom: 8px; }
+.travel-ai-answer button { display: flex; justify-content: space-between; gap: 10px; width: 100%; padding: 9px 0; border: 0; border-bottom: 1px solid var(--premium-line); color: var(--premium-ink); background: transparent; text-align: start; cursor: pointer; }
+.travel-ai-answer button:last-child { border-bottom: 0; }
+.travel-ai-answer button small { color: var(--premium-muted); }
+@media (max-width: 480px) { .travel-ai-question { grid-template-columns: 1fr; } .travel-ai-question .action-btn { width: 100%; } }
 .itinerary-sheet .modal-header { align-items: flex-start; }
 .itinerary-field { display: block; color: var(--premium-muted); font-size: 12px; font-weight: 750; margin: 0 0 14px; }
 .itinerary-field input, .itinerary-field select, .itinerary-field textarea {
