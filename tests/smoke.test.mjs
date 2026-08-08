@@ -106,7 +106,7 @@ test('PDF dependency is local and available in the offline app shell', async () 
     'service worker must cache the exact local PDF bundle URL'
   );
   assert.ok(
-    worker.includes("'./assets/js/app.js?v=20260809-12'"),
+    worker.includes("'./assets/js/app.js?v=20260809-13'"),
     'service worker must cache the exact versioned application URL'
   );
   assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
@@ -155,6 +155,14 @@ test('PDF export renders visible content and rejects blank output', async () => 
   assert.ok(
     appSource.includes('downloadPdfBlob(blob, filename);'),
     'failed or unsupported file sharing must fall back to a real download'
+  );
+  assert.ok(
+    appSource.includes('html2canvas: { scale: 1,'),
+    'PDF rendering must stay below mobile browser canvas limits'
+  );
+  assert.ok(
+    appSource.includes('windowWidth: 794, windowHeight: documentNode.scrollHeight'),
+    'PDF rendering must use stable A4 source dimensions'
   );
   assert.ok(
     appSource.includes('const pdfSchedule = getScheduleForPdf();'),
