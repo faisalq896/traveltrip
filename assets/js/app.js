@@ -1976,7 +1976,7 @@ async function shareTripPdf() {
     await waitForPdfAssets(documentNode);
     if (!documentNode.isConnected || documentNode.scrollWidth < 100 || documentNode.scrollHeight < 100) throw new Error('PDF content is not renderable');
     const filename = `TRAVELTRIP-${currentCityKey()}-${new Date().toISOString().slice(0, 10)}.pdf`;
-    const worker = window.html2pdf().set({ margin: 0, filename, image: { type: 'jpeg', quality: 0.96 }, html2canvas: { scale: 2, useCORS: true, allowTaint: false, logging: false, backgroundColor: '#f4f8fb', scrollX: 0, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'], avoid: ['.pdf-day', '.pdf-stops article'] } }).from(documentNode).toCanvas();
+    const worker = window.html2pdf().set({ margin: 0, filename, image: { type: 'jpeg', quality: 0.94 }, html2canvas: { scale: 1, useCORS: true, allowTaint: false, logging: false, backgroundColor: '#f4f8fb', scrollX: 0, scrollY: 0, width: 794, windowWidth: 794, windowHeight: documentNode.scrollHeight, onclone: clonedDocument => { const clonedPdf = clonedDocument.querySelector('.trip-pdf-document'); if (clonedPdf) { clonedPdf.style.position = 'relative'; clonedPdf.style.inset = 'auto'; clonedPdf.style.width = '794px'; } } }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true }, pagebreak: { mode: ['css', 'legacy'], avoid: ['.pdf-day', '.pdf-stops article'] } }).from(documentNode).toCanvas();
     const canvas = await worker.get('canvas');
     if (!pdfCanvasHasContent(canvas)) throw new Error('PDF canvas is blank');
     const blob = await worker.toPdf().outputPdf('blob');
