@@ -36,6 +36,43 @@ test('GitHub Pages uses the public serverless price endpoint', async () => {
   assert.ok(html.includes('https://traveltrip-traveltrip.vercel.app/api/travel-price'), 'the static site must not call a nonexistent GitHub Pages API path');
 });
 
+test('default itineraries use the configured 2026 Thailand trip dates', async () => {
+  const appSource = await readProjectFile('assets/js/app.js');
+
+  for (const date of ['19 أغسطس', '20 أغسطس', '21 أغسطس', '22 أغسطس', '23 أغسطس', '25 أغسطس', '26 أغسطس', '27 أغسطس']) {
+    assert.ok(appSource.includes(`date: '${date}'`) || appSource.includes(`date: "${date}"`), `missing corrected date ${date}`);
+  }
+  assert.ok(!appSource.includes("date: '15 أغسطس'") && !appSource.includes('date: "15 أغسطس"'), 'legacy August 15 dates must not remain in defaults');
+  assert.ok(appSource.includes("tripDate: '2026-08-19T13:40:00+07:00'"), 'Phuket countdown must include Thailand offset');
+  assert.ok(appSource.includes("tripDate: '2026-08-25T12:35:00+07:00'"), 'Bangkok countdown must include Thailand offset');
+});
+
+test('Thailand dates, config, language, and hotel placeholders are safe', async () => {
+  const appSource = await readProjectFile('assets/js/app.js');
+
+  assert.ok(appSource.includes("timeZone: 'Asia/Bangkok'"), 'Thailand timezone must be explicit');
+  assert.ok(appSource.includes('getThailandDateIso(today)'), 'today card must use the Thailand calendar date');
+  assert.ok(!appSource.includes('getPhuketNowParts'), 'city-specific time helper name must be removed');
+  assert.ok(appSource.includes("const appConfig = { ...(window.TRAVEL_APP_CONFIG || {}), ...(window.TRAVELTRIP_CONFIG || {}) }"), 'app config must use the unified TRAVELTRIP config with legacy compatibility');
+  assert.ok(appSource.includes(": 'ar',\n  selectedCity"), 'Arabic must be the default when no preference exists');
+  assert.equal((appSource.match(/Skyline Riverside Hotel/g) || []).length, 1, 'the old hotel name may appear only in the saved-data migration');
+  assert.ok(!appSource.includes('+66 2 555 1234'), 'fake Bangkok phone data must be removed');
+});
+
+test('PDF dependency is local and available in the offline app shell', async () => {
+  const [html, worker, pdfBundle] = await Promise.all([
+    readProjectFile('index.html'),
+    readProjectFile('sw.js'),
+    readProjectFile('assets/vendor/html2pdf.bundle.min.js')
+  ]);
+
+  assert.ok(html.includes('assets/vendor/html2pdf.bundle.min.js'), 'HTML must load the local PDF bundle');
+  assert.ok(!html.includes('cdnjs.cloudflare.com'), 'HTML must not depend on the PDF CDN');
+  assert.ok(worker.includes("'./assets/vendor/html2pdf.bundle.min.js?v=0.14.0'"), 'service worker must cache the exact local PDF bundle URL');
+  assert.ok(worker.includes("'./assets/js/app.js?v=20260808-4'"), 'service worker must cache the exact versioned application URL');
+  assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
+});
+
 test('Gemini endpoint uses the current stable Flash model', async () => {
   const endpoint = await readProjectFile('api/travel-price.js');
 

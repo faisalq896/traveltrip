@@ -2,7 +2,7 @@
 // DATA
 // ============================================
 
-const TRIP_DATE = "2026-08-19T13:40:00";
+const TRIP_DATE = "2026-08-19T13:40:00+07:00";
 const TMD_PHUKET_URL = "https://www.tmd.go.th/en/weather/province/phuket";
 const OPEN_METEO_PHUKET_URL = "https://api.open-meteo.com/v1/forecast?latitude=7.8804&longitude=98.3923&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,weather_code,wind_speed_10m,wind_direction_10m&timezone=Asia%2FBangkok";
 const PLACEHOLDER_IMG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%23007AFF"/><stop offset="1" stop-color="%235856D6"/></linearGradient></defs><rect width="800" height="500" fill="url(%23g)"/><text x="400" y="260" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="64" fill="%23fff">بوكيت 2026</text></svg>';
@@ -13,7 +13,7 @@ function isSafeUserPhoto(src) { return typeof src === 'string' && USER_PHOTO_DAT
 
 const scheduleData = [
   {
-    day: 1, date: "15 أغسطس", city: "باتونج", hotel: "Oceanfront Beach Resort",
+    day: 1, date: "19 أغسطس", city: "باتونج", hotel: "Oceanfront Beach Resort",
     items: [
       { time: "08:00", title: "الوصول والاستلام", sub: "الفندق", done: false },
       { time: "10:00", title: "فطور في Commune", sub: "مقهى / مطعم", done: false },
@@ -24,7 +24,7 @@ const scheduleData = [
     ]
   },
   {
-    day: 2, date: "16 أغسطس", city: "باتونج / كاثو", hotel: "Oceanfront Beach Resort",
+    day: 2, date: "20 أغسطس", city: "باتونج / كاثو", hotel: "Oceanfront Beach Resort",
     items: [
       { time: "09:00", title: "ATV Rides", sub: "مغامرة في Big Buddha Hill", done: false },
       { time: "12:00", title: "غداء في Three Monkeys", sub: "مطعم في الغابة", done: false },
@@ -34,7 +34,7 @@ const scheduleData = [
     ]
   },
   {
-    day: 3, date: "17 أغسطس", city: "جزيرة في في", hotel: "Oceanfront Beach Resort",
+    day: 3, date: "21 أغسطس", city: "جزيرة في في", hotel: "Oceanfront Beach Resort",
     items: [
       { time: "07:00", title: "الانطلاق لـ Noah Phi Phi Island", sub: "رحلة بحرية", done: false },
       { time: "09:00", title: "Maya Bay", sub: "شاطئ ذا بيتش", done: false },
@@ -44,7 +44,7 @@ const scheduleData = [
     ]
   },
   {
-    day: 4, date: "18 أغسطس", city: "Old Town / راواي", hotel: "Oceanfront Beach Resort",
+    day: 4, date: "22 أغسطس", city: "Old Town / راواي", hotel: "Oceanfront Beach Resort",
     items: [
       { time: "09:00", title: "قهوة في Rush Coffee", sub: "Old Town", done: false },
       { time: "10:30", title: "جولة في Phuket Old Town", sub: "منطقة تراثية", done: false },
@@ -55,7 +55,7 @@ const scheduleData = [
     ]
   },
   {
-    day: 5, date: "19 أغسطس", city: "باتونج", hotel: "Oceanfront Beach Resort",
+    day: 5, date: "23 أغسطس", city: "باتونج", hotel: "Oceanfront Beach Resort",
     items: [
       { time: "08:00", title: "Ma Doo Bua للتصوير", sub: "أشهر مكان للتصوير", done: false },
       { time: "11:00", title: "The Cozy Coffee", sub: "Tri Trang Beach", done: false },
@@ -92,7 +92,7 @@ const activitiesData = [
 
 const bangkokScheduleData = [
   {
-    day: 1, date: '15 أغسطس', city: 'Sukhumvit', hotel: 'Skyline Riverside Hotel',
+    day: 1, date: '25 أغسطس', city: 'Sukhumvit', hotel: 'غير محدد',
     items: [
       { time: '09:00', title: 'الوصول وتسجيل الدخول', sub: 'الفندق', done: false },
       { time: '12:00', title: 'Terminal 21', sub: 'تسوق وغداء', done: false },
@@ -100,7 +100,7 @@ const bangkokScheduleData = [
     ]
   },
   {
-    day: 2, date: '16 أغسطس', city: 'Old Bangkok', hotel: 'Skyline Riverside Hotel',
+    day: 2, date: '26 أغسطس', city: 'Old Bangkok', hotel: 'غير محدد',
     items: [
       { time: '08:30', title: 'Grand Palace', sub: 'جولة ثقافية', done: false },
       { time: '11:00', title: 'Wat Pho', sub: 'معبد بوذا', done: false },
@@ -108,7 +108,7 @@ const bangkokScheduleData = [
     ]
   },
   {
-    day: 3, date: '17 أغسطس', city: 'Bangkok City', hotel: 'Skyline Riverside Hotel',
+    day: 3, date: '27 أغسطس', city: 'Bangkok City', hotel: 'غير محدد',
     items: [
       { time: '10:00', title: 'ICONSIAM', sub: 'مول فاخر', done: false },
       { time: '14:00', title: 'Chatuchak Market', sub: 'تسوق شعبي', done: false },
@@ -120,15 +120,15 @@ const bangkokScheduleData = [
 const bangkokHotelsData = [
   {
     id: 'bh1',
-    name: 'Skyline Riverside Hotel',
-    nameTh: 'สกายไลน์ ริเวอร์ไซด์ โฮเทล',
-    address: 'Chao Phraya Riverside, Bangkok',
-    addressTh: 'ริมแม่น้ำเจ้าพระยา กรุงเทพฯ',
-    phone: '+66 2 555 1234',
-    rating: 4.7,
-    map: 'Skyline+Riverside+Hotel+Bangkok',
-    img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80',
-    notes: 'موقع ممتاز قريب من المترو النهري والأسواق الليلية.'
+    name: 'غير محدد',
+    nameTh: 'ไม่ระบุ',
+    address: 'غير محدد',
+    addressTh: 'ไม่ระบุ',
+    phone: '',
+    rating: null,
+    map: '',
+    img: '',
+    notes: 'لم تتم إضافة بيانات فندق بانكوك بعد.'
   }
 ];
 
@@ -179,7 +179,7 @@ const CITY_CONFIG = {
   phuket: {
     key: 'phuket',
     label: 'بوكيت',
-    tripDate: '2026-08-19T13:40:00',
+    tripDate: '2026-08-19T13:40:00+07:00',
     heroTitle: 'رحلة بوكيت 2026',
     heroSubtitle: 'جزر وشواطئ وأيام هادئة لا تُنسى',
     heroImage: 'https://images.pexels.com/photos/4159512/pexels-photo-4159512.jpeg?auto=compress&cs=tinysrgb&w=2560',
@@ -200,7 +200,7 @@ const CITY_CONFIG = {
   bangkok: {
     key: 'bangkok',
     label: 'بانكوك',
-    tripDate: '2026-08-25T12:35:00',
+    tripDate: '2026-08-25T12:35:00+07:00',
     heroTitle: 'رحلة بانكوك 2026',
     heroSubtitle: 'أضواء المدينة وأسواقها ولياليها الجميلة',
     heroImage: 'https://images.pexels.com/photos/20020757/pexels-photo-20020757.jpeg?auto=compress&cs=tinysrgb&w=2560',
@@ -438,17 +438,18 @@ function sanitizeExpenses(value, key) {
 const legacyFavorites = sanitizeFavorites(readStoredJson('tg_favorites', []), 'tg_favorites');
 const savedPacking = sanitizePacking(readStoredJson('tg_packing', null), 'tg_packing');
 const savedTheme = readStoredText('tg_theme', 'light');
-const savedLanguage = readStoredText('tg_language', 'en');
+const savedLanguage = readStoredText('tg_language', '');
 const languagePreferenceInitialized = readStoredText('tg_language_initialized', '');
 const savedCity = readStoredText('tg_city', '');
 const savedSection = readStoredText('tg_section', 'home');
 const validSections = new Set(['home', 'schedule', 'hotels', 'restaurants', 'cafes', 'malls', 'activities', 'budget', 'packing', 'favorites', 'notes', 'gallery', 'visited', 'search', 'more']);
-const placesEndpoint = window.TRAVEL_APP_CONFIG?.placesEndpoint || '';
+const appConfig = { ...(window.TRAVEL_APP_CONFIG || {}), ...(window.TRAVELTRIP_CONFIG || {}) };
+const placesEndpoint = appConfig.placesEndpoint || '';
 const PLACE_CACHE_TTL = 1000 * 60 * 60 * 24;
 
 let state = {
   theme: savedTheme === 'dark' ? 'dark' : 'light',
-  language: languagePreferenceInitialized ? (savedLanguage === 'ar' ? 'ar' : 'en') : 'en',
+  language: (languagePreferenceInitialized || savedLanguage) ? (savedLanguage === 'en' ? 'en' : 'ar') : 'ar',
   selectedCity: CITY_CONFIG[savedCity] ? savedCity : '',
   currentSection: validSections.has(savedSection) ? savedSection : 'home',
   favorites: [],
@@ -498,6 +499,28 @@ function getCityData(cityKey = currentCityKey()) {
   return CITY_DATASETS[cityKey] || CITY_DATASETS.phuket;
 }
 
+const LEGACY_SCHEDULE_DATE_MIGRATIONS = {
+  phuket: { '15 أغسطس': '19 أغسطس', '16 أغسطس': '20 أغسطس', '17 أغسطس': '21 أغسطس', '18 أغسطس': '22 أغسطس', '19 أغسطس': '23 أغسطس' },
+  bangkok: { '15 أغسطس': '25 أغسطس', '16 أغسطس': '26 أغسطس', '17 أغسطس': '27 أغسطس' }
+};
+
+function migrateLegacySchedule(schedule, cityKey) {
+  const dateMap = LEGACY_SCHEDULE_DATE_MIGRATIONS[cityKey];
+  const expectedLength = cityKey === 'phuket' ? 5 : 3;
+  const hasLegacyDefaultDates = Boolean(dateMap) && schedule.length === expectedLength && schedule.every(day => dateMap[day.date]);
+  let changed = false;
+  if (hasLegacyDefaultDates) {
+    schedule.forEach(day => { day.date = dateMap[day.date]; });
+    changed = true;
+  }
+  if (cityKey === 'bangkok') {
+    schedule.forEach(day => {
+      if (day.hotel === 'Skyline Riverside Hotel') { day.hotel = 'غير محدد'; changed = true; }
+    });
+  }
+  return changed;
+}
+
 function loadCityScopedState(cityKey) {
   const cityData = getCityData(cityKey);
   const favoritesKey = cityScopedKey('tg_favorites', cityKey);
@@ -509,6 +532,7 @@ function loadCityScopedState(cityKey) {
     ? (cityKey === 'phuket' ? deepClone(legacyFavorites) : [])
     : sanitizeFavorites(savedFavorites, favoritesKey);
   state.schedule = sanitizeSchedule(readStoredJson(scheduleKey, null), cityData.schedule, scheduleKey);
+  if (migrateLegacySchedule(state.schedule, cityKey)) writeStoredValue(scheduleKey, JSON.stringify(state.schedule));
   state.visited = sanitizeTextArray(readStoredJson(visitedKey, []), visitedKey);
   state.weather = {
     temp: null,
@@ -1224,7 +1248,7 @@ function updateWeather() {
   refreshWeather();
 }
 
-function getPhuketNowParts() {
+function getThailandNowParts() {
   const parts = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Asia/Bangkok',
     weekday: 'long',
@@ -1264,7 +1288,7 @@ function formatMinutesToTime(value) {
 
 function getOpenStatus(hoursText) {
   const raw = (hoursText || '').trim();
-  const now = getPhuketNowParts();
+  const now = getThailandNowParts();
   const rangeMatch = raw.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
   const sundayOnly = /(الأحد فقط|فقط يوم الأحد|Sunday\s+only)/i.test(raw);
   const alwaysOpen = /^مفتوح/.test(raw) && !sundayOnly;
@@ -1396,8 +1420,10 @@ function renderSchedule() {
 
 function renderTodayCard() {
   const meta = document.getElementById('todayMeta'), list = document.getElementById('todayItems'); if (!meta || !list) return;
-  const today = new Date(); const day = state.schedule.find(entry => scheduleDateToIso(entry.date) === today.toISOString().slice(0,10));
-  meta.textContent = `${today.toLocaleDateString(state.language === 'en' ? 'en-GB' : 'ar-KW')} · ${state.language === 'en' ? getCityConfig().key : getCityConfig().label}`;
+  const today = new Date();
+  const thailandDate = getThailandDateIso(today);
+  const day = state.schedule.find(entry => scheduleDateToIso(entry.date) === thailandDate);
+  meta.textContent = `${today.toLocaleDateString(state.language === 'en' ? 'en-GB' : 'ar-KW', { timeZone: 'Asia/Bangkok' })} · ${state.language === 'en' ? getCityConfig().key : getCityConfig().label}`;
   if (!day?.items?.length) { list.innerHTML = `<div class="today-empty">لا توجد أنشطة مضافة لهذا اليوم <button type="button" onclick="addScheduleDay()">إضافة نشاط</button></div>`; return; }
   list.innerHTML = day.items.slice().sort((a,b) => a.time.localeCompare(b.time)).map(item => `<div class="today-item"><b>${escapeHtml(item.time)}</b><span>${escapeHtml(item.title)}<small>${escapeHtml(item.sub || '')}</small></span><button type="button" onclick="openMap('${escapeHtml(item.title)}')">خريطة</button></div>`).join('');
 }
@@ -1458,7 +1484,7 @@ async function askTravelAssistant(event) {
   const answer = document.getElementById('travelAiAnswer');
   const question = input?.value.trim();
   if (!question || !button || !answer) return;
-  const priceEndpoint = window.TRAVELTRIP_CONFIG?.aiPriceEndpoint || './api/travel-price';
+  const priceEndpoint = appConfig.aiPriceEndpoint || './api/travel-price';
   const endpoint = priceEndpoint.replace(/\/travel-price(?:\?.*)?$/, '/travel-assistant');
   button.disabled = true;
   button.textContent = ui('جاري التفكير...', 'Thinking...');
@@ -1610,8 +1636,21 @@ function scheduleDateToIso(value) {
   const match = String(value || '').match(/(\d{1,2})\s+([^\s]+)/);
   const month = match ? months[match[2]] : null;
   if (!match || !month) return '';
-  const year = new Date(getCityConfig().tripDate).getFullYear();
+  const year = Number(getCityConfig().tripDate.slice(0, 4));
   return `${year}-${String(month).padStart(2, '0')}-${String(match[1]).padStart(2, '0')}`;
+}
+
+function getThailandDateIso(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function addDaysToIsoDate(value, days) {
+  const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return '';
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]) + days));
+  return date.toISOString().slice(0, 10);
 }
 
 function formatScheduleDate(value) {
@@ -1624,9 +1663,8 @@ function formatScheduleDate(value) {
 function suggestedScheduleDate() {
   const lastDay = state.schedule.at(-1);
   const lastDate = scheduleDateToIso(lastDay?.date);
-  const date = lastDate ? new Date(`${lastDate}T12:00:00`) : new Date(getCityConfig().tripDate);
-  if (lastDate) date.setDate(date.getDate() + 1);
-  return date.toISOString().slice(0, 10);
+  if (lastDate) return addDaysToIsoDate(lastDate, 1);
+  return getCityConfig().tripDate.slice(0, 10);
 }
 
 function closeScheduleEditor(event) {
@@ -1748,7 +1786,7 @@ async function estimateSchedulePlacePrice(place, type) {
   };
   applyEstimate(localEstimate);
 
-  const endpoint = window.TRAVELTRIP_CONFIG?.aiPriceEndpoint || './api/travel-price';
+  const endpoint = appConfig.aiPriceEndpoint || './api/travel-price';
   if (!navigator.onLine || !endpoint) return;
   display.innerHTML = `${renderSchedulePriceEstimate(localEstimate)}<small>${ui('جارٍ تحسين التقدير…', 'Refining estimate…')}</small>`;
   try {
@@ -1943,24 +1981,28 @@ function renderHotels() {
   const container = document.getElementById('hotelsList');
   const { hotels } = getCityData();
   container.innerHTML = hotels.map(h => {
-    const imgUrl = safeImage(h.img);
-    const mapQuery = h.map || `${h.name}, ${h.address}`;
+    const image = h.img ? `<img src="${safeImage(h.img)}" alt="${escapeHtml(h.name)}" class="detail-card-img clickable" onerror="this.style.display='none'" onclick="openPlaceDetails('hotel','${h.id}')">` : '';
+    const mapQuery = h.map || '';
+    const ratingRow = h.rating ? `<div class="detail-row"><span class="detail-row-label">Rating</span><span class="detail-row-value">⭐ ${h.rating}</span></div>` : '';
+    const callButton = h.phone ? `<button class="action-btn blue" onclick="callNumber('${h.phone.replace(/[^0-9+]/g,'')}')">📞 Call</button>` : '';
+    const mapButton = mapQuery ? `<button class="action-btn gray" onclick="openMap('${mapQuery}')">🗺️ Map</button>` : '';
+    const copyButton = h.name !== 'غير محدد' && h.address !== 'غير محدد' ? `<button class="action-btn green" onclick="copyText('${h.name}, ${h.address}')">📋 Copy</button>` : '';
     return `
     <div class="detail-card">
-      <img src="${imgUrl}" alt="${h.name}" class="detail-card-img clickable" onerror="this.style.display='none'" onclick="openPlaceDetails('hotel','${h.id}')">
+      ${image}
       <div class="detail-card-body">
         <div class="detail-card-title">${h.name}</div>
         <div class="detail-card-sub">${h.nameTh}</div>
-        <div class="detail-row"><span class="detail-row-label">Rating</span><span class="detail-row-value">⭐ ${h.rating}</span></div>
+        ${ratingRow}
         <div class="detail-row"><span class="detail-row-label">Address</span><span class="detail-row-value">${h.address}</span></div>
         <div class="detail-row"><span class="detail-row-label">Thai Address</span><span class="detail-row-value" style="font-size:13px">${h.addressTh}</span></div>
-        <div class="detail-row"><span class="detail-row-label">Phone</span><span class="detail-row-value">${h.phone}</span></div>
+        <div class="detail-row"><span class="detail-row-label">Phone</span><span class="detail-row-value">${h.phone || 'غير محدد'}</span></div>
         <div class="detail-row"><span class="detail-row-label">Notes</span><span class="detail-row-value" style="font-size:13px">${escapeHtml(localizeContent(h.notes))}</span></div>
         <div class="action-row">
           <button class="action-btn orange" onclick="openPlaceDetails('hotel','${h.id}')">📸 Details</button>
-          <button class="action-btn blue" onclick="callNumber('${h.phone.replace(/[^0-9+]/g,'')}')">📞 Call</button>
-          <button class="action-btn green" onclick="copyText('${h.name}, ${h.address}')">📋 Copy</button>
-          <button class="action-btn gray" onclick="openMap('${mapQuery}')">🗺️ Map</button>
+          ${callButton}
+          ${copyButton}
+          ${mapButton}
         </div>
       </div>
     </div>
@@ -2594,9 +2636,9 @@ function openPlaceDetails(type, id) {
 
   let rows = '';
   if (type === 'hotel') {
-    rows += `<div class="detail-row"><span class="detail-row-label">Rating</span><span class="detail-row-value">⭐ ${item.rating ?? '-'}</span></div>`;
-    rows += `<div class="detail-row"><span class="detail-row-label">Address</span><span class="detail-row-value">${escapeHtml(item.address || '-')}</span></div>`;
-    rows += `<div class="detail-row"><span class="detail-row-label">Phone</span><span class="detail-row-value">${escapeHtml(item.phone || '-')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Rating</span><span class="detail-row-value">${item.rating ? `⭐ ${item.rating}` : 'غير محدد'}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Address</span><span class="detail-row-value">${escapeHtml(item.address || 'غير محدد')}</span></div>`;
+    rows += `<div class="detail-row"><span class="detail-row-label">Phone</span><span class="detail-row-value">${escapeHtml(item.phone || 'غير محدد')}</span></div>`;
     rows += `<div class="detail-row"><span class="detail-row-label">Notes</span><span class="detail-row-value">${escapeHtml(item.notes || '-')}</span></div>`;
   }
   if (type === 'restaurant' || type === 'cafe') {

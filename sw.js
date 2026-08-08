@@ -1,5 +1,5 @@
-const CACHE_NAME = 'traveltrip-v7';
-const APP_SHELL = ['./', './index.html', './data.js', './assets/js/app.js', './assets/css/app.css', './manifest.webmanifest', './assets/icons/app-icon.svg'];
+const CACHE_NAME = 'traveltrip-v8';
+const APP_SHELL = ['./', './index.html', './data.js?v=20260806-15', './assets/js/app.js?v=20260808-4', './assets/css/app.css?v=20260806-16', './assets/vendor/html2pdf.bundle.min.js?v=0.14.0', './manifest.webmanifest', './assets/icons/app-icon.svg'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
