@@ -106,10 +106,29 @@ test('PDF dependency is local and available in the offline app shell', async () 
     'service worker must cache the exact local PDF bundle URL'
   );
   assert.ok(
-    worker.includes("'./assets/js/app.js?v=20260809-11'"),
+    worker.includes("'./assets/js/app.js?v=20260809-12'"),
     'service worker must cache the exact versioned application URL'
   );
   assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
+});
+
+test('itinerary header buttons keep the correct labels and actions', async () => {
+  const [html, appSource] = await Promise.all([readProjectFile('index.html'), readProjectFile('assets/js/app.js')]);
+
+  assert.ok(html.includes('id="shareTripPdfButton"'), 'PDF sharing needs its own stable button id');
+  assert.ok(html.includes('id="addScheduleDayButton"'), 'adding a day needs its own stable button id');
+  assert.ok(
+    appSource.includes("setUiText('#shareTripPdfButton', ui('↗ مشاركة PDF', '↗ Share PDF'))"),
+    'language updates must preserve the PDF sharing label'
+  );
+  assert.ok(
+    appSource.includes("setUiText('#addScheduleDayButton', t('addDay'))"),
+    'the add-day label must only target the add-day button'
+  );
+  assert.ok(
+    !appSource.includes("setUiText('.itinerary-page-intro .mini-btn', t('addDay'))"),
+    'the generic selector must not overwrite the PDF sharing button'
+  );
 });
 
 test('PDF export renders visible content and rejects blank output', async () => {
