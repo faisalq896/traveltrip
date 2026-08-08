@@ -735,13 +735,13 @@ const UI_TEXT = {
     home: 'الرئيسية', schedule: 'جدول الرحلة', hotels: 'الفنادق', restaurants: 'المطاعم', cafes: 'المقاهي', malls: 'التسوّق', activities: 'الأنشطة', budget: 'الميزانية', packing: 'التجهيز', favorites: 'المفضلة', notes: 'الملاحظات', gallery: 'معرض الصور', visited: 'الأماكن التي زرتها', search: 'البحث', more: 'المزيد', settings: 'الإعدادات والبيانات',
     day: 'اليوم', edit: 'تعديل', delete: 'حذف', addActivity: '+ نشاط', addDay: '+ يوم', tripKicker: 'خطتك، بتفاصيلها الجميلة', smartItinerary: 'مخطط الرحلة الذكي', itineraryTitle: 'خطة رحلتك', itineraryDescription: 'كل يوم، في مكانه ووقته المناسب.',
     hotels: 'الفنادق', restaurants: 'المطاعم', cafes: 'المقاهي', malls: 'المولات', activities: 'الأنشطة', more: 'المزيد', packing: 'تجهيز الرحلة', chooseCity: 'اختيار المدينة', theme: 'الوضع الداكن والفاتح', gallery: 'معرض الصور', notes: 'الملاحظات', visited: 'الأماكن التي زرتها', budget: 'الميزانية', placeDetails: 'تفاصيل المكان',
-    searchHotels: 'ابحث في الفنادق...', searchRestaurants: 'ابحث في المطاعم...', searchCafes: 'ابحث في المقاهي...', searchAll: 'ابحث في كل الأقسام...'
+    searchHotels: 'ابحث في الفنادق...', searchRestaurants: 'ابحث في المطاعم...', searchCafes: 'ابحث في المقاهي...', searchAll: 'ابحث في كل الأقسام...', refreshFlight: 'تحديث حالة الرحلة'
   },
   en: {
     home: 'Home', schedule: 'Itinerary', hotels: 'Hotels', restaurants: 'Restaurants', cafes: 'Cafes', malls: 'Shopping', activities: 'Activities', budget: 'Budget', packing: 'Packing', favorites: 'Favorites', notes: 'Notes', gallery: 'Photo Gallery', visited: 'Visited Places', search: 'Search', more: 'More', settings: 'Settings & Data',
     day: 'Day', edit: 'Edit', delete: 'Delete', addActivity: '+ Activity', addDay: '+ Day', tripKicker: 'YOUR TRIP, BEAUTIFULLY PLANNED', smartItinerary: 'SMART ITINERARY', itineraryTitle: 'Your itinerary', itineraryDescription: 'Every day, in the right place at the right time.',
     chooseCity: 'Choose city', theme: 'Dark / Light mode', placeDetails: 'Place details',
-    searchHotels: 'Search hotels...', searchRestaurants: 'Search restaurants...', searchCafes: 'Search cafes...', searchAll: 'Search every section...'
+    searchHotels: 'Search hotels...', searchRestaurants: 'Search restaurants...', searchCafes: 'Search cafes...', searchAll: 'Search every section...', refreshFlight: 'Refresh flight status'
   }
 };
 
@@ -906,7 +906,9 @@ function applyLanguage() {
   document.getElementById('restSearch')?.setAttribute('placeholder', t('searchRestaurants'));
   document.getElementById('cafeSearch')?.setAttribute('placeholder', t('searchCafes'));
   document.getElementById('globalSearch')?.setAttribute('placeholder', t('searchAll'));
-  const moreLabels = [t('hotels'), t('restaurants'), t('cafes'), t('malls'), t('activities'), t('budget'), t('packing'), t('visited'), t('gallery'), t('notes'), t('theme'), t('chooseCity'), t('settings')];
+  const moreExploreLabels = [t('hotels'), t('restaurants'), t('cafes'), t('malls'), t('activities')];
+  document.querySelectorAll('#sec-more .explore-tile-label').forEach((element, index) => { if (moreExploreLabels[index]) element.textContent = moreExploreLabels[index]; });
+  const moreLabels = [t('budget'), t('packing'), t('visited'), t('gallery'), t('notes'), t('refreshFlight'), t('theme'), t('chooseCity'), t('settings')];
   document.querySelectorAll('#sec-more .ios-list-title').forEach((element, index) => { if (moreLabels[index]) element.textContent = moreLabels[index]; });
   setTabLabel('home', ui('الرئيسية', 'Home'));
   setTabLabel('schedule', ui('الجدول', 'Itinerary'));
@@ -1212,6 +1214,13 @@ async function refreshFlightStatus(flightId) {
     const remaining = Math.max(0, (flightRefreshBlockedUntil.get(flight.id) || 0) - Date.now());
     setTimeout(() => renderFlightTracker(), remaining);
   }
+}
+
+function refreshCurrentFlightFromMore() {
+  const flight = getActiveFlight();
+  if (!flight) return;
+  showSection('home');
+  requestAnimationFrame(() => refreshFlightStatus(flight.id));
 }
 
 function updateCountdown() {

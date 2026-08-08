@@ -103,10 +103,31 @@ test('PDF dependency is local and available in the offline app shell', async () 
     'service worker must cache the exact local PDF bundle URL'
   );
   assert.ok(
-    worker.includes("'./assets/js/app.js?v=20260808-6'"),
+    worker.includes("'./assets/js/app.js?v=20260808-7'"),
     'service worker must cache the exact versioned application URL'
   );
   assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
+});
+
+test('More menu labels map to their actual actions and expose manual flight refresh', async () => {
+  const [html, appSource] = await Promise.all([readProjectFile('index.html'), readProjectFile('assets/js/app.js')]);
+
+  assert.ok(
+    html.includes('onclick="refreshCurrentFlightFromMore()"'),
+    'More must expose the manual flight refresh action'
+  );
+  assert.ok(
+    appSource.includes(
+      "const moreLabels = [t('budget'), t('packing'), t('visited'), t('gallery'), t('notes'), t('refreshFlight'), t('theme'), t('chooseCity'), t('settings')];"
+    ),
+    'More labels must follow the same order as their actions'
+  );
+  assert.ok(
+    appSource.includes(
+      "const moreExploreLabels = [t('hotels'), t('restaurants'), t('cafes'), t('malls'), t('activities')];"
+    ),
+    'explore tile translations must remain separate from More list labels'
+  );
 });
 
 test('bug audit regressions preserve user data and Thailand-local behavior', async () => {
