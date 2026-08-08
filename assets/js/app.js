@@ -1648,27 +1648,14 @@ function startMyDay() {
   alert(first ? `طقس اليوم: ${state.weather.desc || 'جارٍ التحميل'}\nأول نشاط: ${first.title} — ${first.time}\nخذ معك: ${state.weather.rain > 0 ? 'مظلة خفيفة' : 'ماء وواقي شمس'}` : 'لا يوجد نشاط غير مكتمل في جدول اليوم.');
 }
 function showRainPlan() {
-  const { malls, cafes, restaurants } = getCityData();
-  const indoor = [...malls, ...cafes, ...restaurants].filter(item => getOpenStatus(item.hours || '').isOpen !== false).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 5);
   showSection('schedule');
   openTravelAi();
-  const answer = document.getElementById('travelAiAnswer');
-  if (!answer) return;
-  answer.hidden = false;
-  answer.innerHTML = `<strong>${ui('خطة بديلة للمطر', 'Rainy-day plan')}</strong>${indoor.map(item => `<button type="button" data-map-query="${escapeHtml(item.name)}"><span>${escapeHtml(item.name)}</span><small>${escapeHtml(localizeContent(item.type || item.hours || 'مكان داخلي'))}</small></button>`).join('')}`;
-  answer.querySelectorAll('[data-map-query]').forEach(button => button.addEventListener('click', () => openMap(button.dataset.mapQuery)));
-  answer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  useTravelAiPrompt(ui('اقترح لي خطة مناسبة إذا نزل مطر، مع أماكن أقدر أضيفها للجدول', 'Suggest a rainy-day plan with places I can add to my itinerary'));
 }
 function showNowSuggestions() {
-  const { restaurants, cafes, malls, activities } = getCityData();
-  const picks = [...restaurants, ...cafes, ...malls, ...activities].filter(item => getOpenStatus(item.hours || '').isOpen !== false).sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0,5);
   showSection('schedule');
   openTravelAi();
-  const answer = document.getElementById('travelAiAnswer');
-  if (!answer) return;
-  answer.hidden = false;
-  answer.innerHTML = `<strong>${ui('أماكن مناسبة الآن', 'Good places right now')}</strong>${picks.map(item => `<button type="button" data-map-query="${escapeHtml(item.name)}"><span>${escapeHtml(item.name)}</span><small>${escapeHtml(localizeContent(item.type || item.company || 'مكان مقترح'))}</small></button>`).join('')}`;
-  answer.querySelectorAll('[data-map-query]').forEach(button => button.addEventListener('click', () => openMap(button.dataset.mapQuery)));
+  useTravelAiPrompt(ui('وين نروح الحين؟ اقترح أماكن مناسبة من مدينتي أقدر أضيفها للجدول', 'Where should we go now? Suggest suitable places in my city that I can add to the itinerary'));
 }
 
 function getPlannedStops() {
@@ -1715,7 +1702,7 @@ async function askTravelAssistant(event) {
     if (!response.ok || (!payload.answer && !payload.summary)) throw new Error(payload.error || 'Assistant unavailable');
     renderTravelAiAnswer(payload);
   } catch {
-    answer.textContent = ui('تعذر الوصول إلى المساعد الآن. حاول مرة أخرى بعد قليل.', 'The assistant is unavailable right now. Please try again shortly.');
+    renderTravelAiAnswer(buildLocalAssistantFallback(question));
   } finally {
     button.disabled = false;
     button.textContent = ui('اسأل المساعد', 'Ask assistant');
@@ -1739,19 +1726,45 @@ function closeTravelAi(event) {
 
 function useTravelAiPrompt(prompt) {
   const input = document.getElementById('travelAiQuestion');
-  if (!input) return;
+  const form = input?.closest('form');
+  const button = document.getElementById('travelAiAsk');
+  if (!input || !form || button?.disabled) return;
   input.value = prompt;
-  input.focus();
+  form.requestSubmit();
+}
+
+function buildLocalAssistantFallback(question) {
+  const { malls, cafes, restaurants, activities } = getCityData();
+  const rainy = /مطر|rain/i.test(question);
+  const source = rainy ? [...malls, ...cafes, ...restaurants] : [...activities, ...restaurants, ...cafes, ...malls];
+  const picks = source
+    .filter(item => item?.name && getOpenStatus(item.hours || '').isOpen !== false)
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+    .slice(0, 4);
+  return {
+    summary: rainy
+      ? ui('تعذر الاتصال بالمساعد، لذلك جهزت لك بدائل داخلية محفوظة في التطبيق.', 'AI is unavailable, so here are saved indoor alternatives.')
+      : ui('تعذر الاتصال بالمساعد، وهذه أفضل اقتراحات محفوظة في التطبيق حاليًا.', 'AI is unavailable, so here are the best saved suggestions.'),
+    suggestions: picks.map((item, index) => ({
+      title: item.name,
+      time: `${String(12 + index * 2).padStart(2, '0')}:00`,
+      details: localizeContent(item.type || item.company || item.address || ui('مكان مقترح', 'Suggested place')),
+      reason: ui('اقتراح محلي متاح حتى عند انقطاع الإنترنت.', 'A locally saved suggestion available offline.')
+    })),
+    tips: [],
+    warning: ui('هذه اقتراحات محفوظة وليست إجابة مباشرة من Gemini.', 'These are saved suggestions, not a live Gemini response.'),
+    localFallback: true
+  };
 }
 
 function renderTravelAiAnswer(payload) {
   const answer = document.getElementById('travelAiAnswer');
   if (!answer) return;
-  const suggestions = Array.isArray(payload.suggestions) ? payload.suggestions.slice(0, 4) : [];
+  const suggestions = Array.isArray(payload.suggestions) ? payload.suggestions.filter(item => item?.title).slice(0, 4) : [];
   const tips = Array.isArray(payload.tips) ? payload.tips.slice(0, 4) : [];
   answer.hidden = false;
   answer.innerHTML = `
-    <div class="ai-response-label"><span>✦</span>${ui('إجابة المساعد الذكي', 'AI assistant response')}</div>
+    <div class="ai-response-label"><span>✦</span>${payload.localFallback ? ui('اقتراحات محفوظة من التطبيق', 'Saved app suggestions') : ui('إجابة المساعد الذكي', 'AI assistant response')}</div>
     <div class="ai-response-summary">${escapeHtml(payload.summary || payload.answer || '')}</div>
     ${suggestions.length ? `<div class="ai-response-section"><strong>${ui('اقتراحات مناسبة لك', 'Suggestions for you')}</strong><div class="ai-suggestion-grid">${suggestions.map((item, index) => `<article class="ai-suggestion-card"><div><span>${escapeHtml(item.time || '16:00')}</span><h3>${escapeHtml(item.title || '')}</h3><p>${escapeHtml(item.reason || item.details || '')}</p></div><button type="button" onclick="addTravelAiSuggestion(${index})">+ ${ui('أضف للجدول', 'Add to itinerary')}</button></article>`).join('')}</div></div>` : ''}
     ${tips.length ? `<div class="ai-response-section ai-tip-list"><strong>${ui('نصائح سريعة', 'Quick tips')}</strong>${tips.map(tip => `<p>• ${escapeHtml(tip)}</p>`).join('')}</div>` : ''}
@@ -1766,14 +1779,24 @@ function addTravelAiSuggestion(index) {
   try { suggestions = JSON.parse(answer?.dataset.suggestions || '[]'); } catch { suggestions = []; }
   const suggestion = suggestions[index];
   if (!suggestion?.title) return;
-  if (!state.schedule.length) state.schedule.push({ day: 1, date: suggestedScheduleDate(), city: getCityConfig().label, hotel: '', items: [] });
-  const targetDay = state.schedule.find(day => day.items.length < 6) || state.schedule.at(-1);
-  targetDay.items.push({ time: /^\d{2}:\d{2}$/.test(suggestion.time || '') ? suggestion.time : '16:00', title: safeText(suggestion.title, 120), sub: safeText(suggestion.details || suggestion.reason || ui('اقتراح من مساعد AI', 'AI assistant suggestion'), 240), done: false });
+  if (!state.schedule.length) state.schedule.push({ day: 1, date: getCityConfig().tripDate.slice(0, 10), city: getCityConfig().label, hotel: '', items: [] });
+  const today = getThailandDateIso();
+  const targetDay = state.schedule.find(day => scheduleDateToIso(day.date) === today)
+    || state.schedule.find(day => (scheduleDateToIso(day.date) || '') > today)
+    || state.schedule.at(-1);
+  let time = /^([01]\d|2[0-3]):[0-5]\d$/.test(suggestion.time || '') ? suggestion.time : '16:00';
+  const occupied = new Set(targetDay.items.map(item => item.time));
+  for (let attempts = 0; occupied.has(time) && attempts < 24; attempts += 1) {
+    const [hours, minutes] = time.split(':').map(Number);
+    const nextMinutes = hours * 60 + minutes + 30;
+    time = `${String(Math.floor((nextMinutes % 1440) / 60)).padStart(2, '0')}:${String(nextMinutes % 60).padStart(2, '0')}`;
+  }
+  targetDay.items.push({ time, title: safeText(suggestion.title, 120), sub: safeText(suggestion.details || suggestion.reason || ui('اقتراح من مساعد AI', 'AI assistant suggestion'), 240), done: false });
   sortScheduleItems(targetDay);
   saveState();
   renderSchedule();
   const button = answer?.querySelectorAll('.ai-suggestion-card button')[index];
-  if (button) { button.disabled = true; button.textContent = ui('✓ تمت الإضافة', '✓ Added'); }
+  if (button) { button.disabled = true; button.textContent = ui(`✓ أضيف لليوم ${targetDay.day}`, `✓ Added to day ${targetDay.day}`); }
 }
 
 function buildTripPdfDocument() {

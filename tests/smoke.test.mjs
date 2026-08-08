@@ -103,7 +103,7 @@ test('PDF dependency is local and available in the offline app shell', async () 
     'service worker must cache the exact local PDF bundle URL'
   );
   assert.ok(
-    worker.includes("'./assets/js/app.js?v=20260808-7'"),
+    worker.includes("'./assets/js/app.js?v=20260808-8'"),
     'service worker must cache the exact versioned application URL'
   );
   assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
@@ -248,6 +248,22 @@ test('Gemini endpoint uses the current stable Flash model', async () => {
 
   assert.ok(endpoint.includes("'gemini-3.6-flash'"), 'the endpoint must use a currently available Gemini model');
   assert.ok(!endpoint.includes('temperature:'), 'new Gemini models must not receive deprecated sampling parameters');
+});
+
+test('AI prompts submit, fail safely, and add suggestions to a valid trip day', async () => {
+  const [html, appSource] = await Promise.all([readProjectFile('index.html'), readProjectFile('assets/js/app.js')]);
+
+  assert.ok(html.includes('ميزة AI'), 'the interface must not claim Gemini is connected before a request succeeds');
+  assert.ok(appSource.includes('form.requestSubmit();'), 'quick prompts must submit instead of only filling the input');
+  assert.ok(
+    appSource.includes('renderTravelAiAnswer(buildLocalAssistantFallback(question));'),
+    'failed AI requests must retain useful offline suggestions'
+  );
+  assert.ok(
+    appSource.includes('scheduleDateToIso(day.date) === today'),
+    'AI suggestions must prefer the current Thailand trip day'
+  );
+  assert.ok(appSource.includes('occupied.has(time)'), 'AI additions must avoid an existing activity time');
 });
 
 test('client-side source files have valid JavaScript syntax', async () => {
