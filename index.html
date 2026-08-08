@@ -154,7 +154,7 @@
     <div class="itinerary-kicker">خطتك، بتفاصيلها الجميلة</div>
     <div class="section-head-row">
       <div><div class="section-header">خطة رحلتك</div><p>كل يوم، في مكانه ووقته المناسب.</p></div>
-      <div class="itinerary-head-actions"><button class="mini-btn pdf-share-mini" id="shareTripPdfButton" type="button" onclick="shareTripPdf()">↗ مشاركة PDF</button><button class="mini-btn ai-launch-mini" type="button" onclick="openTravelAi()">✦ مساعد AI</button><button class="mini-btn" type="button" onclick="addScheduleDay()">+ يوم</button></div>
+      <div class="itinerary-head-actions"><button class="mini-btn pdf-share-mini" id="shareTripPdfButton" type="button" onclick="shareTripPdf()" aria-label="مشاركة خطة الرحلة بصيغة PDF">↗ مشاركة PDF</button><button class="mini-btn ai-launch-mini" id="travelAiButton" type="button" onclick="openTravelAi()">✦ مساعد AI</button><button class="mini-btn" id="addScheduleDayButton" type="button" onclick="addScheduleDay()">+ يوم</button></div>
     </div>
     <div class="itinerary-stats">
       <div><strong id="scheduleDaysStat">0</strong><span>أيام</span></div>
@@ -607,6 +607,6 @@
       placesEndpoint: ''
     };
   </script>
-<script src="assets/js/app.js?v=20260809-11"></script>
+<script src="assets/js/app.js?v=20260809-12"></script>
 </body>
 </html>

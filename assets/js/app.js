@@ -910,7 +910,10 @@ function applyLanguage() {
   setUiText('.itinerary-page-intro .itinerary-kicker', t('tripKicker'));
   setUiText('.itinerary-page-intro .section-header', t('itineraryTitle'));
   setUiText('.itinerary-page-intro p', t('itineraryDescription'));
-  setUiText('.itinerary-page-intro .mini-btn', t('addDay'));
+  setUiText('#shareTripPdfButton', ui('↗ مشاركة PDF', '↗ Share PDF'));
+  document.getElementById('shareTripPdfButton')?.setAttribute('aria-label', ui('مشاركة خطة الرحلة بصيغة PDF', 'Share trip itinerary as PDF'));
+  setUiText('#travelAiButton', ui('✦ مساعد AI', '✦ AI Assistant'));
+  setUiText('#addScheduleDayButton', t('addDay'));
   setUiText('.itinerary-sheet .itinerary-kicker', t('smartItinerary'));
   setUiText('#weatherKicker', ui('الطقس المباشر', 'LIVE WEATHER'));
   setUiText('#todayKicker', ui('اليوم', 'TODAY'));
