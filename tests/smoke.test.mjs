@@ -103,7 +103,7 @@ test('PDF dependency is local and available in the offline app shell', async () 
     'service worker must cache the exact local PDF bundle URL'
   );
   assert.ok(
-    worker.includes("'./assets/js/app.js?v=20260808-9'"),
+    worker.includes("'./assets/js/app.js?v=20260808-10'"),
     'service worker must cache the exact versioned application URL'
   );
   assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
@@ -126,6 +126,14 @@ test('PDF export renders visible content and rejects blank output', async () => 
     'blank canvases must be rejected'
   );
   assert.ok(appSource.includes("signature !== '%PDF-'"), 'invalid or empty PDF blobs must not be downloaded');
+  assert.ok(
+    appSource.includes("typeof navigator.canShare !== 'function'"),
+    'sharing must work on browsers that expose share without canShare'
+  );
+  assert.ok(
+    appSource.includes('downloadPdfBlob(blob, filename);'),
+    'failed or unsupported file sharing must fall back to a real download'
+  );
 });
 
 test('global search normalizes Arabic and includes category aliases', async () => {
