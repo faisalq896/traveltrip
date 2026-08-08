@@ -1925,6 +1925,54 @@ function pdfCanvasHasContent(canvas) {
   return colored > 20;
 }
 
+function tripPdfRenderOptions(filename, sourceHeight) {
+  return {
+    margin: 0,
+    filename,
+    image: { type: 'jpeg', quality: 0.94 },
+    html2canvas: {
+      scale: 1,
+      useCORS: true,
+      allowTaint: false,
+      logging: false,
+      backgroundColor: '#f4f8fb',
+      scrollX: 0,
+      scrollY: 0,
+      width: 794,
+      windowWidth: 794,
+      windowHeight: sourceHeight,
+      onclone: clonedDocument => {
+        const clonedPdf = clonedDocument.querySelector('.trip-pdf-document');
+        if (clonedPdf) {
+          clonedPdf.style.position = 'relative';
+          clonedPdf.style.inset = 'auto';
+          clonedPdf.style.width = '794px';
+        }
+      }
+    },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+    pagebreak: { mode: ['css', 'legacy'] }
+  };
+}
+
+async function renderTripPdfPages(documentNode, filename) {
+  const pages = [...documentNode.children].filter(page => page.textContent.trim());
+  if (!pages.length) throw new Error('PDF has no pages');
+  let pdf = null;
+  for (const page of pages) {
+    if (pdf) pdf.addPage();
+    const worker = window.html2pdf()
+      .set({ ...tripPdfRenderOptions(filename, page.scrollHeight), ...(pdf ? { pdf } : {}) })
+      .from(page)
+      .toCanvas();
+    const canvas = await worker.get('canvas');
+    if (!pdfCanvasHasContent(canvas)) throw new Error('PDF page canvas is blank');
+    await worker.toPdf();
+    pdf = await worker.get('pdf');
+  }
+  return pdf.output('blob');
+}
+
 function createPdfLoadingOverlay() {
   const overlay = document.createElement('div');
   overlay.className = 'pdf-loading-overlay';
@@ -1976,10 +2024,7 @@ async function shareTripPdf() {
     await waitForPdfAssets(documentNode);
     if (!documentNode.isConnected || documentNode.scrollWidth < 100 || documentNode.scrollHeight < 100) throw new Error('PDF content is not renderable');
     const filename = `TRAVELTRIP-${currentCityKey()}-${new Date().toISOString().slice(0, 10)}.pdf`;
-    const worker = window.html2pdf().set({ margin: 0, filename, image: { type: 'jpeg', quality: 0.94 }, html2canvas: { scale: 1, useCORS: true, allowTaint: false, logging: false, backgroundColor: '#f4f8fb', scrollX: 0, scrollY: 0, width: 794, windowWidth: 794, windowHeight: documentNode.scrollHeight, onclone: clonedDocument => { const clonedPdf = clonedDocument.querySelector('.trip-pdf-document'); if (clonedPdf) { clonedPdf.style.position = 'relative'; clonedPdf.style.inset = 'auto'; clonedPdf.style.width = '794px'; } } }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true }, pagebreak: { mode: ['css', 'legacy'], avoid: ['.pdf-day', '.pdf-stops article'] } }).from(documentNode).toCanvas();
-    const canvas = await worker.get('canvas');
-    if (!pdfCanvasHasContent(canvas)) throw new Error('PDF canvas is blank');
-    const blob = await worker.toPdf().outputPdf('blob');
+    const blob = await renderTripPdfPages(documentNode, filename);
     const signature = await blob.slice(0, 5).text();
     if (blob.size < 5000 || signature !== '%PDF-') throw new Error('Generated PDF is empty or invalid');
     const file = new File([blob], filename, { type: 'application/pdf' });

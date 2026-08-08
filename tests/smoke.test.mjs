@@ -106,7 +106,7 @@ test('PDF dependency is local and available in the offline app shell', async () 
     'service worker must cache the exact local PDF bundle URL'
   );
   assert.ok(
-    worker.includes("'./assets/js/app.js?v=20260809-13'"),
+    worker.includes("'./assets/js/app.js?v=20260809-14'"),
     'service worker must cache the exact versioned application URL'
   );
   assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
@@ -144,8 +144,8 @@ test('PDF export renders visible content and rejects blank output', async () => 
   );
   assert.ok(appSource.includes('await waitForPdfAssets(documentNode);'), 'PDF export must wait for fonts and images');
   assert.ok(
-    appSource.includes("if (!pdfCanvasHasContent(canvas)) throw new Error('PDF canvas is blank');"),
-    'blank canvases must be rejected'
+    appSource.includes("if (!pdfCanvasHasContent(canvas)) throw new Error('PDF page canvas is blank');"),
+    'blank page canvases must be rejected'
   );
   assert.ok(appSource.includes("signature !== '%PDF-'"), 'invalid or empty PDF blobs must not be downloaded');
   assert.ok(
@@ -157,12 +157,20 @@ test('PDF export renders visible content and rejects blank output', async () => 
     'failed or unsupported file sharing must fall back to a real download'
   );
   assert.ok(
-    appSource.includes('html2canvas: { scale: 1,'),
+    appSource.includes('function tripPdfRenderOptions') && appSource.includes('scale: 1,'),
     'PDF rendering must stay below mobile browser canvas limits'
   );
   assert.ok(
-    appSource.includes('windowWidth: 794, windowHeight: documentNode.scrollHeight'),
+    appSource.includes('windowWidth: 794,') && appSource.includes('windowHeight: sourceHeight,'),
     'PDF rendering must use stable A4 source dimensions'
+  );
+  assert.ok(
+    appSource.includes('const pages = [...documentNode.children].filter(page => page.textContent.trim());'),
+    'PDF export must render each itinerary page separately'
+  );
+  assert.ok(
+    appSource.includes('const blob = await renderTripPdfPages(documentNode, filename);'),
+    'PDF export must avoid one oversized full-itinerary canvas'
   );
   assert.ok(
     appSource.includes('const pdfSchedule = getScheduleForPdf();'),
