@@ -1915,6 +1915,28 @@ function createPdfLoadingOverlay() {
   return overlay;
 }
 
+function downloadPdfBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+
+function browserCanSharePdf(file) {
+  if (typeof navigator.share !== 'function') return false;
+  if (typeof navigator.canShare !== 'function') return true;
+  try {
+    return navigator.canShare({ files: [file] });
+  } catch {
+    return true;
+  }
+}
+
 async function shareTripPdf() {
   const button = document.getElementById('shareTripPdfButton');
   if (!state.schedule.length) { alert(ui('أضف يوماً واحداً على الأقل قبل إنشاء PDF.', 'Add at least one day before creating a PDF.')); return; }
@@ -1940,13 +1962,17 @@ async function shareTripPdf() {
     const signature = await blob.slice(0, 5).text();
     if (blob.size < 5000 || signature !== '%PDF-') throw new Error('Generated PDF is empty or invalid');
     const file = new File([blob], filename, { type: 'application/pdf' });
-    if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      await navigator.share({ title: ui('خطة رحلتي من TRAVELTRIP', 'My TRAVELTRIP itinerary'), text: ui('هذه خطة الرحلة كاملة بصيغة PDF.', 'Here is the complete trip plan as a PDF.'), files: [file] });
+    if (browserCanSharePdf(file)) {
+      try {
+        await navigator.share({ title: ui('خطة رحلتي من TRAVELTRIP', 'My TRAVELTRIP itinerary'), text: ui('هذه خطة الرحلة كاملة بصيغة PDF.', 'Here is the complete trip plan as a PDF.'), files: [file] });
+      } catch (shareError) {
+        if (shareError?.name === 'AbortError') throw shareError;
+        downloadPdfBlob(blob, filename);
+        alert(ui('تعذرت المشاركة المباشرة، لذلك تم تنزيل ملف PDF. افتحه واختر مشاركة لإرساله.', 'Direct sharing failed, so the PDF was downloaded. Open it and choose Share to send it.'));
+      }
     } else {
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url; link.download = filename; link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      downloadPdfBlob(blob, filename);
+      alert(ui('جهازك لا يدعم مشاركة ملفات PDF مباشرة من المتصفح. تم تنزيل الملف لتقدر ترسله من التنزيلات.', 'Your browser cannot share PDF files directly. The file was downloaded so you can send it from Downloads.'));
     }
   } catch (error) {
     if (error?.name !== 'AbortError') alert(ui('تعذر إنشاء ملف PDF الآن. لم يتم تنزيل أي ملف فارغ.', 'Could not create the PDF. No empty file was downloaded.'));
