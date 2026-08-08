@@ -1843,13 +1843,30 @@ function addTravelAiSuggestion(index) {
   if (button) { button.disabled = true; button.textContent = ui(`✓ أضيف لليوم ${targetDay.day}`, `✓ Added to day ${targetDay.day}`); }
 }
 
-function buildTripPdfDocument() {
+function getScheduleForPdf() {
+  const runtimeSchedule = sanitizeSchedule(state.schedule, [], 'pdf_runtime_schedule');
+  if (runtimeSchedule.length) return runtimeSchedule;
+
+  const cityKey = currentCityKey();
+  const scopedKey = cityScopedKey('tg_schedule', cityKey);
+  const scopedSchedule = sanitizeSchedule(readStoredJson(scopedKey, null), [], scopedKey);
+  if (scopedSchedule.length) return scopedSchedule;
+
+  if (cityKey === 'phuket') {
+    const legacySchedule = sanitizeSchedule(readStoredJson('tg_schedule', null), [], 'tg_schedule');
+    if (legacySchedule.length) return legacySchedule;
+  }
+
+  return deepClone(getCityData(cityKey).schedule);
+}
+
+function buildTripPdfDocument(schedule = getScheduleForPdf()) {
   const city = getCityConfig();
   const cityDisplayName = state.language === 'en' ? (city.key === 'bangkok' ? 'Bangkok' : 'Phuket') : city.label;
-  const totalStops = state.schedule.reduce((total, day) => total + day.items.length, 0);
-  const completedStops = state.schedule.reduce((total, day) => total + day.items.filter(item => item.done).length, 0);
-  const estimatedTotal = state.schedule.reduce((total, day) => total + day.items.reduce((sum, item) => sum + (Number(item.estimatedCost) || 0), 0), 0);
-  const days = state.schedule.map(day => `
+  const totalStops = schedule.reduce((total, day) => total + day.items.length, 0);
+  const completedStops = schedule.reduce((total, day) => total + day.items.filter(item => item.done).length, 0);
+  const estimatedTotal = schedule.reduce((total, day) => total + day.items.reduce((sum, item) => sum + (Number(item.estimatedCost) || 0), 0), 0);
+  const days = schedule.map(day => `
     <section class="pdf-day">
       <header><div><span>${ui('اليوم', 'Day')} ${escapeHtml(day.day)}</span><h2>${escapeHtml(localizeContent(day.date))}</h2></div><p>${escapeHtml(localizeContent(day.city))}<br>${escapeHtml(localizeContent(day.hotel || ui('بدون فندق محدد', 'No hotel selected')))}</p></header>
       <div class="pdf-stops">${day.items.length ? day.items.map(item => `<article><time>${escapeHtml(item.time)}</time><div><h3>${escapeHtml(localizeContent(item.title))}</h3><p>${escapeHtml(localizeContent(item.sub || ''))}</p>${item.estimatedCost !== null && item.estimatedCost !== undefined ? `<small>${ui('التكلفة التقديرية', 'Estimated cost')}: ${Number(item.estimatedCost).toLocaleString()} ${ui('بات', 'THB')}</small>` : ''}</div><b>${item.done ? '✓' : ''}</b></article>`).join('') : `<p class="pdf-empty">${ui('لا توجد محطات مضافة.', 'No stops added.')}</p>`}</div>
@@ -1861,10 +1878,10 @@ function buildTripPdfDocument() {
     <section class="pdf-cover">
       <div class="pdf-brand"><span>✦</span> TRAVELTRIP</div>
       <div class="pdf-cover-copy"><p>${ui('خطتك الخاصة إلى', 'Your personal trip to')}</p><h1>${escapeHtml(state.language === 'en' ? city.key.toUpperCase() : city.label)}</h1><strong>${ui('رحلة مرتبة. ذكريات أجمل.', 'A clearer plan. Better memories.')}</strong></div>
-      <div class="pdf-cover-meta"><div><b>${state.schedule.length}</b><span>${ui('أيام', 'Days')}</span></div><div><b>${totalStops}</b><span>${ui('محطات', 'Stops')}</span></div><div><b>${completedStops}</b><span>${ui('منجز', 'Done')}</span></div></div>
+      <div class="pdf-cover-meta"><div><b>${schedule.length}</b><span>${ui('أيام', 'Days')}</span></div><div><b>${totalStops}</b><span>${ui('محطات', 'Stops')}</span></div><div><b>${completedStops}</b><span>${ui('منجز', 'Done')}</span></div></div>
       <footer><span>${new Date().toLocaleDateString(state.language === 'en' ? 'en-GB' : 'ar-KW')}</span><span>faisalq896.github.io/traveltrip</span></footer>
     </section>
-    <section class="pdf-summary"><div><span>${ui('ملخص الرحلة', 'TRIP SUMMARY')}</span><h2>${ui('كل تفاصيل رحلتك في مكان واحد', 'Everything for your trip in one place')}</h2></div><div class="pdf-summary-grid"><p><b>${cityDisplayName}</b>${ui('الوجهة', 'Destination')}</p><p><b>${state.schedule.length}</b>${ui('عدد الأيام', 'Trip days')}</p><p><b>${estimatedTotal.toLocaleString()} ${ui('بات', 'THB')}</b>${ui('تكلفة الأنشطة التقديرية', 'Estimated activities')}</p><p><b>${state.weather.temp ?? '--'}°</b>${ui('آخر درجة حرارة محفوظة', 'Last saved temperature')}</p></div></section>
+    <section class="pdf-summary"><div><span>${ui('ملخص الرحلة', 'TRIP SUMMARY')}</span><h2>${ui('كل تفاصيل رحلتك في مكان واحد', 'Everything for your trip in one place')}</h2></div><div class="pdf-summary-grid"><p><b>${cityDisplayName}</b>${ui('الوجهة', 'Destination')}</p><p><b>${schedule.length}</b>${ui('عدد الأيام', 'Trip days')}</p><p><b>${estimatedTotal.toLocaleString()} ${ui('بات', 'THB')}</b>${ui('تكلفة الأنشطة التقديرية', 'Estimated activities')}</p><p><b>${state.weather.temp ?? '--'}°</b>${ui('آخر درجة حرارة محفوظة', 'Last saved temperature')}</p></div></section>
     ${days}
     <section class="pdf-closing"><div class="pdf-brand"><span>✦</span> TRAVELTRIP</div><h2>${ui('رحلة سعيدة وآمنة', 'Have a safe and wonderful trip')}</h2><p>${ui('شارك هذه الخطة مع رفقاء الرحلة وخلو كل شخص يعرف المحطة القادمة.', 'Share this plan with your travel companions so everyone knows what comes next.')}</p></section>`;
   return wrapper;
@@ -1939,11 +1956,12 @@ function browserCanSharePdf(file) {
 
 async function shareTripPdf() {
   const button = document.getElementById('shareTripPdfButton');
-  if (!state.schedule.length) { alert(ui('أضف يوماً واحداً على الأقل قبل إنشاء PDF.', 'Add at least one day before creating a PDF.')); return; }
+  const pdfSchedule = getScheduleForPdf();
+  if (!pdfSchedule.length) { alert(ui('لم أتمكن من العثور على جدول لهذه المدينة.', 'No itinerary could be found for this city.')); return; }
   if (typeof window.html2pdf !== 'function') { alert(ui('تعذر تحميل أداة PDF. أعد فتح التطبيق وحاول مرة أخرى.', 'The PDF tool could not load. Reopen the app and try again.')); return; }
   const originalText = button?.textContent;
   if (button) { button.disabled = true; button.textContent = ui('جاري إنشاء PDF...', 'Creating PDF...'); }
-  const documentNode = buildTripPdfDocument();
+  const documentNode = buildTripPdfDocument(pdfSchedule);
   if (!documentNode || documentNode.textContent.trim().length < 20) {
     if (button) { button.disabled = false; button.textContent = originalText; }
     alert(ui('لا يوجد محتوى صالح لإنشاء ملف PDF.', 'There is no valid content to create a PDF.'));

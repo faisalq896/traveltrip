@@ -80,7 +80,10 @@ test('Thailand dates, config, language, and hotel placeholders are safe', async 
     ),
     'app config must use the unified TRAVELTRIP config with legacy compatibility'
   );
-  assert.ok(appSource.includes(": 'ar',\n  selectedCity"), 'Arabic must be the default when no preference exists');
+  assert.ok(
+    appSource.includes("savedLanguage === 'en' ? 'en' : 'ar') : 'ar'"),
+    'Arabic must be the default when no preference exists'
+  );
   assert.equal(
     (appSource.match(/Skyline Riverside Hotel/g) || []).length,
     1,
@@ -103,7 +106,7 @@ test('PDF dependency is local and available in the offline app shell', async () 
     'service worker must cache the exact local PDF bundle URL'
   );
   assert.ok(
-    worker.includes("'./assets/js/app.js?v=20260808-10'"),
+    worker.includes("'./assets/js/app.js?v=20260809-11'"),
     'service worker must cache the exact versioned application URL'
   );
   assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
@@ -133,6 +136,18 @@ test('PDF export renders visible content and rejects blank output', async () => 
   assert.ok(
     appSource.includes('downloadPdfBlob(blob, filename);'),
     'failed or unsupported file sharing must fall back to a real download'
+  );
+  assert.ok(
+    appSource.includes('const pdfSchedule = getScheduleForPdf();'),
+    'PDF sharing must resolve the current city itinerary before checking for content'
+  );
+  assert.ok(
+    appSource.includes('readStoredJson(scopedKey, null)'),
+    'PDF sharing must recover the city-scoped saved itinerary'
+  );
+  assert.ok(
+    appSource.includes('getCityData(cityKey).schedule'),
+    'PDF sharing must retain the correct city defaults when no saved state exists'
   );
 });
 
