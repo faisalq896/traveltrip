@@ -25,26 +25,47 @@ test('service worker updates silently without interrupting the current trip', as
   ]);
 
   assert.ok(!worker.includes('self.skipWaiting()'), 'service worker must not replace a running version mid-session');
-  assert.ok(worker.includes("event.request.mode === 'navigate'"), 'page navigations must check the network for a new version');
-  assert.ok(!appSource.includes("serviceWorker.addEventListener('controllerchange'"), 'the app must never reload when a service worker activates');
+  assert.ok(
+    worker.includes("event.request.mode === 'navigate'"),
+    'page navigations must check the network for a new version'
+  );
+  assert.ok(
+    !appSource.includes("serviceWorker.addEventListener('controllerchange'"),
+    'the app must never reload when a service worker activates'
+  );
   assert.ok(!html.includes('id="appUpdate"'), 'the update prompt must not be shown');
 });
 
 test('GitHub Pages uses the public serverless price endpoint', async () => {
   const html = await readProjectFile('index.html');
 
-  assert.ok(html.includes('https://traveltrip-traveltrip.vercel.app/api/travel-price'), 'the static site must not call a nonexistent GitHub Pages API path');
+  assert.ok(
+    html.includes('https://traveltrip-traveltrip.vercel.app/api/travel-price'),
+    'the static site must not call a nonexistent GitHub Pages API path'
+  );
 });
 
 test('default itineraries use the configured 2026 Thailand trip dates', async () => {
   const appSource = await readProjectFile('assets/js/app.js');
 
   for (const date of ['19 أغسطس', '20 أغسطس', '21 أغسطس', '22 أغسطس', '23 أغسطس', '25 أغسطس', '26 أغسطس', '27 أغسطس']) {
-    assert.ok(appSource.includes(`date: '${date}'`) || appSource.includes(`date: "${date}"`), `missing corrected date ${date}`);
+    assert.ok(
+      appSource.includes(`date: '${date}'`) || appSource.includes(`date: "${date}"`),
+      `missing corrected date ${date}`
+    );
   }
-  assert.ok(!appSource.includes("date: '15 أغسطس'") && !appSource.includes('date: "15 أغسطس"'), 'legacy August 15 dates must not remain in defaults');
-  assert.ok(appSource.includes("tripDate: '2026-08-19T13:40:00+07:00'"), 'Phuket countdown must include Thailand offset');
-  assert.ok(appSource.includes("tripDate: '2026-08-25T12:35:00+07:00'"), 'Bangkok countdown must include Thailand offset');
+  assert.ok(
+    !appSource.includes("date: '15 أغسطس'") && !appSource.includes('date: "15 أغسطس"'),
+    'legacy August 15 dates must not remain in defaults'
+  );
+  assert.ok(
+    appSource.includes("tripDate: '2026-08-19T13:40:00+07:00'"),
+    'Phuket countdown must include Thailand offset'
+  );
+  assert.ok(
+    appSource.includes("tripDate: '2026-08-25T12:35:00+07:00'"),
+    'Bangkok countdown must include Thailand offset'
+  );
 });
 
 test('Thailand dates, config, language, and hotel placeholders are safe', async () => {
@@ -53,9 +74,18 @@ test('Thailand dates, config, language, and hotel placeholders are safe', async 
   assert.ok(appSource.includes("timeZone: 'Asia/Bangkok'"), 'Thailand timezone must be explicit');
   assert.ok(appSource.includes('getThailandDateIso(today)'), 'today card must use the Thailand calendar date');
   assert.ok(!appSource.includes('getPhuketNowParts'), 'city-specific time helper name must be removed');
-  assert.ok(appSource.includes("const appConfig = { ...(window.TRAVEL_APP_CONFIG || {}), ...(window.TRAVELTRIP_CONFIG || {}) }"), 'app config must use the unified TRAVELTRIP config with legacy compatibility');
+  assert.ok(
+    appSource.includes(
+      'const appConfig = { ...(window.TRAVEL_APP_CONFIG || {}), ...(window.TRAVELTRIP_CONFIG || {}) }'
+    ),
+    'app config must use the unified TRAVELTRIP config with legacy compatibility'
+  );
   assert.ok(appSource.includes(": 'ar',\n  selectedCity"), 'Arabic must be the default when no preference exists');
-  assert.equal((appSource.match(/Skyline Riverside Hotel/g) || []).length, 1, 'the old hotel name may appear only in the saved-data migration');
+  assert.equal(
+    (appSource.match(/Skyline Riverside Hotel/g) || []).length,
+    1,
+    'the old hotel name may appear only in the saved-data migration'
+  );
   assert.ok(!appSource.includes('+66 2 555 1234'), 'fake Bangkok phone data must be removed');
 });
 
@@ -68,8 +98,14 @@ test('PDF dependency is local and available in the offline app shell', async () 
 
   assert.ok(html.includes('assets/vendor/html2pdf.bundle.min.js'), 'HTML must load the local PDF bundle');
   assert.ok(!html.includes('cdnjs.cloudflare.com'), 'HTML must not depend on the PDF CDN');
-  assert.ok(worker.includes("'./assets/vendor/html2pdf.bundle.min.js?v=0.14.0'"), 'service worker must cache the exact local PDF bundle URL');
-  assert.ok(worker.includes("'./assets/js/app.js?v=20260808-5'"), 'service worker must cache the exact versioned application URL');
+  assert.ok(
+    worker.includes("'./assets/vendor/html2pdf.bundle.min.js?v=0.14.0'"),
+    'service worker must cache the exact local PDF bundle URL'
+  );
+  assert.ok(
+    worker.includes("'./assets/js/app.js?v=20260808-6'"),
+    'service worker must cache the exact versioned application URL'
+  );
   assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
 });
 
@@ -79,11 +115,26 @@ test('bug audit regressions preserve user data and Thailand-local behavior', asy
   assert.ok(appSource.includes("'gallery', 'settings', 'visited'"), 'settings must remain a valid persisted section');
   assert.ok(appSource.includes("state.language = 'ar';"), 'full reset must return to the Arabic default');
   assert.ok(appSource.includes('date: getThailandDateIso()'), 'expense dates must use the Thailand calendar day');
-  assert.ok(appSource.includes("document.getElementById(`b-${field}`).value = b[field] ?? ''"), 'restoring a zero or empty budget must clear stale inputs');
-  assert.ok(appSource.includes("estimatedCostValue === '' ? null"), 'an empty estimate must stay null instead of becoming zero');
-  assert.ok(appSource.includes('await navigator.clipboard.writeText(text)'), 'clipboard rejections must be handled by the async copy flow');
-  assert.ok(appSource.includes('addScheduleItem(${dayIndex})'), 'an empty existing Today entry must add an activity to that day');
-  assert.ok(appSource.includes('data-today-map=') && !appSource.includes("onclick=\"openMap('${escapeHtml(item.title)}')"), 'user-entered activity names must not be embedded in inline JavaScript');
+  assert.ok(
+    appSource.includes("document.getElementById(`b-${field}`).value = b[field] ?? ''"),
+    'restoring a zero or empty budget must clear stale inputs'
+  );
+  assert.ok(
+    appSource.includes("estimatedCostValue === '' ? null"),
+    'an empty estimate must stay null instead of becoming zero'
+  );
+  assert.ok(
+    appSource.includes('await navigator.clipboard.writeText(text)'),
+    'clipboard rejections must be handled by the async copy flow'
+  );
+  assert.ok(
+    appSource.includes('addScheduleItem(${dayIndex})'),
+    'an empty existing Today entry must add an activity to that day'
+  );
+  assert.ok(
+    appSource.includes('data-today-map=') && !appSource.includes("onclick=\"openMap('${escapeHtml(item.title)}')"),
+    'user-entered activity names must not be embedded in inline JavaScript'
+  );
   assert.ok(!appSource.includes('renderTripMap()'), 'schedule rendering must not call a missing map function');
   assert.ok(appSource.includes('refreshTripMap();'), 'schedule rendering must refresh the existing map implementation');
 });
@@ -98,10 +149,22 @@ test('PWA install metadata provides local PNG icons for mobile platforms', async
   ]);
   const manifest = JSON.parse(manifestSource);
 
-  assert.ok(html.includes('rel="apple-touch-icon" href="assets/icons/app-icon-192.png"'), 'iOS must receive a PNG touch icon');
-  assert.ok(manifest.icons.some(icon => icon.sizes === '192x192' && icon.type === 'image/png'), 'Android needs a 192px PNG icon');
-  assert.ok(manifest.icons.some(icon => icon.sizes === '512x512' && icon.type === 'image/png'), 'Android needs a 512px PNG icon');
-  assert.ok(worker.includes("'./assets/icons/app-icon-192.png'") && worker.includes("'./assets/icons/app-icon-512.png'"), 'offline shell must cache both install icons');
+  assert.ok(
+    html.includes('rel="apple-touch-icon" href="assets/icons/app-icon-192.png"'),
+    'iOS must receive a PNG touch icon'
+  );
+  assert.ok(
+    manifest.icons.some((icon) => icon.sizes === '192x192' && icon.type === 'image/png'),
+    'Android needs a 192px PNG icon'
+  );
+  assert.ok(
+    manifest.icons.some((icon) => icon.sizes === '512x512' && icon.type === 'image/png'),
+    'Android needs a 512px PNG icon'
+  );
+  assert.ok(
+    worker.includes("'./assets/icons/app-icon-192.png'") && worker.includes("'./assets/icons/app-icon-512.png'"),
+    'offline shell must cache both install icons'
+  );
   assert.equal(icon192.readUInt32BE(16), 192);
   assert.equal(icon192.readUInt32BE(20), 192);
   assert.equal(icon512.readUInt32BE(16), 512);
@@ -110,9 +173,53 @@ test('PWA install metadata provides local PNG icons for mobile platforms', async
 
 test('known broken external image URLs are not shipped', async () => {
   const source = `${await readProjectFile('data.js')}\n${await readProjectFile('assets/js/app.js')}`;
-  for (const id of ['1574868235872-1663edcb4569', '1520328593999-9a2cd29b7252', '1495121605193-b116b5b9c5d1', '1583492723326-6b63d00192e2', '1540202404-b71188410214', '1558618666-fcd25c85f82e', '1519567281028-11a5b85d38cc']) {
+  for (const id of [
+    '1574868235872-1663edcb4569',
+    '1520328593999-9a2cd29b7252',
+    '1495121605193-b116b5b9c5d1',
+    '1583492723326-6b63d00192e2',
+    '1540202404-b71188410214',
+    '1558618666-fcd25c85f82e',
+    '1519567281028-11a5b85d38cc'
+  ]) {
     assert.ok(!source.includes(id), `broken image ${id} must use the local fallback`);
   }
+});
+
+test('flight tracking is manual, local-first, and keeps secrets off the frontend', async () => {
+  const [html, appSource, worker] = await Promise.all([
+    readProjectFile('index.html'),
+    readProjectFile('assets/js/app.js'),
+    readProjectFile('sw.js')
+  ]);
+  const frontend = `${html}\n${appSource}\n${worker}`;
+
+  assert.ok(html.includes('/api/flight-status'), 'frontend must use the Vercel flight endpoint');
+  assert.ok(
+    !frontend.includes('AVIATIONSTACK_API_KEY') && !frontend.includes('api.aviationstack.com'),
+    'Aviationstack credentials and provider URL must remain server-side'
+  );
+  assert.ok(appSource.includes('setInterval(updateCountdown, 1000)'), 'countdown must continue locally every second');
+  assert.ok(
+    !appSource.includes('setInterval(refreshFlightStatus') && !appSource.includes('refreshFlightStatus();'),
+    'flight status must never auto-refresh'
+  );
+  assert.ok(
+    appSource.includes("['tg_flights', JSON.stringify(state.flights)]"),
+    'successful flight data must be persisted locally'
+  );
+  assert.ok(
+    appSource.includes('flightStatusEndpoint') && appSource.includes('navigator.onLine'),
+    'manual refresh must use the configured endpoint and handle offline mode'
+  );
+  assert.ok(
+    appSource.includes('flightRefreshBlockedUntil') && appSource.includes('Date.now() + 10000'),
+    'rapid refresh clicks must be throttled'
+  );
+  assert.ok(
+    appSource.includes("id: 'phuket-outbound'") && appSource.includes("id: 'bangkok-transfer'"),
+    'flight state must support separate records rather than one hardcoded flight'
+  );
 });
 
 test('Gemini endpoint uses the current stable Flash model', async () => {

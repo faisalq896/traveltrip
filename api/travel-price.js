@@ -4,7 +4,7 @@ const DEFAULT_ALLOWED_ORIGIN = 'https://faisalq896.github.io';
 function getAllowedOrigins() {
   return (process.env.TRAVELTRIP_ALLOWED_ORIGINS || DEFAULT_ALLOWED_ORIGIN)
     .split(',')
-    .map(origin => origin.trim())
+    .map((origin) => origin.trim())
     .filter(Boolean);
 }
 
@@ -26,7 +26,11 @@ function cleanText(value) {
 function readJson(text) {
   const match = String(text || '').match(/\{[\s\S]*\}/);
   if (!match) return null;
-  try { return JSON.parse(match[0]); } catch { return null; }
+  try {
+    return JSON.parse(match[0]);
+  } catch {
+    return null;
+  }
 }
 
 export default async function handler(req, res) {
@@ -45,33 +49,37 @@ export default async function handler(req, res) {
   try {
     const configuredModel = cleanText(process.env.GEMINI_MODEL) || 'gemini-3.6-flash';
     const model = configuredModel === 'gemini-2.5-flash' ? 'gemini-3.6-flash' : configuredModel;
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': process.env.GEMINI_API_KEY
-      },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          maxOutputTokens: 512,
-          thinkingConfig: { thinkingLevel: 'minimal' },
-          responseMimeType: 'application/json'
-        }
-      })
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': process.env.GEMINI_API_KEY
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            maxOutputTokens: 512,
+            thinkingConfig: { thinkingLevel: 'minimal' },
+            responseMimeType: 'application/json'
+          }
+        })
+      }
+    );
     if (!response.ok) {
       const providerPayload = await response.json().catch(() => ({}));
       const providerError = providerPayload?.error || {};
       const providerStatus = cleanText(providerError.status).replace(/[^A-Z_]/g, '');
       const status = response.status === 401 || response.status === 429 ? response.status : 502;
-      const reason = response.status === 401
-        ? 'Gemini API key is invalid or inactive.'
-        : response.status === 429
-          ? 'Gemini free-tier rate limit was reached. Try again later.'
-          : providerError.type === 'invalid_request_error'
-            ? 'Gemini rejected the requested model or request configuration.'
-            : 'Gemini provider request failed.';
+      const reason =
+        response.status === 401
+          ? 'Gemini API key is invalid or inactive.'
+          : response.status === 429
+            ? 'Gemini free-tier rate limit was reached. Try again later.'
+            : providerError.type === 'invalid_request_error'
+              ? 'Gemini rejected the requested model or request configuration.'
+              : 'Gemini provider request failed.';
       return res.status(status).json({
         error: reason,
         providerStatus: providerStatus || 'UNKNOWN',
@@ -80,8 +88,8 @@ export default async function handler(req, res) {
     }
     const payload = await response.json();
     const responseText = (payload.candidates?.[0]?.content?.parts || [])
-      .filter(part => !part.thought && typeof part.text === 'string')
-      .map(part => part.text)
+      .filter((part) => !part.thought && typeof part.text === 'string')
+      .map((part) => part.text)
       .join('\n');
     const result = readJson(responseText);
     const low = Number(result?.low);

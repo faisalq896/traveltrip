@@ -14,7 +14,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="assets/icons/app-icon-192.png">
 <title>دليل تايلند — بوكيت 2026</title>
-    <link rel="stylesheet" href="assets/css/app.css?v=20260808-17">
+    <link rel="stylesheet" href="assets/css/app.css?v=20260808-18">
 </head>
 <body>
 
@@ -121,6 +121,8 @@
     <div class="countdown-box"><div class="countdown-num" id="cd-minutes">--</div><div class="countdown-label">دقيقة</div></div>
     <div class="countdown-box"><div class="countdown-num" id="cd-seconds">--</div><div class="countdown-label">ثانية</div></div>
   </div>
+
+  <section class="flight-tracker-card" id="flightTrackerCard" aria-live="polite"></section>
 
   <section class="today-card" id="todayCard">
     <div class="premium-card-head"><div><span>TODAY</span><h2>جدول اليوم</h2></div><button class="mini-btn" type="button" onclick="startMyDay()">ابدأ يومي</button></div>
@@ -595,9 +597,10 @@
   <script>
     window.TRAVELTRIP_CONFIG = {
       aiPriceEndpoint: 'https://traveltrip-traveltrip.vercel.app/api/travel-price',
+      flightStatusEndpoint: 'https://traveltrip-traveltrip.vercel.app/api/flight-status',
       placesEndpoint: ''
     };
   </script>
-<script src="assets/js/app.js?v=20260808-5"></script>
+<script src="assets/js/app.js?v=20260808-6"></script>
 </body>
 </html>

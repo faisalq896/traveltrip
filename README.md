@@ -70,6 +70,7 @@ https://USERNAME.github.io/phuket-guide/
 عند نشر المشروع كاملاً على Vercel، يصبح المسار `api/travel-price` متاحاً تلقائياً. أضف المتغيرات التالية من **Vercel → Project → Settings → Environment Variables** ولا تضع المفتاح داخل `index.html` أو `app.js`:
 
 - `GEMINI_API_KEY`: مفتاح Gemini السري من Google AI Studio.
+- `AVIATIONSTACK_API_KEY`: مفتاح Aviationstack السري لتحديث حالة الرحلة يدويًا.
 - `TRAVELTRIP_ALLOWED_ORIGINS`: عنوان أو عناوين الموقع المسموح بها مفصولة بفاصلة، مثل `https://faisalq896.github.io,https://your-project.vercel.app`.
 - `GEMINI_MODEL` (اختياري): اسم النموذج؛ الافتراضي `gemini-3.6-flash`.
 

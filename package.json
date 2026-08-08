@@ -9,8 +9,8 @@
   },
   "scripts": {
     "format": "prettier --write index.html data.js assets/css/app.css assets/js/app.js tests/*.mjs README.md",
-    "format:check": "prettier --check index.html data.js assets/css/app.css assets/js/app.js tests/*.mjs README.md",
-    "lint": "eslint data.js assets/js/app.js tests/*.mjs",
+    "format:check": "prettier --check api/*.js tests/*.mjs eslint.config.mjs package.json manifest.webmanifest sw.js",
+    "lint": "eslint data.js assets/js/app.js api/*.js tests/*.mjs",
     "test": "node --test tests/*.mjs",
     "verify": "npm run format:check && npm run lint && npm run test"
   },

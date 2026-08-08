@@ -23,5 +23,18 @@ export default [
     languageOptions: {
       sourceType: 'script'
     }
+  },
+  {
+    files: ['api/**/*.js'],
+    languageOptions: {
+      sourceType: 'module',
+      globals: globals.node
+    }
+  },
+  {
+    files: ['tests/**/*.mjs'],
+    languageOptions: {
+      globals: globals.node
+    }
   }
 ];

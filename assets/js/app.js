@@ -220,6 +220,19 @@ const CITY_CONFIG = {
   }
 };
 
+const DEFAULT_FLIGHTS = [
+  {
+    id: 'phuket-outbound', city: 'phuket', flightNumber: 'KU411', flightDate: '2026-08-19',
+    scheduledDeparture: TRIP_DATE, estimatedDeparture: null, actualDeparture: null,
+    delay: 0, flightStatus: 'scheduled', lastUpdated: '', departureTimezone: '', arrivalTimezone: ''
+  },
+  {
+    id: 'bangkok-transfer', city: 'bangkok', flightNumber: '', flightDate: '2026-08-25',
+    scheduledDeparture: CITY_CONFIG.bangkok.tripDate, estimatedDeparture: null, actualDeparture: null,
+    delay: 0, flightStatus: 'scheduled', lastUpdated: '', departureTimezone: '', arrivalTimezone: ''
+  }
+];
+
 const CITY_DATASETS = {
   phuket: {
     schedule: scheduleData,
@@ -435,6 +448,42 @@ function sanitizeExpenses(value, key) {
   return expenses;
 }
 
+function isZonedTimestamp(value) {
+  return typeof value === 'string' && /(Z|[+-]\d{2}:?\d{2})$/.test(value) && Number.isFinite(Date.parse(value));
+}
+
+function sanitizeFlights(value, key) {
+  if (!Array.isArray(value)) {
+    if (value !== null) recordStorageRecovery(key);
+    return deepClone(DEFAULT_FLIGHTS);
+  }
+  const flights = value.filter(isPlainObject).map((flight, index) => {
+    const city = CITY_CONFIG[flight.city] ? flight.city : null;
+    const fallback = DEFAULT_FLIGHTS.find(item => item.city === city);
+    if (!city || !fallback) return null;
+    const flightNumber = safeText(flight.flightNumber, 10).toUpperCase().replace(/\s+/g, '');
+    return {
+      id: /^[a-z0-9_-]+$/i.test(flight.id || '') ? flight.id : `${city}-flight-${index + 1}`,
+      city,
+      flightNumber: /^[A-Z0-9]{2,3}\d{1,4}[A-Z]?$/.test(flightNumber) ? flightNumber : '',
+      flightDate: /^\d{4}-\d{2}-\d{2}$/.test(flight.flightDate || '') ? flight.flightDate : fallback.flightDate,
+      scheduledDeparture: isZonedTimestamp(flight.scheduledDeparture) ? flight.scheduledDeparture : fallback.scheduledDeparture,
+      estimatedDeparture: isZonedTimestamp(flight.estimatedDeparture) ? flight.estimatedDeparture : null,
+      actualDeparture: isZonedTimestamp(flight.actualDeparture) ? flight.actualDeparture : null,
+      delay: Math.max(0, Math.round(Number(flight.delay) || 0)),
+      flightStatus: safeText(flight.flightStatus, 40) || 'scheduled',
+      lastUpdated: isZonedTimestamp(flight.lastUpdated) ? flight.lastUpdated : '',
+      departureTimezone: safeText(flight.departureTimezone, 80),
+      arrivalTimezone: safeText(flight.arrivalTimezone, 80)
+    };
+  }).filter(Boolean);
+  DEFAULT_FLIGHTS.forEach(fallback => {
+    if (!flights.some(flight => flight.city === fallback.city)) flights.push(deepClone(fallback));
+  });
+  if (flights.length !== value.length) recordStorageRecovery(key);
+  return flights;
+}
+
 const legacyFavorites = sanitizeFavorites(readStoredJson('tg_favorites', []), 'tg_favorites');
 const savedPacking = sanitizePacking(readStoredJson('tg_packing', null), 'tg_packing');
 const savedTheme = readStoredText('tg_theme', 'light');
@@ -458,6 +507,7 @@ let state = {
   budget: sanitizeBudget(readStoredJson('tg_budget', {}), 'tg_budget'),
   budgetLimit: Math.max(0, Number(readStoredText('tg_budget_limit', '0')) || 0),
   expenses: sanitizeExpenses(readStoredJson('tg_expenses', []), 'tg_expenses'),
+  flights: sanitizeFlights(readStoredJson('tg_flights', null), 'tg_flights'),
   weather: {
     temp: null,
     desc: 'جاري التحديث...',
@@ -625,6 +675,7 @@ function applyCityIdentity() {
   if (weatherLocation) weatherLocation.textContent = cityWeatherLocation;
   applyQuickMedia();
   updateHomeCounts();
+  renderFlightTracker();
 }
 
 function notifyStorageIssue(message) {
@@ -664,6 +715,7 @@ function saveState() {
     ['tg_budget', JSON.stringify(state.budget)],
     ['tg_budget_limit', String(state.budgetLimit)],
     ['tg_expenses', JSON.stringify(state.expenses)],
+    ['tg_flights', JSON.stringify(state.flights)],
     [cityScopedKey('tg_weather'), JSON.stringify(state.weather)],
     ['tg_rate', String(state.exchangeRate)],
     [cityScopedKey('tg_schedule'), JSON.stringify(state.schedule)],
@@ -1020,16 +1072,161 @@ function selectCity(city) {
 // COUNTDOWN
 // ============================================
 
+const flightRefreshBlockedUntil = new Map();
+
+function getActiveFlight() {
+  return state.flights.find(flight => flight.city === currentCityKey()) || null;
+}
+
+function getFlightCountdownTarget(flight = getActiveFlight()) {
+  if (!flight) return getCityConfig().tripDate || TRIP_DATE;
+  if (flight.delay > 0 && isZonedTimestamp(flight.estimatedDeparture)) return flight.estimatedDeparture;
+  return flight.scheduledDeparture || getCityConfig().tripDate || TRIP_DATE;
+}
+
+function isDepartedFlight(flight) {
+  return Boolean(flight?.actualDeparture) || ['active', 'landed', 'diverted'].includes(String(flight?.flightStatus || '').toLowerCase());
+}
+
+function flightStatusLabel(flight) {
+  const status = String(flight?.flightStatus || 'scheduled').toLowerCase();
+  const labels = {
+    scheduled: ui('مجدولة', 'Scheduled'), active: ui('أقلعت', 'Departed'), landed: ui('وصلت', 'Landed'),
+    cancelled: ui('ملغاة', 'Cancelled'), incident: ui('توجد ملاحظة', 'Incident'), diverted: ui('تم تحويل المسار', 'Diverted'), unknown: ui('غير معروفة', 'Unknown')
+  };
+  return labels[status] || status;
+}
+
+function formatFlightTime(timestamp, flight) {
+  if (!isZonedTimestamp(timestamp)) return ui('غير محدد', 'Not set');
+  const fallbackZone = flight?.city === 'bangkok' ? 'Asia/Bangkok' : 'Asia/Bangkok';
+  const timeZone = flight?.departureTimezone || fallbackZone;
+  try {
+    return new Date(timestamp).toLocaleString(state.language === 'en' ? 'en-GB' : 'ar-KW', {
+      timeZone, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true
+    });
+  } catch {
+    return timestamp.replace('T', ' ').slice(0, 16);
+  }
+}
+
+function renderFlightTracker(message = '') {
+  const container = document.getElementById('flightTrackerCard');
+  const flight = getActiveFlight();
+  if (!container || !flight) return;
+  const delayed = flight.delay > 0 && flight.estimatedDeparture;
+  const departed = isDepartedFlight(flight);
+  const cancelled = String(flight.flightStatus).toLowerCase() === 'cancelled';
+  const statusClass = departed ? 'departed' : delayed ? 'delayed' : '';
+  const statusMessage = message || (departed
+    ? ui(`أقلعت الرحلة · ${flightStatusLabel(flight)}`, `Flight departed · ${flightStatusLabel(flight)}`)
+    : cancelled
+      ? ui('تم إلغاء الرحلة', 'Flight cancelled')
+      : delayed
+        ? ui(`تأخرت الرحلة ${flight.delay} دقيقة`, `Flight delayed by ${flight.delay} minutes`)
+        : ui('الرحلة في موعدها', 'Flight is on time'));
+  const blocked = (flightRefreshBlockedUntil.get(flight.id) || 0) > Date.now();
+  container.innerHTML = `
+    <div class="flight-tracker-head"><strong>${ui('تتبع الرحلة', 'Flight tracking')}</strong><span class="flight-status-pill ${statusClass}">${escapeHtml(flightStatusLabel(flight))}</span></div>
+    <div class="flight-tracker-fields">
+      <label>${ui('رقم الرحلة', 'Flight number')}<input id="flightNumberInput" value="${escapeHtml(flight.flightNumber)}" maxlength="10" autocomplete="off" placeholder="KU411"></label>
+      <label>${ui('تاريخ الرحلة', 'Flight date')}<input id="flightDateInput" type="date" value="${escapeHtml(flight.flightDate)}"></label>
+    </div>
+    <div class="flight-tracker-meta">
+      <span>${ui('الموعد المجدول', 'Scheduled')}<br><strong>${escapeHtml(formatFlightTime(flight.scheduledDeparture, flight))}</strong></span>
+      ${delayed ? `<span>${ui('الموعد المتوقع', 'Estimated')}<br><strong>${escapeHtml(formatFlightTime(flight.estimatedDeparture, flight))}</strong></span>` : ''}
+      ${flight.delay > 0 ? `<span>${ui('التأخير', 'Delay')}<br><strong>${flight.delay} ${ui('دقيقة', 'min')}</strong></span>` : ''}
+    </div>
+    <p class="flight-tracker-message ${delayed ? 'delayed' : ''}" id="flightTrackerMessage">${escapeHtml(statusMessage)}</p>
+    <div class="flight-tracker-actions">
+      <button class="flight-refresh-button" id="flightRefreshButton" type="button" ${blocked ? 'disabled' : ''}>🔄 ${ui('تحديث حالة الرحلة', 'Refresh flight status')}</button>
+      <span class="flight-last-updated">${flight.lastUpdated ? `${ui('آخر تحديث', 'Last updated')}: ${escapeHtml(formatFlightTime(flight.lastUpdated, { ...flight, departureTimezone: 'Asia/Bangkok' }))}` : ui('لم يتم التحديث بعد', 'Not updated yet')}</span>
+    </div>`;
+  const saveLink = () => updateFlightLink(flight.id);
+  container.querySelector('#flightNumberInput')?.addEventListener('change', saveLink);
+  container.querySelector('#flightDateInput')?.addEventListener('change', saveLink);
+  container.querySelector('#flightRefreshButton')?.addEventListener('click', () => refreshFlightStatus(flight.id));
+}
+
+function updateFlightLink(flightId) {
+  const flight = state.flights.find(item => item.id === flightId);
+  const numberInput = document.getElementById('flightNumberInput');
+  const dateInput = document.getElementById('flightDateInput');
+  if (!flight || !numberInput || !dateInput) return false;
+  const flightNumber = numberInput.value.toUpperCase().replace(/\s+/g, '');
+  const flightDate = dateInput.value;
+  if (!/^[A-Z0-9]{2,3}\d{1,4}[A-Z]?$/.test(flightNumber) || !/^\d{4}-\d{2}-\d{2}$/.test(flightDate)) {
+    renderFlightTracker(ui('أدخل رقم رحلة وتاريخًا صحيحين.', 'Enter a valid flight number and date.'));
+    return false;
+  }
+  if (flight.flightNumber !== flightNumber || flight.flightDate !== flightDate) {
+    const manualTime = getCityConfig(flight.city).tripDate.slice(10);
+    Object.assign(flight, {
+      flightNumber, flightDate, scheduledDeparture: `${flightDate}${manualTime}`,
+      estimatedDeparture: null, actualDeparture: null, delay: 0, flightStatus: 'scheduled',
+      lastUpdated: '', departureTimezone: '', arrivalTimezone: ''
+    });
+    saveState();
+  }
+  renderFlightTracker();
+  updateCountdown();
+  return true;
+}
+
+async function refreshFlightStatus(flightId) {
+  const flight = state.flights.find(item => item.id === flightId);
+  if (!flight) return;
+  if (!updateFlightLink(flightId) || !flight.flightNumber) return;
+  if (!navigator.onLine) {
+    renderFlightTracker(ui('لا يوجد اتصال بالإنترنت. آخر بيانات محفوظة ما زالت معروضة.', 'No internet connection. The last saved status is still shown.'));
+    return;
+  }
+  if ((flightRefreshBlockedUntil.get(flight.id) || 0) > Date.now()) return;
+  flightRefreshBlockedUntil.set(flight.id, Date.now() + 10000);
+  renderFlightTracker(ui('جاري تحديث حالة الرحلة…', 'Refreshing flight status…'));
+  const endpoint = appConfig.flightStatusEndpoint || './api/flight-status';
+  try {
+    const url = new URL(endpoint, window.location.href);
+    url.searchParams.set('flightNumber', flight.flightNumber);
+    url.searchParams.set('flightDate', flight.flightDate);
+    const response = await fetch(url, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !isZonedTimestamp(payload.scheduledDeparture)) throw new Error(payload.error || 'Flight request failed');
+    Object.assign(flight, {
+      flightNumber: safeText(payload.flightNumber, 10) || flight.flightNumber,
+      scheduledDeparture: payload.scheduledDeparture,
+      estimatedDeparture: Number(payload.delay) > 0 && isZonedTimestamp(payload.estimatedDeparture) ? payload.estimatedDeparture : null,
+      actualDeparture: isZonedTimestamp(payload.actualDeparture) ? payload.actualDeparture : null,
+      delay: Math.max(0, Math.round(Number(payload.delay) || 0)),
+      flightStatus: safeText(payload.flightStatus, 40) || 'unknown',
+      lastUpdated: isZonedTimestamp(payload.lastUpdated) ? payload.lastUpdated : new Date().toISOString(),
+      departureTimezone: safeText(payload.departure?.timezone, 80),
+      arrivalTimezone: safeText(payload.arrival?.timezone, 80)
+    });
+    saveState();
+    renderFlightTracker();
+    updateCountdown();
+  } catch {
+    renderFlightTracker(ui('تعذر تحديث الرحلة. تم الاحتفاظ بآخر بيانات ناجحة والمؤقت مستمر.', 'Could not refresh the flight. The last saved status and countdown remain active.'));
+  } finally {
+    const remaining = Math.max(0, (flightRefreshBlockedUntil.get(flight.id) || 0) - Date.now());
+    setTimeout(() => renderFlightTracker(), remaining);
+  }
+}
+
 function updateCountdown() {
-  const cityConfig = getCityConfig();
-  const target = new Date(cityConfig.tripDate || TRIP_DATE);
+  const flight = getActiveFlight();
+  const target = new Date(getFlightCountdownTarget(flight));
   const now = new Date();
   const diff = target - now;
-  if (diff <= 0) {
+  const stopped = isDepartedFlight(flight) || String(flight?.flightStatus || '').toLowerCase() === 'cancelled' || diff <= 0;
+  if (stopped) {
     document.getElementById('cd-days').textContent = '0';
     document.getElementById('cd-hours').textContent = '0';
     document.getElementById('cd-minutes').textContent = '0';
     document.getElementById('cd-seconds').textContent = '0';
+    const message = document.getElementById('flightTrackerMessage');
+    if (message && isDepartedFlight(flight)) message.textContent = ui(`أقلعت الرحلة · ${flightStatusLabel(flight)}`, `Flight departed · ${flightStatusLabel(flight)}`);
     return;
   }
   const d = Math.floor(diff / (1000*60*60*24));
@@ -2785,6 +2982,7 @@ function buildTripExport() {
       budget: state.budget,
       budgetLimit: state.budgetLimit,
       expenses: state.expenses,
+      flights: state.flights,
       exchangeRate: state.exchangeRate
     },
     cities
@@ -2830,6 +3028,7 @@ function normalizeImportedGlobalState(value) {
     budget: sanitizeBudget(value.budget, 'import_budget'),
     budgetLimit: Math.max(0, Number(value.budgetLimit) || 0),
     expenses: sanitizeExpenses(value.expenses, 'import_expenses'),
+    flights: sanitizeFlights(value.flights ?? null, 'import_flights'),
     exchangeRate: sanitizeExchangeRate(value.exchangeRate)
   };
 }
@@ -2892,6 +3091,7 @@ async function importTripData(input) {
     ['tg_budget', JSON.stringify(globalState.budget)],
     ['tg_budget_limit', String(globalState.budgetLimit)],
     ['tg_expenses', JSON.stringify(globalState.expenses)],
+    ['tg_flights', JSON.stringify(globalState.flights)],
     ['tg_rate', String(globalState.exchangeRate)]
   ].every(([key, value]) => writeStoredValue(key, value));
   const citiesSaved = Object.entries(citySnapshots).every(([cityKey, snapshot]) => writeCitySnapshot(cityKey, snapshot));
@@ -2909,6 +3109,7 @@ async function importTripData(input) {
   state.budget = globalState.budget;
   state.budgetLimit = globalState.budgetLimit;
   state.expenses = globalState.expenses;
+  state.flights = globalState.flights;
   state.exchangeRate = globalState.exchangeRate;
   loadCityScopedState(state.selectedCity || 'phuket');
   applyTheme();
@@ -2936,6 +3137,8 @@ function resetCurrentCityData() {
   }
   loadCityScopedState(cityKey);
   state.expenses = state.expenses.filter(expense => expense.city !== cityKey);
+  state.flights = state.flights.filter(flight => flight.city !== cityKey);
+  state.flights.push(deepClone(DEFAULT_FLIGHTS.find(flight => flight.city === cityKey)));
   saveState();
   applyCityIdentity();
   renderWeather();
@@ -2953,7 +3156,7 @@ async function resetAllAppData() {
     cityScopedKey('tg_visited', cityKey),
     cityScopedKey('tg_weather', cityKey)
   ]);
-  const globalKeys = ['tg_theme', 'tg_language', 'tg_language_initialized', 'tg_city', 'tg_section', 'tg_favorites', 'tg_packing', 'tg_notes', 'tg_budget', 'tg_budget_limit', 'tg_expenses', 'tg_weather', 'tg_rate', 'tg_photos'];
+  const globalKeys = ['tg_theme', 'tg_language', 'tg_language_initialized', 'tg_city', 'tg_section', 'tg_favorites', 'tg_packing', 'tg_notes', 'tg_budget', 'tg_budget_limit', 'tg_expenses', 'tg_flights', 'tg_weather', 'tg_rate', 'tg_photos'];
   const stateRemoved = [...globalKeys, ...cityKeys].every(removeStoredValue);
   try {
     await clearPhotoLibrary();
@@ -2972,6 +3175,7 @@ async function resetAllAppData() {
   state.budget = {};
   state.budgetLimit = 0;
   state.expenses = [];
+  state.flights = deepClone(DEFAULT_FLIGHTS);
   state.weather = {};
   state.exchangeRate = 110;
   state.photos = [];
