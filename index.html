@@ -12,9 +12,9 @@
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="assets/icons/app-icon.svg">
+<link rel="apple-touch-icon" href="assets/icons/app-icon-192.png">
 <title>دليل تايلند — بوكيت 2026</title>
-    <link rel="stylesheet" href="assets/css/app.css?v=20260806-16">
+    <link rel="stylesheet" href="assets/css/app.css?v=20260808-17">
 </head>
 <body>
 
@@ -57,7 +57,7 @@
 </div>
 
 <!-- EMERGENCY FAB -->
-<button class="emergency-fab" onclick="openEmergency()">🚨</button>
+<button class="emergency-fab" type="button" onclick="openEmergency()" aria-label="فتح أرقام الطوارئ">🚨</button>
 
 <!-- ==================== HOME SECTION ==================== -->
 <div class="section active" id="sec-home">
@@ -406,7 +406,7 @@
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-header">
       <h2>🚨 أرقام الطوارئ</h2>
-      <button class="modal-close" onclick="closeEmergency()">✕</button>
+      <button class="modal-close" type="button" onclick="closeEmergency()" aria-label="إغلاق نافذة الطوارئ">✕</button>
     </div>
 
     <div class="ios-list" style="margin-bottom:12px">
@@ -485,7 +485,7 @@
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-header">
       <h2 id="placeDetailTitle">تفاصيل المكان</h2>
-      <button class="modal-close" onclick="closePlaceDetails()">✕</button>
+      <button class="modal-close" type="button" onclick="closePlaceDetails()" aria-label="إغلاق تفاصيل المكان">✕</button>
     </div>
     <div class="place-detail-head">
       <div class="place-detail-sub" id="placeDetailSub"></div>
@@ -556,7 +556,7 @@
   <div class="modal-sheet itinerary-sheet" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div><div class="itinerary-kicker">مخطط الرحلة الذكي</div><h2 id="scheduleEditorTitle">خطط لحظتك القادمة</h2></div>
-      <button class="modal-close" type="button" onclick="closeScheduleEditor()">✕</button>
+      <button class="modal-close" type="button" onclick="closeScheduleEditor()" aria-label="إغلاق محرر الجدول">✕</button>
     </div>
     <form id="scheduleEditorForm" novalidate>
       <div id="scheduleEditorFields"></div>
@@ -571,7 +571,7 @@
     <div class="ai-sheet-hero">
       <div class="ai-hero-mark">✦</div>
       <div><div class="itinerary-kicker">POWERED BY GEMINI</div><h2>مساعد الرحلة الذكي</h2><p>يفهم مدينتك، طقسها وجدولك الحالي.</p></div>
-      <button class="modal-close" type="button" onclick="closeTravelAi()">✕</button>
+      <button class="modal-close" type="button" onclick="closeTravelAi()" aria-label="إغلاق المساعد الذكي">✕</button>
     </div>
     <div class="ai-quick-prompts">
       <button type="button" onclick="useTravelAiPrompt('رتب لي يومي بطريقة مريحة بدون ازدحام')">رتب يومي</button>
@@ -588,7 +588,9 @@
   </div>
 </div>
 
-<script src="data.js?v=20260806-15"></script>
+</div>
+
+<script src="data.js?v=20260808-16"></script>
   <script src="assets/vendor/html2pdf.bundle.min.js?v=0.14.0"></script>
   <script>
     window.TRAVELTRIP_CONFIG = {
@@ -596,6 +598,6 @@
       placesEndpoint: ''
     };
   </script>
-  <script src="assets/js/app.js?v=20260808-4"></script>
+<script src="assets/js/app.js?v=20260808-5"></script>
 </body>
 </html>

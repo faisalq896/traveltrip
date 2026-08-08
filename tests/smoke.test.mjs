@@ -69,8 +69,50 @@ test('PDF dependency is local and available in the offline app shell', async () 
   assert.ok(html.includes('assets/vendor/html2pdf.bundle.min.js'), 'HTML must load the local PDF bundle');
   assert.ok(!html.includes('cdnjs.cloudflare.com'), 'HTML must not depend on the PDF CDN');
   assert.ok(worker.includes("'./assets/vendor/html2pdf.bundle.min.js?v=0.14.0'"), 'service worker must cache the exact local PDF bundle URL');
-  assert.ok(worker.includes("'./assets/js/app.js?v=20260808-4'"), 'service worker must cache the exact versioned application URL');
+  assert.ok(worker.includes("'./assets/js/app.js?v=20260808-5'"), 'service worker must cache the exact versioned application URL');
   assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
+});
+
+test('bug audit regressions preserve user data and Thailand-local behavior', async () => {
+  const appSource = await readProjectFile('assets/js/app.js');
+
+  assert.ok(appSource.includes("'gallery', 'settings', 'visited'"), 'settings must remain a valid persisted section');
+  assert.ok(appSource.includes("state.language = 'ar';"), 'full reset must return to the Arabic default');
+  assert.ok(appSource.includes('date: getThailandDateIso()'), 'expense dates must use the Thailand calendar day');
+  assert.ok(appSource.includes("document.getElementById(`b-${field}`).value = b[field] ?? ''"), 'restoring a zero or empty budget must clear stale inputs');
+  assert.ok(appSource.includes("estimatedCostValue === '' ? null"), 'an empty estimate must stay null instead of becoming zero');
+  assert.ok(appSource.includes('await navigator.clipboard.writeText(text)'), 'clipboard rejections must be handled by the async copy flow');
+  assert.ok(appSource.includes('addScheduleItem(${dayIndex})'), 'an empty existing Today entry must add an activity to that day');
+  assert.ok(appSource.includes('data-today-map=') && !appSource.includes("onclick=\"openMap('${escapeHtml(item.title)}')"), 'user-entered activity names must not be embedded in inline JavaScript');
+  assert.ok(!appSource.includes('renderTripMap()'), 'schedule rendering must not call a missing map function');
+  assert.ok(appSource.includes('refreshTripMap();'), 'schedule rendering must refresh the existing map implementation');
+});
+
+test('PWA install metadata provides local PNG icons for mobile platforms', async () => {
+  const [html, manifestSource, worker, icon192, icon512] = await Promise.all([
+    readProjectFile('index.html'),
+    readProjectFile('manifest.webmanifest'),
+    readProjectFile('sw.js'),
+    readFile(new URL('../assets/icons/app-icon-192.png', import.meta.url)),
+    readFile(new URL('../assets/icons/app-icon-512.png', import.meta.url))
+  ]);
+  const manifest = JSON.parse(manifestSource);
+
+  assert.ok(html.includes('rel="apple-touch-icon" href="assets/icons/app-icon-192.png"'), 'iOS must receive a PNG touch icon');
+  assert.ok(manifest.icons.some(icon => icon.sizes === '192x192' && icon.type === 'image/png'), 'Android needs a 192px PNG icon');
+  assert.ok(manifest.icons.some(icon => icon.sizes === '512x512' && icon.type === 'image/png'), 'Android needs a 512px PNG icon');
+  assert.ok(worker.includes("'./assets/icons/app-icon-192.png'") && worker.includes("'./assets/icons/app-icon-512.png'"), 'offline shell must cache both install icons');
+  assert.equal(icon192.readUInt32BE(16), 192);
+  assert.equal(icon192.readUInt32BE(20), 192);
+  assert.equal(icon512.readUInt32BE(16), 512);
+  assert.equal(icon512.readUInt32BE(20), 512);
+});
+
+test('known broken external image URLs are not shipped', async () => {
+  const source = `${await readProjectFile('data.js')}\n${await readProjectFile('assets/js/app.js')}`;
+  for (const id of ['1574868235872-1663edcb4569', '1520328593999-9a2cd29b7252', '1495121605193-b116b5b9c5d1', '1583492723326-6b63d00192e2', '1540202404-b71188410214', '1558618666-fcd25c85f82e', '1519567281028-11a5b85d38cc']) {
+    assert.ok(!source.includes(id), `broken image ${id} must use the local fallback`);
+  }
 });
 
 test('Gemini endpoint uses the current stable Flash model', async () => {

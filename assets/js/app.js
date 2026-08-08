@@ -79,13 +79,13 @@ const hotelsData = [
 // restaurantsData and mallsData moved to data.js
 
 const activitiesData = [
-  { id:"a1", name:"Noah Phi Phi Island", nameTh:"ทัวร์เกาะพีพี", company:"Love Andaman", time:"07:00", duration:"يوم كامل", price:"3,500 THB", bring:"نظارة شمس، كريم واقي، منشفة، كاميرا مقاومة للماء", notes:"حجز مسبق ضروري. يناسب الأزواج والعائلات.", img:"https://images.unsplash.com/photo-1540202404-b71188410214?w=600&q=80", map:"Phi+Phi+Islands" },
+  { id:"a1", name:"Noah Phi Phi Island", nameTh:"ทัวร์เกาะพีพี", company:"Love Andaman", time:"07:00", duration:"يوم كامل", price:"3,500 THB", bring:"نظارة شمس، كريم واقي، منشفة، كاميرا مقاومة للماء", notes:"حجز مسبق ضروري. يناسب الأزواج والعائلات.", img:"", map:"Phi+Phi+Islands" },
   { id:"a2", name:"Racha Island Black Pearl", nameTh:"ทัวร์เกาะราชา แบล็คเพิร์ล", company:"Black Pearl Yacht", time:"08:00", duration:"يوم كامل", price:"3,500 THB", bring:"ملابس سباحة، واقي شمس، قبعة", notes:"يخت شراعي فاخر. غوص حر + سنوركل.", img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=80", map:"Racha+Island" },
   { id:"a3", name:"Local Market", nameTh:"ตลาดสดท้องถิ่น", company:"—", time:"08:00", duration:"1-2 ساعة", price:"مجاني", bring:"نقود فكة، كيس", notes:"تفاوض على الأسعار. أفضل وقت الصباح الباكر.", img:"https://images.unsplash.com/photo-1533900298318-6b8da08a523e?w=600&q=80", map:"Phuket+Local+Market" },
   { id:"a4", name:"Thai Cooking Experience", nameTh:"เรียนทำอาหารไทย", company:"Blue Elephant", time:"10:00", duration:"3 ساعات", price:"1,800 THB", bring:"شهية مفتوحة!", notes:"تعلم طبخ أشهر الأطباق التايلاندية.", img:"https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&q=80", map:"Blue+Elephant+Phuket" },
   { id:"a5", name:"ATV Rides", nameTh:"ขับรถเอทีวี", company:"Big Buddha ATV", time:"09:00", duration:"1-2 ساعة", price:"1,500 THB", bring:"ملابس رياضية، حذاء مغلق", notes:"مغامرة في الغابة والجبال. +8 سنوات.", img:"https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80", map:"ATV+Phuket" },
   { id:"a6", name:"Carnival Magic", nameTh:"คาร์นิวัล เมจิก", company:"Phuket FantaSea", time:"17:30", duration:"~4 ساعات", price:"2,500 THB", bring:"كاميرا، نقود للهدايا", notes:"عرض ترفيهي ثقافي مذهل. ممتاز للعائلات.", img:"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80", map:"Carnival+Magic+Phuket" },
-  { id:"a7", name:"Maya Bay", nameTh:"อ่าวมาหยา", company:"Love Andaman", time:"مع Phi Phi", duration:"ضمن الرحلة", price:"~3,500 THB", bring:"كاميرا، واقي شمس", notes:"موقع فيلم The Beach. مغلق أحياناً للتجديد.", img:"https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80", map:"Maya+Bay" },
+  { id:"a7", name:"Maya Bay", nameTh:"อ่าวมาหยา", company:"Love Andaman", time:"مع Phi Phi", duration:"ضمن الرحلة", price:"~3,500 THB", bring:"كاميرا، واقي شمس", notes:"موقع فيلم The Beach. مغلق أحياناً للتجديد.", img:"", map:"Maya+Bay" },
   { id:"a8", name:"Coral Island", nameTh:"เกาะเฮ", company:"—", time:"09:00", duration:"نصف يوم", price:"1,500 THB", bring:"ملابس سباحة، سنوركل", notes:"20 دقيقة بالقارب. رياضات مائية متوفرة.", img:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80", map:"Coral+Island+Phuket" },
   { id:"a9", name:"Hanuman World", nameTh:"ฮานูมาน เวิลด์", company:"Hanuman World", time:"09:00", duration:"2-3 ساعات", price:"2,000 THB", bring:"ملابس رياضية، حذاء مغلق", notes:"أكبر زيبلاين في بوكيت. +4 سنوات.", img:"https://cdn-imgix.headout.com/media/images/a7d7b611e197cd0fcc700c51369adedc-11302-thailand-hanuman-world--32-platforms-zipline-adventure-with-round-trip-transfer-15.jpg?auto=compress%2Cformat&crop=faces&fit=crop&q=90", images:["https://cdn-imgix.headout.com/media/images/a7d7b611e197cd0fcc700c51369adedc-11302-thailand-hanuman-world--32-platforms-zipline-adventure-with-round-trip-transfer-15.jpg?auto=compress%2Cformat&crop=faces&fit=crop&q=90","https://cdn-imgix.headout.com/media/images/7cbcfe501d59b9215493bfd0d1c71a51-17881-phuket-hanuman-world-03.jpg?auto=compress%2Cformat&crop=faces&fit=crop&q=90","https://cdn-imgix.headout.com/media/images/65c172318172611a752b713cd8f940da-11302-thailand-hanuman-world--32-platforms-zipline-adventure-with-round-trip-transfer-03.jpg?auto=compress%2Cformat&crop=faces&fit=crop&q=90"], map:"Hanuman+World+Phuket" },
 ];
@@ -144,7 +144,7 @@ const bangkokCafesData = [
 ];
 
 const bangkokMallsData = [
-  { id:'bm1', name:'ICONSIAM', nameTh:'ไอคอนสยาม', hours:'10:00 - 22:00', shops:'Luxury brands, fashion, tech', restaurants:'Food hall + riverside dining', distance:'20 دقيقة', img:'https://images.unsplash.com/photo-1519567281028-11a5b85d38cc?w=600&q=80', map:'ICONSIAM+Bangkok' },
+  { id:'bm1', name:'ICONSIAM', nameTh:'ไอคอนสยาม', hours:'10:00 - 22:00', shops:'Luxury brands, fashion, tech', restaurants:'Food hall + riverside dining', distance:'20 دقيقة', img:'', map:'ICONSIAM+Bangkok' },
   { id:'bm2', name:'Siam Paragon', nameTh:'สยามพารากอน', hours:'10:00 - 22:00', shops:'ماركات عالمية وسينما', restaurants:'مطاعم عالمية', distance:'15 دقيقة', img:'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=600&q=80', map:'Siam+Paragon+Bangkok' }
 ];
 
@@ -442,7 +442,7 @@ const savedLanguage = readStoredText('tg_language', '');
 const languagePreferenceInitialized = readStoredText('tg_language_initialized', '');
 const savedCity = readStoredText('tg_city', '');
 const savedSection = readStoredText('tg_section', 'home');
-const validSections = new Set(['home', 'schedule', 'hotels', 'restaurants', 'cafes', 'malls', 'activities', 'budget', 'packing', 'favorites', 'notes', 'gallery', 'visited', 'search', 'more']);
+const validSections = new Set(['home', 'schedule', 'hotels', 'restaurants', 'cafes', 'malls', 'activities', 'budget', 'packing', 'favorites', 'notes', 'gallery', 'settings', 'visited', 'search', 'more']);
 const appConfig = { ...(window.TRAVEL_APP_CONFIG || {}), ...(window.TRAVELTRIP_CONFIG || {}) };
 const placesEndpoint = appConfig.placesEndpoint || '';
 const PLACE_CACHE_TTL = 1000 * 60 * 60 * 24;
@@ -1408,13 +1408,13 @@ function renderSchedule() {
                 <button class="mini-btn gray" type="button" onclick="deleteScheduleItem(${di},${ii})">${t('delete')}</button>
               </div>
             </div>
-            <div class="day-check ${item.done ? 'checked' : ''}" onclick="toggleSchedule(${di},${ii})"></div>
+            <div class="day-check ${item.done ? 'checked' : ''}" role="checkbox" tabindex="0" aria-checked="${item.done}" aria-label="${item.done ? ui('تعليم النشاط كغير مكتمل', 'Mark activity incomplete') : ui('تعليم النشاط كمكتمل', 'Mark activity complete')}" onclick="toggleSchedule(${di},${ii})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleSchedule(${di},${ii})}"></div>
           </div>
         `).join('')}
       </div>
     </div>
   `).join('');
-  renderTripMap();
+  refreshTripMap();
   updateHomeSummary();
 }
 
@@ -1424,10 +1424,23 @@ function renderTodayCard() {
   const thailandDate = getThailandDateIso(today);
   const day = state.schedule.find(entry => scheduleDateToIso(entry.date) === thailandDate);
   meta.textContent = `${today.toLocaleDateString(state.language === 'en' ? 'en-GB' : 'ar-KW', { timeZone: 'Asia/Bangkok' })} · ${state.language === 'en' ? getCityConfig().key : getCityConfig().label}`;
-  if (!day?.items?.length) { list.innerHTML = `<div class="today-empty">لا توجد أنشطة مضافة لهذا اليوم <button type="button" onclick="addScheduleDay()">إضافة نشاط</button></div>`; return; }
-  list.innerHTML = day.items.slice().sort((a,b) => a.time.localeCompare(b.time)).map(item => `<div class="today-item"><b>${escapeHtml(item.time)}</b><span>${escapeHtml(item.title)}<small>${escapeHtml(item.sub || '')}</small></span><button type="button" onclick="openMap('${escapeHtml(item.title)}')">خريطة</button></div>`).join('');
+  if (!day?.items?.length) {
+    const dayIndex = day ? state.schedule.indexOf(day) : -1;
+    const action = dayIndex >= 0
+      ? `<button type="button" onclick="addScheduleItem(${dayIndex})">إضافة نشاط</button>`
+      : `<button type="button" onclick="addScheduleDay()">إضافة يوم</button>`;
+    list.innerHTML = `<div class="today-empty">لا توجد أنشطة مضافة لهذا اليوم ${action}</div>`;
+    return;
+  }
+  list.innerHTML = day.items.slice().sort((a,b) => a.time.localeCompare(b.time)).map(item => `<div class="today-item"><b>${escapeHtml(item.time)}</b><span>${escapeHtml(item.title)}<small>${escapeHtml(item.sub || '')}</small></span><button type="button" data-today-map="${escapeHtml(item.title)}">خريطة</button></div>`).join('');
+  list.querySelectorAll('[data-today-map]').forEach(button => button.addEventListener('click', () => openMap(button.dataset.todayMap)));
 }
-function startMyDay() { const first = getPlannedStops().find(item => !item.done); alert(first ? `طقس اليوم: ${state.weather.desc || 'جارٍ التحميل'}\nأول نشاط: ${first.title} — ${first.time}\nخذ معك: ${state.weather.rain > 0 ? 'مظلة خفيفة' : 'ماء وواقي شمس'}` : 'أضف نشاطاً أولاً إلى جدولك.'); }
+function startMyDay() {
+  const thailandDate = getThailandDateIso();
+  const today = state.schedule.find(day => scheduleDateToIso(day.date) === thailandDate);
+  const first = today?.items.find(item => !item.done);
+  alert(first ? `طقس اليوم: ${state.weather.desc || 'جارٍ التحميل'}\nأول نشاط: ${first.title} — ${first.time}\nخذ معك: ${state.weather.rain > 0 ? 'مظلة خفيفة' : 'ماء وواقي شمس'}` : 'لا يوجد نشاط غير مكتمل في جدول اليوم.');
+}
 function showRainPlan() {
   const { malls, cafes, restaurants } = getCityData();
   const indoor = [...malls, ...cafes, ...restaurants].filter(item => getOpenStatus(item.hours || '').isOpen !== false).sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 5);
@@ -1873,12 +1886,14 @@ function saveScheduleEditor(event) {
     if (conflict) { warning.hidden = false; warning.textContent = 'يوجد نشاط آخر في الوقت نفسه. عدّل الوقت قبل الحفظ.'; return; }
     const editedItem = editor.itemIdx !== null ? state.schedule[editor.dayIdx].items[editor.itemIdx] : null;
     if (editedItem) state.schedule[editor.dayIdx].items.splice(editor.itemIdx, 1);
-    const estimatedCost = Number(data.get('estimatedCost'));
-    const estimatedCostHigh = Number(data.get('estimatedCostHigh'));
+    const estimatedCostValue = String(data.get('estimatedCost') || '').trim();
+    const estimatedCostHighValue = String(data.get('estimatedCostHigh') || '').trim();
+    const estimatedCost = estimatedCostValue === '' ? null : Number(estimatedCostValue);
+    const estimatedCostHigh = estimatedCostHighValue === '' ? null : Number(estimatedCostHighValue);
     state.schedule[targetDayIdx].items.push({
       time, title, sub, done: editedItem?.done || false,
-      estimatedCost: Number.isFinite(estimatedCost) && estimatedCost >= 0 ? Math.round(estimatedCost) : null,
-      estimatedCostHigh: Number.isFinite(estimatedCostHigh) && estimatedCostHigh >= 0 ? Math.round(estimatedCostHigh) : null,
+      estimatedCost: estimatedCost !== null && Number.isFinite(estimatedCost) && estimatedCost >= 0 ? Math.round(estimatedCost) : null,
+      estimatedCostHigh: estimatedCostHigh !== null && Number.isFinite(estimatedCostHigh) && estimatedCostHigh >= 0 ? Math.round(estimatedCostHigh) : null,
       costSource: data.get('costSource') === 'ai' ? 'ai' : data.get('costSource') === 'local' ? 'local' : ''
     });
     sortScheduleItems(state.schedule[targetDayIdx]);
@@ -2036,7 +2051,7 @@ function renderRestaurants(filter = '') {
               <button class="sub-copy-btn" onclick="copyText('${r.nameTh}')">Copy Thai</button>
             </div>
           </div>
-          <button class="fav-btn ${isFav('r', r.id) ? 'active' : ''}" onclick="toggleFav('r','${r.id}')">${isFav('r', r.id) ? '❤️' : '🤍'}</button>
+          <button class="fav-btn ${isFav('r', r.id) ? 'active' : ''}" type="button" aria-label="${isFav('r', r.id) ? ui('إزالة من المفضلة', 'Remove from favorites') : ui('إضافة إلى المفضلة', 'Add to favorites')}" onclick="toggleFav('r','${r.id}')">${isFav('r', r.id) ? '❤️' : '🤍'}</button>
         </div>
         <div style="margin:8px 0">
           ${r.halal === true ? '<span class="tag-pill tag-green">✅ Halal</span>' : r.halal === false ? '<span class="tag-pill tag-red">❌ Not Halal</span>' : '<span class="tag-pill tag-gray">⚪ Unconfirmed</span>'}
@@ -2086,7 +2101,7 @@ function renderCafes(filter = '') {
               <button class="sub-copy-btn" onclick="copyText('${r.nameTh}')">Copy Thai</button>
             </div>
           </div>
-          <button class="fav-btn ${isFav('r', r.id) ? 'active' : ''}" onclick="toggleFav('r','${r.id}')">${isFav('r', r.id) ? '❤️' : '🤍'}</button>
+          <button class="fav-btn ${isFav('r', r.id) ? 'active' : ''}" type="button" aria-label="${isFav('r', r.id) ? ui('إزالة من المفضلة', 'Remove from favorites') : ui('إضافة إلى المفضلة', 'Add to favorites')}" onclick="toggleFav('r','${r.id}')">${isFav('r', r.id) ? '❤️' : '🤍'}</button>
         </div>
         <div style="margin:8px 0">
           ${r.halal === true ? '<span class="tag-pill tag-green">✅ Halal</span>' : r.halal === false ? '<span class="tag-pill tag-red">❌ Not Halal</span>' : '<span class="tag-pill tag-gray">⚪ Unconfirmed</span>'}
@@ -2132,7 +2147,7 @@ function renderMalls() {
             <div class="detail-card-title">${m.name}</div>
             <div class="detail-card-sub">${m.nameTh}</div>
           </div>
-          <button class="fav-btn ${isFav('m', m.id) ? 'active' : ''}" onclick="toggleFav('m','${m.id}')">${isFav('m', m.id) ? '❤️' : '🤍'}</button>
+          <button class="fav-btn ${isFav('m', m.id) ? 'active' : ''}" type="button" aria-label="${isFav('m', m.id) ? ui('إزالة من المفضلة', 'Remove from favorites') : ui('إضافة إلى المفضلة', 'Add to favorites')}" onclick="toggleFav('m','${m.id}')">${isFav('m', m.id) ? '❤️' : '🤍'}</button>
         </div>
         <div style="margin:8px 0">
           <span class="tag-pill ${status.className}">${status.label}</span>
@@ -2171,7 +2186,7 @@ function renderActivities() {
             <div class="detail-card-title">${a.name}</div>
             <div class="detail-card-sub">${a.nameTh}</div>
           </div>
-          <button class="fav-btn ${isFav('a', a.id) ? 'active' : ''}" onclick="toggleFav('a','${a.id}')">${isFav('a', a.id) ? '❤️' : '🤍'}</button>
+          <button class="fav-btn ${isFav('a', a.id) ? 'active' : ''}" type="button" aria-label="${isFav('a', a.id) ? ui('إزالة من المفضلة', 'Remove from favorites') : ui('إضافة إلى المفضلة', 'Add to favorites')}" onclick="toggleFav('a','${a.id}')">${isFav('a', a.id) ? '❤️' : '🤍'}</button>
         </div>
         <div class="detail-row"><span class="detail-row-label">Company</span><span class="detail-row-value">${a.company}</span></div>
         <div class="detail-row"><span class="detail-row-label">Departure</span><span class="detail-row-value">${a.time}</span></div>
@@ -2198,7 +2213,7 @@ function toggleExpenseForm() { document.getElementById('expenseForm')?.toggleAtt
 function saveExpense(event) {
   event.preventDefault(); const data = new FormData(event.target); const amount = Number(data.get('amount'));
   if (!Number.isFinite(amount) || amount <= 0) return;
-  state.expenses.unshift({ id: `${Date.now()}_${Math.random().toString(36).slice(2)}`, amount, category: String(data.get('category')), payment: String(data.get('payment')), note: safeText(String(data.get('note')), 120), city: currentCityKey(), date: new Date().toISOString().slice(0,10) });
+  state.expenses.unshift({ id: `${Date.now()}_${Math.random().toString(36).slice(2)}`, amount, category: String(data.get('category')), payment: String(data.get('payment')), note: safeText(String(data.get('note')), 120), city: currentCityKey(), date: getThailandDateIso() });
   event.target.reset(); event.target.hidden = true; saveState(); renderExpenses();
 }
 function deleteExpense(id) { state.expenses = state.expenses.filter(item => item.id !== id); saveState(); renderExpenses(); }
@@ -2211,16 +2226,9 @@ function renderExpenses() {
 
 function loadBudget() {
   const b = state.budget;
-  if (b.hotel) document.getElementById('b-hotel').value = b.hotel;
-  if (b.breakfast) document.getElementById('b-breakfast').value = b.breakfast;
-  if (b.food) document.getElementById('b-food').value = b.food;
-  if (b.cafe) document.getElementById('b-cafe').value = b.cafe;
-  if (b.shop) document.getElementById('b-shop').value = b.shop;
-  if (b.gifts) document.getElementById('b-gifts').value = b.gifts;
-  if (b.tour1) document.getElementById('b-tour1').value = b.tour1;
-  if (b.tour2) document.getElementById('b-tour2').value = b.tour2;
-  if (b.trans) document.getElementById('b-trans').value = b.trans;
-  if (b.emer) document.getElementById('b-emer').value = b.emer;
+  ['hotel','breakfast','food','cafe','shop','gifts','tour1','tour2','trans','emer'].forEach(field => {
+    document.getElementById(`b-${field}`).value = b[field] ?? '';
+  });
   document.getElementById('budgetLimit').value = state.budgetLimit || '';
   document.getElementById('rateInput').value = state.exchangeRate;
   calcBudget();
@@ -2282,10 +2290,10 @@ function saveRate() {
 function renderPacking() {
   const container = document.getElementById('packingList');
   container.innerHTML = state.packing.map((item, i) => `
-    <div class="check-item" onclick="togglePacking(${i})">
+    <div class="check-item" role="checkbox" tabindex="0" aria-checked="${item.done}" onclick="togglePacking(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();togglePacking(${i})}">
       <div class="check-box ${item.done ? 'checked' : ''}"></div>
       <div class="check-text ${item.done ? 'done' : ''}">${escapeHtml(item.text)}</div>
-      <div class="check-delete" onclick="event.stopPropagation();deletePacking(${i})">🗑️</div>
+      <button class="check-delete" type="button" aria-label="${ui('حذف عنصر التجهيز', 'Delete packing item')}" onclick="event.stopPropagation();deletePacking(${i})">🗑️</button>
     </div>
   `).join('');
   updateProgress();
@@ -2696,21 +2704,25 @@ function closePlaceDetails(e) {
 function callNumber(num) {
   window.location.href = 'tel:' + num;
 }
-function copyText(text) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(() => alert('تم النسخ: ' + text));
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
+async function copyText(text) {
+  try {
+    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+    else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      const copied = document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (!copied) throw new Error('Copy command failed');
+    }
     alert('تم النسخ: ' + text);
+  } catch {
+    alert('تعذر النسخ تلقائياً. اضغط مطولاً على النص لنسخه.');
   }
 }
 function openMap(query) {
-  window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query), '_blank');
+  window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query), '_blank', 'noopener,noreferrer');
 }
 
 // ============================================
@@ -2951,7 +2963,7 @@ async function resetAllAppData() {
   if (!stateRemoved) notifyStorageIssue('تمت إعادة ضبط التطبيق، لكن تعذر حذف بعض البيانات من تخزين الجهاز.');
 
   state.theme = 'light';
-  state.language = 'en';
+  state.language = 'ar';
   state.selectedCity = '';
   state.currentSection = 'home';
   state.favorites = [];
@@ -3120,7 +3132,7 @@ async function renderGallery() {
         <img src="${createPhotoSource(photo)}" alt="صورة من الرحلة">
       </button>
     `).join('');
-    grid.innerHTML = `${photoItems}<label class="photo-grid-item photo-add"><span>+</span><input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onchange="addPhoto(this)"></label>`;
+    grid.innerHTML = `${photoItems}<label class="photo-grid-item photo-add"><span>+</span><input type="file" aria-label="${ui('إضافة صورة إلى المعرض', 'Add a photo to the gallery')}" accept="image/jpeg,image/png,image/gif,image/webp" onchange="addPhoto(this)"></label>`;
     grid.querySelectorAll('[data-photo-id]').forEach(button => {
       button.addEventListener('click', () => deletePhoto(button.dataset.photoId));
     });

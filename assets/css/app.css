@@ -1007,7 +1007,9 @@ body {
   text-decoration: line-through;
 }
 .check-delete {
+  border: 0;
   color: var(--ios-red);
+  background: transparent;
   font-size: 18px;
   padding: 4px;
   cursor: pointer;
