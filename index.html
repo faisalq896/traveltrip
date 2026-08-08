@@ -13,29 +13,29 @@
 <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="assets/icons/app-icon-192.png">
-<title>دليل تايلند — بوكيت 2026</title>
-    <link rel="stylesheet" href="assets/css/app.css?v=20260808-18">
+<title>TravelTrip — اختر وجهتك</title>
+    <link rel="stylesheet" href="assets/css/app.css?v=20260808-19">
 </head>
 <body>
 
 <div class="city-picker" id="cityPicker">
-  <div class="onboarding-aurora onboarding-aurora-one"></div>
-  <div class="onboarding-aurora onboarding-aurora-two"></div>
+  <div class="onboarding-aurora onboarding-aurora-one" aria-hidden="true"></div>
+  <div class="onboarding-aurora onboarding-aurora-two" aria-hidden="true"></div>
   <div class="city-picker-card">
     <button class="language-toggle onboarding-language-toggle" id="languageToggle" type="button" onclick="toggleLanguage()" aria-label="تغيير اللغة">EN</button>
-    <div class="onboarding-mark">✦</div>
+    <div class="onboarding-mark" aria-hidden="true">✦</div>
     <div class="city-picker-kicker">اختر وجهتك</div>
     <div class="city-picker-title">إلى أين تأخذك رحلتك؟</div>
     <div class="city-picker-sub">ابدأ باختيار الدولة، ثم اختر المدينة أو المنطقة التي تناسب خطتك.</div>
     <button class="country-entry-btn" id="countryEntryBtn" type="button" onclick="handleCountryEntry()">استكشف تايلاند <span>←</span></button>
     <div class="city-picker-grid app-hidden" id="cityOptions">
       <button class="city-card phuket" type="button" onclick="selectCity('phuket')">
-        <div class="city-card-photo" style="background-image:url('https://images.pexels.com/photos/4159512/pexels-photo-4159512.jpeg?auto=compress&cs=tinysrgb&w=900')"></div>
+        <div class="city-card-photo" aria-hidden="true" style="background-image:url('https://images.pexels.com/photos/4159512/pexels-photo-4159512.jpeg?auto=compress&cs=tinysrgb&w=900')"></div>
         <span class="name">بوكيت</span>
         <div class="meta">بحر، جزر، ولحظات هادئة</div>
       </button>
       <button class="city-card bangkok" type="button" onclick="selectCity('bangkok')">
-        <div class="city-card-photo" style="background-image:url('https://images.pexels.com/photos/20020757/pexels-photo-20020757.jpeg?auto=compress&cs=tinysrgb&w=900')"></div>
+        <div class="city-card-photo" aria-hidden="true" style="background-image:url('https://images.pexels.com/photos/20020757/pexels-photo-20020757.jpeg?auto=compress&cs=tinysrgb&w=900')"></div>
         <span class="name">بانكوك</span>
         <div class="meta">مدينة نابضة لا تنام</div>
       </button>
@@ -51,6 +51,7 @@
   <div class="top-nav-inner">
     <div class="nav-title" id="navTitle">الرئيسية</div>
     <button class="nav-btn" onclick="handleCityPickerShortcut()" id="cityPickerBtn" aria-label="اختيار المدينة">
+      <span id="cityPickerBtnLabel">اختيار المدينة</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
     </button>
   </div>
@@ -78,24 +79,24 @@
   </div>
 
   <button class="next-stop-card" type="button" onclick="showSection('schedule')">
-    <div class="next-stop-icon">✦</div>
+    <div class="next-stop-icon" aria-hidden="true">✦</div>
     <div class="next-stop-content">
       <div class="next-stop-label">محطتك التالية</div>
       <div class="next-stop-title" id="nextStopTitle">كل لحظة تستحق أن تُعاش</div>
       <div class="next-stop-meta" id="nextStopMeta">راجع خطتك واختر ما يناسب يومك</div>
     </div>
-    <div class="next-stop-arrow">‹</div>
+    <div class="next-stop-arrow" aria-hidden="true">‹</div>
   </button>
 
   <div class="weather-card" id="weatherCard">
-    <div class="weather-fx" id="weatherFx">
+    <div class="weather-fx" id="weatherFx" aria-hidden="true">
       <span class="fx-cloud"></span>
       <span class="fx-rain"></span>
       <span class="fx-spark"></span>
     </div>
     <div class="weather-top">
       <div class="weather-copy">
-        <div class="weather-kicker" id="weatherKicker">LIVE WEATHER</div>
+        <div class="weather-kicker" id="weatherKicker">الطقس المباشر</div>
         <div class="weather-temp" id="weatherTemp">--</div>
         <div class="weather-desc" id="weatherDesc">جارٍ تحميل الطقس…</div>
         <div class="weather-location" id="weatherLocation">بوكيت، تايلند</div>
@@ -125,7 +126,7 @@
   <section class="flight-tracker-card" id="flightTrackerCard" aria-live="polite"></section>
 
   <section class="today-card" id="todayCard">
-    <div class="premium-card-head"><div><span>TODAY</span><h2>جدول اليوم</h2></div><button class="mini-btn" type="button" onclick="startMyDay()">ابدأ يومي</button></div>
+    <div class="premium-card-head"><div><span id="todayKicker">اليوم</span><h2>جدول اليوم</h2></div><button class="mini-btn" type="button" onclick="startMyDay()">ابدأ يومي</button></div>
     <p id="todayMeta"></p><div id="todayItems"></div>
     <div class="today-actions"><button class="action-btn gray" type="button" onclick="showRainPlan()">خطة بديلة للمطر</button><button class="action-btn blue" type="button" onclick="showNowSuggestions()">وين نروح الحين؟</button></div>
   </section>
@@ -161,8 +162,8 @@
       <div><strong id="scheduleDoneStat">0%</strong><span>منجز</span></div>
     </div>
   </div>
-  <section class="trip-map-card" id="tripMapCard" aria-label="Trip map">
-    <div class="premium-card-head"><div><span>LIVE ROUTE</span><h2 id="tripMapTitle">خريطة رحلتك</h2></div><button type="button" class="mini-btn" onclick="refreshTripMap()">تحديث</button></div>
+  <section class="trip-map-card" id="tripMapCard" aria-label="خريطة الرحلة">
+    <div class="premium-card-head"><div><span id="tripMapKicker">المسار المباشر</span><h2 id="tripMapTitle">خريطة رحلتك</h2></div><button type="button" class="mini-btn" onclick="refreshTripMap()">تحديث</button></div>
     <p id="tripMapMeta">اختَر محطات من جدولك لعرضها على الخريطة.</p>
     <div class="trip-map-chips" id="tripMapChips"></div>
     <iframe id="tripMapFrame" title="Trip map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -498,7 +499,7 @@
 
 <!-- ==================== MORE SECTION ==================== -->
 <div class="section" id="sec-more">
-  <div class="more-hero"><div class="more-hero-kicker">TRAVEL DIRECTORY</div><div class="section-header">المزيد</div><p>كل ما تحتاجه لرحلة مرتبة في مكان واحد.</p></div>
+  <div class="more-hero"><div class="more-hero-kicker" id="moreDirectoryKicker">دليل الرحلة</div><div class="section-header">المزيد</div><p>كل ما تحتاجه لرحلة مرتبة في مكان واحد.</p></div>
   <div class="more-explore-grid">
     <button class="explore-tile tile-hotels" type="button" onclick="showSection('hotels')"><span class="explore-tile-icon"></span><span class="explore-tile-label">الفنادق</span><small>إقامتك المثالية</small><i></i></button>
     <button class="explore-tile tile-restaurants" type="button" onclick="showSection('restaurants')"><span class="explore-tile-icon"></span><span class="explore-tile-label">المطاعم</span><small>تجارب مذاق مميزة</small><i></i></button>
@@ -606,6 +607,6 @@
       placesEndpoint: ''
     };
   </script>
-<script src="assets/js/app.js?v=20260808-8"></script>
+<script src="assets/js/app.js?v=20260808-9"></script>
 </body>
 </html>

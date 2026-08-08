@@ -114,21 +114,24 @@ body {
   white-space: nowrap;
 }
 .nav-btn {
-  width: 32px; height: 32px;
-  border-radius: 50%;
+  width: auto; min-width: 32px; height: 32px;
+  border-radius: 999px;
   border: none;
   background: var(--ios-gray5);
   color: var(--ios-blue);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  gap: 5px;
+  padding: 0 9px;
+  font-size: 12px;
+  font-weight: 800;
   cursor: pointer;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 [data-theme="dark"] .nav-btn { background: var(--ios-surface-elevated); }
 .nav-btn:active { transform: scale(0.88); opacity: 0.7; }
-.nav-btn svg { width: 18px; height: 18px; }
+.nav-btn svg { width: 16px; height: 16px; }
 
 /* ===== BOTTOM TAB BAR ===== */
 .tab-bar {
@@ -1644,7 +1647,8 @@ body {
 .top-nav-inner { max-width: 520px; pointer-events: auto; padding: 0 20px; }
 .nav-title { font-size: 15px; font-weight: 750; letter-spacing: -0.01em; }
 .nav-btn {
-  width: 38px;
+  width: auto;
+  min-width: 38px;
   height: 38px;
   color: var(--premium-ink);
   background: var(--premium-card);
@@ -2125,8 +2129,7 @@ body {
 #sec-cafes > .section-header { background: linear-gradient(135deg, #684637, #af7350); }
 #sec-malls > .section-header { background: linear-gradient(135deg, #5b458d, #9469c6); }
 #sec-activities > .section-header { background: linear-gradient(135deg, #176a78, #22a68f); }
-#sec-hotels > .section-header::after, #sec-restaurants > .section-header::after, #sec-cafes > .section-header::after, #sec-malls > .section-header::after, #sec-activities > .section-header::after { content: 'CURATED FOR YOUR TRIP'; margin-inline-start: auto; color: rgba(255,255,255,0.68); font-size: 0.56rem; font-weight: 850; letter-spacing: 0.11em; }
-[dir="rtl"] #sec-hotels > .section-header::after, [dir="rtl"] #sec-restaurants > .section-header::after, [dir="rtl"] #sec-cafes > .section-header::after, [dir="rtl"] #sec-malls > .section-header::after, [dir="rtl"] #sec-activities > .section-header::after { content: 'مختار لرحلتك'; letter-spacing: 0; }
+#sec-hotels > .section-header::after, #sec-restaurants > .section-header::after, #sec-cafes > .section-header::after, #sec-malls > .section-header::after, #sec-activities > .section-header::after { content: ''; }
 #sec-restaurants .search-bar, #sec-cafes .search-bar { position: relative; z-index: 2; margin: -3px 4px 17px; padding: 6px 13px; border: 1px solid rgba(255,255,255,0.68); border-radius: 17px; background: rgba(255,255,255,0.68); box-shadow: 0 12px 24px rgba(68,58,57,0.09); backdrop-filter: blur(16px); }
 #sec-restaurants .search-bar input, #sec-cafes .search-bar input { font-size: 0.84rem; font-weight: 700; }
 #sec-hotels .detail-card, #sec-restaurants .detail-card, #sec-cafes .detail-card, #sec-malls .detail-card, #sec-activities .detail-card { position: relative; overflow: hidden; margin-bottom: 18px; border: 1px solid rgba(21,78,112,0.1); border-radius: 27px; background: var(--ios-surface); box-shadow: 0 14px 30px rgba(16,71,106,0.1); transition: transform 220ms ease, box-shadow 220ms ease; }
@@ -2316,9 +2319,9 @@ body.modal-open { overflow: hidden; }
 .ai-composer { position: sticky; bottom: 0; z-index: 2; padding: 11px 0 4px; background: color-mix(in srgb, var(--ios-surface) 94%, transparent); backdrop-filter: blur(16px); }
 .ai-disclaimer { margin: 6px 0 0; color: var(--premium-muted); font-size: 0.64rem; text-align: center; }
 @media (max-width: 420px) { .itinerary-head-actions { align-items: stretch; flex-direction: column; } .ai-suggestion-card { grid-template-columns: 1fr; } .ai-suggestion-card button { width: 100%; } }
-.trip-pdf-document { position: fixed; left: -20000px; top: 0; z-index: -1; width: 794px; color: #14283b; background: #f4f8fb; font-family: Arial, Tahoma, sans-serif; }
+.trip-pdf-document { position: fixed; left: 0; top: 0; z-index: 6000; width: 794px; color: #14283b; background: #f4f8fb; font-family: Tahoma, Arial, sans-serif; pointer-events: none; }
 .trip-pdf-document * { box-sizing: border-box; }
-.pdf-cover { position: relative; display: flex; min-height: 1122px; padding: 64px; flex-direction: column; color: #fff; background: linear-gradient(145deg,#0c2848 0%,#0a7698 54%,#6455bd 100%); page-break-after: always; overflow: hidden; }
+.pdf-cover { position: relative; display: flex; min-height: 1122px; padding: 64px; flex-direction: column; color: #fff; background: #0a7698; page-break-after: always; overflow: hidden; }
 .pdf-cover::before,.pdf-cover::after { content: ''; position: absolute; border: 46px solid rgba(255,255,255,0.07); border-radius: 50%; }
 .pdf-cover::before { width: 390px; height: 390px; top: -190px; left: -110px; }.pdf-cover::after { width: 520px; height: 520px; right: -260px; bottom: -190px; }
 .pdf-brand { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 900; letter-spacing: 0.12em; }
@@ -2330,7 +2333,32 @@ body.modal-open { overflow: hidden; }
 .pdf-summary > div:first-child span,.pdf-day header span { color: #0b83a7; font-size: 11px; font-weight: 900; letter-spacing: 0.08em; }.pdf-summary h2 { margin: 7px 0 23px; font-size: 27px; }.pdf-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }.pdf-summary-grid p { margin: 0; padding: 15px; border-radius: 14px; background: #f1f7fa; }.pdf-summary-grid b,.pdf-summary-grid p { display: block; }.pdf-summary-grid b { margin-bottom: 5px; font-size: 18px; }.pdf-summary-grid p { color: #668094; font-size: 11px; }
 .pdf-day header { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 18px; border-bottom: 2px solid #edf3f6; }.pdf-day header h2 { margin: 4px 0 0; font-size: 26px; }.pdf-day header p { margin: 0; color: #6b8293; font-size: 12px; line-height: 1.6; text-align: end; }
 .pdf-stops article { display: grid; grid-template-columns: 64px minmax(0,1fr) 24px; gap: 15px; align-items: start; padding: 15px 0; border-bottom: 1px solid #edf2f5; }.pdf-stops article:last-child { border-bottom: 0; }.pdf-stops time { padding: 7px; border-radius: 9px; color: #08799d; background: #e7f6fa; font-size: 12px; font-weight: 900; text-align: center; direction: ltr; }.pdf-stops h3 { margin: 0; font-size: 16px; }.pdf-stops p { margin: 4px 0; color: #6a8192; font-size: 11px; }.pdf-stops small { color: #5e54c9; font-size: 10px; }.pdf-stops article > b { color: #25a967; font-size: 18px; }.pdf-empty { color: #7c909e; text-align: center; }
-.pdf-closing { display: flex; min-height: 320px; align-items: center; justify-content: center; flex-direction: column; text-align: center; background: linear-gradient(145deg,#eaf8fb,#f0efff); }.pdf-closing .pdf-brand { color: #173551; }.pdf-closing .pdf-brand span { color: #fff; background: linear-gradient(135deg,#0b89ad,#6555d0); }.pdf-closing h2 { margin: 25px 0 8px; font-size: 30px; }.pdf-closing p { max-width: 520px; color: #60798c; line-height: 1.8; }
+.pdf-closing { display: flex; min-height: 320px; align-items: center; justify-content: center; flex-direction: column; text-align: center; background: #eaf8fb; }.pdf-closing .pdf-brand { color: #173551; }.pdf-closing .pdf-brand span { color: #fff; background: #0b89ad; }.pdf-closing h2 { margin: 25px 0 8px; font-size: 30px; }.pdf-closing p { max-width: 520px; color: #60798c; line-height: 1.8; }
+.pdf-loading-overlay { position: fixed; inset: 0; z-index: 7000; display: grid; place-items: center; padding: 24px; color: #fff; background: rgba(9,28,45,.92); text-align: center; }
+.pdf-loading-overlay > div { display: grid; gap: 8px; justify-items: center; }
+.pdf-loading-overlay span { width: 34px; height: 34px; border: 4px solid rgba(255,255,255,.28); border-top-color: #fff; border-radius: 50%; animation: pdfSpin .8s linear infinite; }
+.pdf-loading-overlay strong { font-size: 17px; }.pdf-loading-overlay small { color: rgba(255,255,255,.72); }
+@keyframes pdfSpin { to { transform: rotate(360deg); } }
+.search-result-button { width: 100%; border: 0; color: inherit; font: inherit; text-align: start; cursor: pointer; }
+
+@media (min-width: 700px) {
+  .app-container { max-width: 760px; }
+  .top-nav-inner { max-width: 760px; }
+  .tab-bar { left: max(18px, calc(50% - 360px)); right: max(18px, calc(50% - 360px)); }
+  .quick-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .more-explore-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .app-container { max-width: 1120px; }
+  .top-nav-inner { max-width: 1120px; }
+  .tab-bar { left: max(24px, calc(50% - 520px)); right: max(24px, calc(50% - 520px)); }
+  .section { padding-inline: 32px; }
+  .quick-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .more-explore-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  #hotelsList, #restaurantsList, #cafesList, #mallsList, #activitiesList { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+  #hotelsList .detail-card, #restaurantsList .detail-card, #cafesList .detail-card, #mallsList .detail-card, #activitiesList .detail-card { margin-bottom: 0; }
+}
 .itinerary-sheet .modal-header { align-items: flex-start; }
 .itinerary-field { display: block; color: var(--premium-muted); font-size: 12px; font-weight: 750; margin: 0 0 14px; }
 .itinerary-field input, .itinerary-field select, .itinerary-field textarea {

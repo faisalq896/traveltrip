@@ -628,7 +628,7 @@ function updateHomeSummary() {
   const scheduledItems = state.schedule.flatMap(day => day.items.map(item => ({ day, item })));
   const nextItem = scheduledItems.find(({ item }) => !item.done);
   if (title) title.textContent = state.language === 'en' ? `Discover ${cityConfig.key === 'bangkok' ? 'Bangkok' : 'Phuket'} your way` : `اكتشف ${cityConfig.label} بطريقتك`;
-  if (cityChip) cityChip.textContent = `${cityConfig.label} · Thailand · 2026`;
+  if (cityChip) cityChip.textContent = state.language === 'en' ? `${cityConfig.key === 'bangkok' ? 'Bangkok' : 'Phuket'} · Thailand · 2026` : `${cityConfig.label} · تايلند · 2026`;
   if (!nextItem) {
     if (nextTitle) nextTitle.textContent = scheduledItems.length ? ui('أنجزت كل ما خططت له', 'You completed everything you planned') : ui('كل لحظة تستحق أن تُعاش', 'Every moment is worth living');
     if (nextMeta) nextMeta.textContent = scheduledItems.length ? ui('استمتع بما تبقى من رحلتك', 'Enjoy the rest of your trip') : ui('راجع خطتك واختر ما يناسب يومك', 'Review your plan and choose what suits your day');
@@ -661,7 +661,7 @@ function applyCityIdentity() {
   const cityHeroSubtitle = english ? (cityConfig.key === 'bangkok' ? 'City lights, markets, and skyline nights' : 'Islands, beaches, and unforgettable moments') : cityConfig.heroSubtitle;
   const cityWeatherLocation = english ? `${cityName}, Thailand` : cityConfig.weatherLocation;
   document.documentElement.setAttribute('data-city', cityConfig.key);
-  document.title = english ? `TravelTrip — ${cityName}` : `TravelTrip — ${cityConfig.label}`;
+  updateDocumentTitle();
   const heroTitle = document.getElementById('heroTitle');
   const heroSubtitle = document.getElementById('heroSubtitle');
   const heroImage = document.getElementById('heroImage');
@@ -820,6 +820,25 @@ const DOM_TRANSLATIONS = {
   'المحسوس': 'Feels like', 'الهطول': 'Precipitation', 'الرياح': 'Wind', 'الرطوبة': 'Humidity', 'المطر': 'Rain', 'كم/س': 'km/h', 'مم': 'mm', 'آخر تحديث حي:': 'Last live update:', 'عبر': 'via', 'تعذر تحديث القراءة الحية الآن، المعروض آخر قراءة محفوظة.': 'Live data could not be updated. Showing the last saved reading.', 'جاري جلب الطقس الحقيقي...': 'Fetching live weather...'
   , 'كل ما تحتاجه لرحلة مرتبة في مكان واحد.': 'Everything you need for a well-planned trip in one place.', 'إقامتك المثالية': 'Your ideal stay', 'تجارب مذاق مميزة': 'Memorable dining experiences', 'استراحة بطابع جميل': 'A beautiful break', 'تسوّق واكتشاف': 'Shop and discover', 'لحظات لا تُنسى': 'Unforgettable moments'
 };
+Object.assign(DOM_TRANSLATIONS, {
+  'العنوان التايلندي': 'Thai Address',
+  'ملاحظات': 'Notes',
+  'التفاصيل': 'Details',
+  'الساعات': 'Hours',
+  'الآن': 'Now',
+  'النوع': 'Type',
+  'السعر': 'Price',
+  'المتاجر': 'Shops',
+  'المطاعم': 'Restaurants',
+  'الشركة': 'Company',
+  'الانطلاق': 'Departure',
+  'البداية': 'Start',
+  'المدة': 'Duration',
+  'أحضر معك': 'Bring',
+  'تمت الزيارة': 'Visited',
+  'تسجيل زيارة': 'Visit',
+  'نسخ التايلندي': 'Copy Thai'
+});
 const ARABIC_DOM_TRANSLATIONS = Object.fromEntries(Object.entries(DOM_TRANSLATIONS).map(([arabic, english]) => [english, arabic]));
 
 function translateUiValue(value, translations) {
@@ -875,7 +894,7 @@ function applyLanguage() {
   const english = state.language === 'en';
   document.documentElement.lang = english ? 'en' : 'ar';
   document.documentElement.dir = english ? 'ltr' : 'rtl';
-  document.title = english ? 'Thailand Travel Guide — 2026' : `دليل ${getCityConfig().label} — تايلند 2026`;
+  updateDocumentTitle();
   const languageButton = document.getElementById('languageToggle');
   if (languageButton) {
     languageButton.textContent = english ? 'عربي' : 'EN';
@@ -894,6 +913,15 @@ function applyLanguage() {
   setUiText('.itinerary-page-intro .mini-btn', t('addDay'));
   setUiText('.itinerary-sheet .itinerary-kicker', t('smartItinerary'));
   setUiText('#weatherKicker', ui('الطقس المباشر', 'LIVE WEATHER'));
+  setUiText('#todayKicker', ui('اليوم', 'TODAY'));
+  setUiText('#tripMapKicker', ui('المسار المباشر', 'LIVE ROUTE'));
+  setUiText('#moreDirectoryKicker', ui('دليل الرحلة', 'TRAVEL DIRECTORY'));
+  document.getElementById('tripMapCard')?.setAttribute('aria-label', ui('خريطة الرحلة', 'Trip map'));
+  document.getElementById('tripMapFrame')?.setAttribute('title', ui('خريطة الرحلة', 'Trip map'));
+  const cityPickerButton = document.getElementById('cityPickerBtn');
+  const cityPickerButtonLabel = document.getElementById('cityPickerBtnLabel');
+  if (cityPickerButton) cityPickerButton.setAttribute('aria-label', ui('اختيار المدينة', 'Choose city'));
+  if (cityPickerButtonLabel) cityPickerButtonLabel.textContent = ui('اختيار المدينة', 'Choose city');
   setUiText('.home-directory-kicker', ui('أساسيات الرحلة', 'TRIP ESSENTIALS'));
   setUiText('.city-picker-kicker', ui('اختر وجهتك', 'Choose your destination'));
   setUiText('.city-picker-title', ui('إلى أين تأخذك رحلتك؟', 'Where will your journey take you?'));
@@ -980,11 +1008,23 @@ function setCityBadge() {
   else badge.textContent = english ? 'Not selected' : 'غير محدد';
 }
 
+function updateDocumentTitle() {
+  const pickerVisible = document.getElementById('cityPicker')?.classList.contains('active');
+  if (!state.selectedCity || pickerVisible) {
+    document.title = ui('TravelTrip — اختر وجهتك', 'TravelTrip — Choose your destination');
+    return;
+  }
+  const city = getCityConfig();
+  const cityName = state.language === 'en' ? (city.key === 'bangkok' ? 'Bangkok' : 'Phuket') : city.label;
+  document.title = `TravelTrip — ${cityName}`;
+}
+
 function openCityPicker(resetSelection = false) {
   if (resetSelection) saveState();
   document.getElementById('appContainer').classList.add('app-hidden');
   document.getElementById('cityPicker').classList.add('active');
   showCountryLanding();
+  updateDocumentTitle();
 }
 
 function showCountryLanding() {
@@ -994,6 +1034,7 @@ function showCountryLanding() {
   if (options) options.classList.add('app-hidden');
   if (entryButton) entryButton.innerHTML = ui('استكشف تايلند <span>←</span>', 'Explore Thailand <span>→</span>');
   if (note) note.textContent = ui('اختر تايلند أولاً، ثم حدّد المنطقة التي تناسب رحلتك.', 'Choose Thailand first, then select the region that suits your trip.');
+  updateDocumentTitle();
 }
 
 function showCityOptions() {
@@ -1003,6 +1044,7 @@ function showCityOptions() {
   if (options) options.classList.remove('app-hidden');
   if (entryButton) entryButton.innerHTML = ui('العودة لاختيار دولة <span>→</span>', 'Back to country selection <span>←</span>');
   if (note) note.textContent = ui('اختر منطقتك في تايلند.', 'Choose your region in Thailand.');
+  updateDocumentTitle();
 }
 
 function handleCountryEntry() {
@@ -1044,6 +1086,7 @@ function handleCityPickerShortcut() {
   // While the country list is open, return to the app home.
   cityPicker.classList.remove('active');
   appContainer.classList.remove('app-hidden');
+  updateDocumentTitle();
   showSection('home');
 }
 
@@ -1055,6 +1098,7 @@ function enterCity(city) {
   setCityBadge();
   document.getElementById('cityPicker').classList.remove('active');
   document.getElementById('appContainer').classList.remove('app-hidden');
+  updateDocumentTitle();
   renderWeather();
   showSection(state.currentSection || 'home');
   refreshWeather();
@@ -1608,7 +1652,7 @@ function renderSchedule() {
               <div class="day-time">${escapeHtml(item.time)}</div>
               <div class="day-content-title">${escapeHtml(localizeContent(item.title))}</div>
               <div class="day-content-sub">${escapeHtml(localizeContent(item.sub))}</div>
-              ${item.estimatedCost !== null && item.estimatedCost !== undefined ? `<div class="day-item-price">${ui('تقريباً', 'Estimated')} ${Number(item.estimatedCost).toLocaleString()}${item.estimatedCostHigh && item.estimatedCostHigh !== item.estimatedCost ? `–${Number(item.estimatedCostHigh).toLocaleString()}` : ''} THB</div>` : ''}
+              ${item.estimatedCost !== null && item.estimatedCost !== undefined ? `<div class="day-item-price">${ui('تقريباً', 'Estimated')} ${Number(item.estimatedCost).toLocaleString()}${item.estimatedCostHigh && item.estimatedCostHigh !== item.estimatedCost ? `–${Number(item.estimatedCostHigh).toLocaleString()}` : ''} ${ui('بات', 'THB')}</div>` : ''}
               <div class="day-item-actions">
                 <button class="mini-btn gray" type="button" onclick="editScheduleItem(${di},${ii})">${t('edit')}</button>
                 <button class="mini-btn gray" type="button" onclick="deleteScheduleItem(${di},${ii})">${t('delete')}</button>
@@ -1801,13 +1845,14 @@ function addTravelAiSuggestion(index) {
 
 function buildTripPdfDocument() {
   const city = getCityConfig();
+  const cityDisplayName = state.language === 'en' ? (city.key === 'bangkok' ? 'Bangkok' : 'Phuket') : city.label;
   const totalStops = state.schedule.reduce((total, day) => total + day.items.length, 0);
   const completedStops = state.schedule.reduce((total, day) => total + day.items.filter(item => item.done).length, 0);
   const estimatedTotal = state.schedule.reduce((total, day) => total + day.items.reduce((sum, item) => sum + (Number(item.estimatedCost) || 0), 0), 0);
   const days = state.schedule.map(day => `
     <section class="pdf-day">
       <header><div><span>${ui('اليوم', 'Day')} ${escapeHtml(day.day)}</span><h2>${escapeHtml(localizeContent(day.date))}</h2></div><p>${escapeHtml(localizeContent(day.city))}<br>${escapeHtml(localizeContent(day.hotel || ui('بدون فندق محدد', 'No hotel selected')))}</p></header>
-      <div class="pdf-stops">${day.items.length ? day.items.map(item => `<article><time>${escapeHtml(item.time)}</time><div><h3>${escapeHtml(localizeContent(item.title))}</h3><p>${escapeHtml(localizeContent(item.sub || ''))}</p>${item.estimatedCost !== null && item.estimatedCost !== undefined ? `<small>${ui('التكلفة التقديرية', 'Estimated cost')}: ${Number(item.estimatedCost).toLocaleString()} THB</small>` : ''}</div><b>${item.done ? '✓' : ''}</b></article>`).join('') : `<p class="pdf-empty">${ui('لا توجد محطات مضافة.', 'No stops added.')}</p>`}</div>
+      <div class="pdf-stops">${day.items.length ? day.items.map(item => `<article><time>${escapeHtml(item.time)}</time><div><h3>${escapeHtml(localizeContent(item.title))}</h3><p>${escapeHtml(localizeContent(item.sub || ''))}</p>${item.estimatedCost !== null && item.estimatedCost !== undefined ? `<small>${ui('التكلفة التقديرية', 'Estimated cost')}: ${Number(item.estimatedCost).toLocaleString()} ${ui('بات', 'THB')}</small>` : ''}</div><b>${item.done ? '✓' : ''}</b></article>`).join('') : `<p class="pdf-empty">${ui('لا توجد محطات مضافة.', 'No stops added.')}</p>`}</div>
     </section>`).join('');
   const wrapper = document.createElement('div');
   wrapper.className = 'trip-pdf-document';
@@ -1819,24 +1864,81 @@ function buildTripPdfDocument() {
       <div class="pdf-cover-meta"><div><b>${state.schedule.length}</b><span>${ui('أيام', 'Days')}</span></div><div><b>${totalStops}</b><span>${ui('محطات', 'Stops')}</span></div><div><b>${completedStops}</b><span>${ui('منجز', 'Done')}</span></div></div>
       <footer><span>${new Date().toLocaleDateString(state.language === 'en' ? 'en-GB' : 'ar-KW')}</span><span>faisalq896.github.io/traveltrip</span></footer>
     </section>
-    <section class="pdf-summary"><div><span>${ui('ملخص الرحلة', 'TRIP SUMMARY')}</span><h2>${ui('كل تفاصيل رحلتك في مكان واحد', 'Everything for your trip in one place')}</h2></div><div class="pdf-summary-grid"><p><b>${city.label}</b>${ui('الوجهة', 'Destination')}</p><p><b>${state.schedule.length}</b>${ui('عدد الأيام', 'Trip days')}</p><p><b>${estimatedTotal.toLocaleString()} THB</b>${ui('تكلفة الأنشطة التقديرية', 'Estimated activities')}</p><p><b>${state.weather.temp ?? '--'}°</b>${ui('آخر درجة حرارة محفوظة', 'Last saved temperature')}</p></div></section>
+    <section class="pdf-summary"><div><span>${ui('ملخص الرحلة', 'TRIP SUMMARY')}</span><h2>${ui('كل تفاصيل رحلتك في مكان واحد', 'Everything for your trip in one place')}</h2></div><div class="pdf-summary-grid"><p><b>${cityDisplayName}</b>${ui('الوجهة', 'Destination')}</p><p><b>${state.schedule.length}</b>${ui('عدد الأيام', 'Trip days')}</p><p><b>${estimatedTotal.toLocaleString()} ${ui('بات', 'THB')}</b>${ui('تكلفة الأنشطة التقديرية', 'Estimated activities')}</p><p><b>${state.weather.temp ?? '--'}°</b>${ui('آخر درجة حرارة محفوظة', 'Last saved temperature')}</p></div></section>
     ${days}
     <section class="pdf-closing"><div class="pdf-brand"><span>✦</span> TRAVELTRIP</div><h2>${ui('رحلة سعيدة وآمنة', 'Have a safe and wonderful trip')}</h2><p>${ui('شارك هذه الخطة مع رفقاء الرحلة وخلو كل شخص يعرف المحطة القادمة.', 'Share this plan with your travel companions so everyone knows what comes next.')}</p></section>`;
   return wrapper;
 }
 
+async function waitForPdfAssets(root) {
+  if (document.fonts?.ready) await document.fonts.ready;
+  const images = [...root.querySelectorAll('img')];
+  await Promise.all(images.map(image => {
+    if (image.complete) return image.decode?.().catch(() => {}) || Promise.resolve();
+    return new Promise(resolve => {
+      const finish = () => resolve();
+      image.addEventListener('load', finish, { once: true });
+      image.addEventListener('error', finish, { once: true });
+      setTimeout(finish, 8000);
+    });
+  }));
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+function pdfCanvasHasContent(canvas) {
+  if (!canvas || canvas.width < 100 || canvas.height < 100) return false;
+  const sample = document.createElement('canvas');
+  sample.width = 32;
+  sample.height = 32;
+  const context = sample.getContext('2d', { willReadFrequently: true });
+  if (!context) return false;
+  context.drawImage(canvas, 0, 0, sample.width, sample.height);
+  const pixels = context.getImageData(0, 0, sample.width, sample.height).data;
+  let colored = 0;
+  for (let index = 0; index < pixels.length; index += 4) {
+    const red = pixels[index];
+    const green = pixels[index + 1];
+    const blue = pixels[index + 2];
+    const alpha = pixels[index + 3];
+    if (alpha > 20 && (Math.max(red, green, blue) - Math.min(red, green, blue) > 8 || red + green + blue < 690)) colored += 1;
+  }
+  return colored > 20;
+}
+
+function createPdfLoadingOverlay() {
+  const overlay = document.createElement('div');
+  overlay.className = 'pdf-loading-overlay';
+  overlay.setAttribute('role', 'status');
+  overlay.setAttribute('aria-live', 'polite');
+  overlay.innerHTML = `<div><span aria-hidden="true"></span><strong>${ui('جاري تجهيز ملف PDF…', 'Preparing your PDF…')}</strong><small>${ui('يتم الآن تحميل الخطوط وترتيب الصفحات.', 'Loading fonts and arranging pages.')}</small></div>`;
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
 async function shareTripPdf() {
   const button = document.getElementById('shareTripPdfButton');
-  if (!state.schedule.length) { notifyStorageIssue(ui('أضف يوماً واحداً على الأقل قبل إنشاء PDF.', 'Add at least one day before creating a PDF.')); return; }
-  if (typeof window.html2pdf !== 'function') { notifyStorageIssue(ui('تعذر تحميل أداة PDF. تحقق من الإنترنت وحاول مرة أخرى.', 'The PDF tool could not load. Check your connection and try again.')); return; }
+  if (!state.schedule.length) { alert(ui('أضف يوماً واحداً على الأقل قبل إنشاء PDF.', 'Add at least one day before creating a PDF.')); return; }
+  if (typeof window.html2pdf !== 'function') { alert(ui('تعذر تحميل أداة PDF. أعد فتح التطبيق وحاول مرة أخرى.', 'The PDF tool could not load. Reopen the app and try again.')); return; }
   const originalText = button?.textContent;
   if (button) { button.disabled = true; button.textContent = ui('جاري إنشاء PDF...', 'Creating PDF...'); }
   const documentNode = buildTripPdfDocument();
+  if (!documentNode || documentNode.textContent.trim().length < 20) {
+    if (button) { button.disabled = false; button.textContent = originalText; }
+    alert(ui('لا يوجد محتوى صالح لإنشاء ملف PDF.', 'There is no valid content to create a PDF.'));
+    return;
+  }
+  const loadingOverlay = createPdfLoadingOverlay();
   document.body.appendChild(documentNode);
   try {
+    await waitForPdfAssets(documentNode);
+    if (!documentNode.isConnected || documentNode.scrollWidth < 100 || documentNode.scrollHeight < 100) throw new Error('PDF content is not renderable');
     const filename = `TRAVELTRIP-${currentCityKey()}-${new Date().toISOString().slice(0, 10)}.pdf`;
-    const worker = window.html2pdf().set({ margin: 0, filename, image: { type: 'jpeg', quality: 0.96 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#f4f8fb' }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'], avoid: ['.pdf-day', '.pdf-stops article'] } }).from(documentNode).toPdf();
-    const blob = await worker.outputPdf('blob');
+    const worker = window.html2pdf().set({ margin: 0, filename, image: { type: 'jpeg', quality: 0.96 }, html2canvas: { scale: 2, useCORS: true, allowTaint: false, logging: false, backgroundColor: '#f4f8fb', scrollX: 0, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'], avoid: ['.pdf-day', '.pdf-stops article'] } }).from(documentNode).toCanvas();
+    const canvas = await worker.get('canvas');
+    if (!pdfCanvasHasContent(canvas)) throw new Error('PDF canvas is blank');
+    const blob = await worker.toPdf().outputPdf('blob');
+    const signature = await blob.slice(0, 5).text();
+    if (blob.size < 5000 || signature !== '%PDF-') throw new Error('Generated PDF is empty or invalid');
     const file = new File([blob], filename, { type: 'application/pdf' });
     if (navigator.share && navigator.canShare?.({ files: [file] })) {
       await navigator.share({ title: ui('خطة رحلتي من TRAVELTRIP', 'My TRAVELTRIP itinerary'), text: ui('هذه خطة الرحلة كاملة بصيغة PDF.', 'Here is the complete trip plan as a PDF.'), files: [file] });
@@ -1847,9 +1949,10 @@ async function shareTripPdf() {
       setTimeout(() => URL.revokeObjectURL(url), 30000);
     }
   } catch (error) {
-    if (error?.name !== 'AbortError') notifyStorageIssue(ui('تعذر إنشاء ملف PDF الآن. حاول مرة أخرى.', 'Could not create the PDF. Please try again.'));
+    if (error?.name !== 'AbortError') alert(ui('تعذر إنشاء ملف PDF الآن. لم يتم تنزيل أي ملف فارغ.', 'Could not create the PDF. No empty file was downloaded.'));
   } finally {
     documentNode.remove();
+    loadingOverlay.remove();
     if (button) { button.disabled = false; button.textContent = originalText; }
   }
 }
@@ -2252,6 +2355,7 @@ function renderHotels() {
     </div>
     `;
   }).join('');
+  translateRenderedInterface(container);
 }
 // ============================================
 // RESTAURANTS
@@ -2301,6 +2405,7 @@ function renderRestaurants(filter = '') {
     </div>
     `;
   }).join('');
+  translateRenderedInterface(container);
 }
 
 function filterRestaurants() {
@@ -2351,6 +2456,7 @@ function renderCafes(filter = '') {
     </div>
     `;
   }).join('');
+  translateRenderedInterface(container);
 }
 
 function filterCafes() {
@@ -2395,6 +2501,7 @@ function renderMalls() {
     </div>
     `;
   }).join('');
+  translateRenderedInterface(container);
 }
 
 // ============================================
@@ -2432,6 +2539,7 @@ function renderActivities() {
     </div>
     `;
   }).join('');
+  translateRenderedInterface(container);
 }
 
 // ============================================
@@ -2663,8 +2771,23 @@ function renderVisited() {
 // SEARCH
 // ============================================
 
+function normalizeSearchText(value) {
+  return String(value || '')
+    .normalize('NFKD')
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ؤ/g, 'و')
+    .replace(/ئ/g, 'ي')
+    .replace(/ى/g, 'ي')
+    .replace(/ـ/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
 function matchesSearch(query, ...values) {
-  return values.some(value => String(value || '').toLowerCase().includes(query));
+  const normalizedQuery = normalizeSearchText(query);
+  return Boolean(normalizedQuery) && values.some(value => normalizeSearchText(value).includes(normalizedQuery));
 }
 
 function openSearchResult(section, placeType = '', id = '') {
@@ -2673,57 +2796,57 @@ function openSearchResult(section, placeType = '', id = '') {
 }
 
 function doGlobalSearch() {
-  const q = document.getElementById('globalSearch').value.trim().toLowerCase();
+  const q = normalizeSearchText(document.getElementById('globalSearch').value);
   const container = document.getElementById('searchResults');
   if (!q) { container.innerHTML = ''; return; }
 
   const { hotels, restaurants, cafes, malls, activities } = getCityData();
   const results = [];
   hotels.forEach(h => {
-    if (matchesSearch(q, h.name, h.nameTh, h.address, h.addressTh, h.notes))
-      results.push({ section: 'hotels', placeType: 'hotel', id: h.id, type: 'فندق', name: h.name, sub: h.address, icon: '🏨' });
+    if (matchesSearch(q, h.name, h.nameTh, h.address, h.addressTh, h.notes, 'فندق فنادق اقامة سكن hotel hotels stay accommodation'))
+      results.push({ section: 'hotels', placeType: 'hotel', id: h.id, type: ui('فندق', 'Hotel'), name: h.name, sub: h.address, icon: '🏨' });
   });
   restaurants.forEach(r => {
-    if (matchesSearch(q, r.name, r.nameTh, r.type, r.halalNote))
-      results.push({ section: 'restaurants', placeType: 'restaurant', id: r.id, type: 'مطعم', name: r.name, sub: r.type, icon: '🍽️' });
+    if (matchesSearch(q, r.name, r.nameTh, r.type, r.halalNote, r.address, 'مطعم مطاعم اكل طعام restaurant restaurants dining food'))
+      results.push({ section: 'restaurants', placeType: 'restaurant', id: r.id, type: ui('مطعم', 'Restaurant'), name: r.name, sub: localizeContent(r.type), icon: '🍽️' });
   });
   cafes.forEach(c => {
-    if (matchesSearch(q, c.name, c.nameTh, c.type, c.halalNote))
-      results.push({ section: 'cafes', placeType: 'cafe', id: c.id, type: 'مقهى', name: c.name, sub: c.type, icon: '☕' });
+    if (matchesSearch(q, c.name, c.nameTh, c.type, c.halalNote, c.address, 'مقهي مقاهي كافيه قهوة cafe cafes coffee'))
+      results.push({ section: 'cafes', placeType: 'cafe', id: c.id, type: ui('مقهى', 'Cafe'), name: c.name, sub: localizeContent(c.type), icon: '☕' });
   });
   malls.forEach(m => {
-    if (matchesSearch(q, m.name, m.nameTh, m.shops, m.restaurants))
-      results.push({ section: 'malls', placeType: 'mall', id: m.id, type: 'مول', name: m.name, sub: m.shops.substring(0, 40) + '...', icon: '🛍️' });
+    if (matchesSearch(q, m.name, m.nameTh, m.shops, m.restaurants, m.address, 'مول مولات تسوق سوق اسواق mall malls shopping shops'))
+      results.push({ section: 'malls', placeType: 'mall', id: m.id, type: ui('مول', 'Mall'), name: m.name, sub: localizeContent(m.shops).substring(0, 80), icon: '🛍️' });
   });
   activities.forEach(a => {
-    if (matchesSearch(q, a.name, a.nameTh, a.company, a.notes))
-      results.push({ section: 'activities', placeType: 'activity', id: a.id, type: 'نشاط', name: a.name, sub: a.company, icon: '🏝️' });
+    if (matchesSearch(q, a.name, a.nameTh, a.company, a.notes, a.duration, a.bring, 'نشاط انشطة فعالية فعاليات رحلة رحلات activity activities tour tours experience'))
+      results.push({ section: 'activities', placeType: 'activity', id: a.id, type: ui('نشاط', 'Activity'), name: a.name, sub: localizeContent(a.company || a.notes), icon: '🏝️' });
   });
   state.schedule.forEach(day => {
     day.items.forEach(item => {
-      if (matchesSearch(q, day.date, day.city, day.hotel, item.time, item.title, item.sub))
-        results.push({ section: 'schedule', type: 'الجدول', name: item.title, sub: `${day.date} • ${item.time} • ${item.sub}`, icon: '🗓️' });
+      if (matchesSearch(q, day.date, day.city, day.hotel, item.time, item.title, item.sub, 'جدول خطة يوم itinerary schedule plan day'))
+        results.push({ section: 'schedule', type: ui('الجدول', 'Itinerary'), name: localizeContent(item.title), sub: `${localizeContent(day.date)} • ${item.time} • ${localizeContent(item.sub)}`, icon: '🗓️' });
     });
   });
   state.packing.forEach(item => {
-    if (matchesSearch(q, item.text))
-      results.push({ section: 'packing', type: 'التجهيز', name: item.text, sub: item.done ? 'مكتمل' : 'غير مكتمل', icon: '🧳' });
+    if (matchesSearch(q, item.text, 'تجهيز امتعة شنطة packing luggage checklist'))
+      results.push({ section: 'packing', type: ui('التجهيز', 'Packing'), name: localizeContent(item.text), sub: item.done ? ui('مكتمل', 'Completed') : ui('غير مكتمل', 'Not completed'), icon: '🧳' });
   });
-  if (matchesSearch(q, state.notes)) results.push({ section: 'notes', type: 'الملاحظات', name: 'ملاحظات الرحلة', sub: state.notes.slice(0, 80), icon: '📝' });
+  if (matchesSearch(q, state.notes, 'ملاحظة ملاحظات notes note')) results.push({ section: 'notes', type: ui('الملاحظات', 'Notes'), name: ui('ملاحظات الرحلة', 'Trip notes'), sub: state.notes.slice(0, 80), icon: '📝' });
 
   if (results.length === 0) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><div>لا توجد نتائج</div></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon" aria-hidden="true">🔍</div><div>${ui('لا توجد نتائج', 'No results found')}</div></div>`;
     return;
   }
   container.innerHTML = `<div class="ios-list">` + results.map(r => `
-    <div class="ios-list-item" onclick="openSearchResult('${r.section}','${r.placeType || ''}','${r.id || ''}')">
+    <button class="ios-list-item search-result-button" type="button" onclick="openSearchResult('${r.section}','${r.placeType || ''}','${r.id || ''}')">
       <div class="ios-list-icon" style="background:var(--ios-gray5)">${r.icon}</div>
       <div class="ios-list-content">
         <div class="ios-list-title">${escapeHtml(r.name)}</div>
         <div class="ios-list-sub">${escapeHtml(r.sub)}</div>
       </div>
-      <div class="ios-list-chevron">›</div>
-    </div>
+      <div class="ios-list-chevron" aria-hidden="true">›</div>
+    </button>
   `).join('') + `</div>`;
 }
 
@@ -2867,7 +2990,7 @@ function openPlaceDetails(type, id) {
   const galleryHtml = `
     <div class="place-gallery-head"><span>${ui('صور المكان', 'Place photos')}</span><small>${gallery.length} / 3</small></div>
     <div class="place-gallery">
-      ${gallery.map((src, idx) => `<img src="${escapeHtml(safeImage(src))}" alt="${escapeHtml(item.name)} ${idx + 1}" onerror="this.style.display='none'">`).join('')}
+      ${gallery.map((src, idx) => `<img src="${escapeHtml(safeImage(src))}" alt="${idx === 0 ? escapeHtml(item.name) : ''}" ${idx === 0 ? '' : 'aria-hidden="true"'} onerror="this.style.display='none'">`).join('')}
     </div>
   `;
 
@@ -2911,6 +3034,7 @@ function openPlaceDetails(type, id) {
   subEl.textContent = `${cfg?.title || 'Place'} • ${item.nameTh || getCityConfig().label}`;
   const liveControl = placesEndpoint ? `<button class="action-btn blue" type="button" data-refresh-place>${ui('تحديث بيانات المكان', 'Refresh place data')}</button>` : `<span class="place-data-status">${cached ? ui('بيانات محفوظة للعمل دون إنترنت', 'Cached for offline use') : ui('بيانات المكان محلية — اربط مزود الأماكن للتحديث الحي.', 'Local place data — connect a provider for live updates.')}</span>`;
   bodyEl.innerHTML = `${galleryHtml}<div class="detail-card" style="margin-bottom:0"><div class="detail-card-body" style="padding:0">${rows}<div class="action-row">${copyNameButton}${mapButton}${liveControl}</div></div></div>`;
+  translateRenderedInterface(bodyEl);
   bodyEl.querySelector('[data-copy-place-name]')?.addEventListener('click', () => copyText(item.name));
   bodyEl.querySelector('[data-map-query]')?.addEventListener('click', event => openMap(event.currentTarget.dataset.mapQuery));
   bodyEl.querySelector('[data-refresh-place]')?.addEventListener('click', () => refreshPlaceIntelligence(type, id));
@@ -3359,13 +3483,13 @@ async function deletePhoto(id) {
 
 async function renderGallery() {
   const grid = document.getElementById('photoGrid');
-  grid.innerHTML = '<div class="empty-state">جارٍ تحميل الصور...</div>';
+    grid.innerHTML = `<div class="empty-state">${ui('جارٍ تحميل الصور...', 'Loading photos...')}</div>`;
   try {
     const photos = await loadPhotoLibrary();
     releasePhotoObjectUrls();
     const photoItems = photos.map(photo => `
-      <button class="photo-grid-item" type="button" data-photo-id="${escapeHtml(photo.id)}">
-        <img src="${createPhotoSource(photo)}" alt="صورة من الرحلة">
+      <button class="photo-grid-item" type="button" data-photo-id="${escapeHtml(photo.id)}" aria-label="${ui('حذف صورة من المعرض', 'Delete photo from gallery')}">
+        <img src="${createPhotoSource(photo)}" alt="" aria-hidden="true">
       </button>
     `).join('');
     grid.innerHTML = `${photoItems}<label class="photo-grid-item photo-add"><span>+</span><input type="file" aria-label="${ui('إضافة صورة إلى المعرض', 'Add a photo to the gallery')}" accept="image/jpeg,image/png,image/gif,image/webp" onchange="addPhoto(this)"></label>`;
@@ -3373,7 +3497,7 @@ async function renderGallery() {
       button.addEventListener('click', () => deletePhoto(button.dataset.photoId));
     });
   } catch {
-    grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📷</div><div>تعذر فتح معرض الصور على هذا الجهاز.</div></div>';
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon" aria-hidden="true">📷</div><div>${ui('تعذر فتح معرض الصور على هذا الجهاز.', 'Could not open the photo gallery on this device.')}</div></div>`;
   }
 }
 

@@ -103,10 +103,100 @@ test('PDF dependency is local and available in the offline app shell', async () 
     'service worker must cache the exact local PDF bundle URL'
   );
   assert.ok(
-    worker.includes("'./assets/js/app.js?v=20260808-8'"),
+    worker.includes("'./assets/js/app.js?v=20260808-9'"),
     'service worker must cache the exact versioned application URL'
   );
   assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
+});
+
+test('PDF export renders visible content and rejects blank output', async () => {
+  const [appSource, css] = await Promise.all([
+    readProjectFile('assets/js/app.js'),
+    readProjectFile('assets/css/app.css')
+  ]);
+
+  assert.ok(!css.includes('left: -20000px'), 'PDF content must not be rendered outside the capturable viewport');
+  assert.ok(
+    css.includes('.trip-pdf-document { position: fixed; left: 0; top: 0;'),
+    'PDF content must be visible to html2canvas while the loading overlay is shown'
+  );
+  assert.ok(appSource.includes('await waitForPdfAssets(documentNode);'), 'PDF export must wait for fonts and images');
+  assert.ok(
+    appSource.includes("if (!pdfCanvasHasContent(canvas)) throw new Error('PDF canvas is blank');"),
+    'blank canvases must be rejected'
+  );
+  assert.ok(appSource.includes("signature !== '%PDF-'"), 'invalid or empty PDF blobs must not be downloaded');
+});
+
+test('global search normalizes Arabic and includes category aliases', async () => {
+  const appSource = await readProjectFile('assets/js/app.js');
+  const start = appSource.indexOf('function normalizeSearchText');
+  const end = appSource.indexOf('function openSearchResult', start);
+  assert.ok(start >= 0 && end > start, 'search normalization functions must exist');
+
+  const searchFunctions = appSource.slice(start, end);
+  const normalize = Function(`${searchFunctions}; return normalizeSearchText;`)();
+  assert.equal(normalize('  مَطَاعِم  '), 'مطاعم');
+  assert.equal(normalize('مَقْهَى'), 'مقهي');
+  assert.equal(normalize('  RESTAURANTS  '), 'restaurants');
+  assert.ok(
+    appSource.includes('مطعم مطاعم اكل طعام restaurant restaurants'),
+    'restaurant category aliases must be searchable'
+  );
+  assert.ok(appSource.includes('مقهي مقاهي كافيه قهوة cafe cafes'), 'cafe category aliases must be searchable');
+
+  const searchEnd = appSource.indexOf('function openEmergency', start);
+  const fullSearchSource = appSource.slice(start, searchEnd);
+  const runSearch = Function(
+    'document',
+    'getCityData',
+    'state',
+    'ui',
+    'localizeContent',
+    'escapeHtml',
+    `${fullSearchSource}; doGlobalSearch();`
+  );
+  for (const query of ['مطعم', 'مطاعم', 'RESTAURANTS']) {
+    const nodes = { globalSearch: { value: query }, searchResults: { innerHTML: '' } };
+    runSearch(
+      { getElementById: (id) => nodes[id] },
+      () => ({
+        hotels: [],
+        restaurants: [{ id: 'r1', name: 'Test Restaurant', nameTh: '', type: 'طعام', halalNote: '', address: '' }],
+        cafes: [],
+        malls: [],
+        activities: []
+      }),
+      { schedule: [], packing: [], notes: '' },
+      (arabic, english) => (query === 'RESTAURANTS' ? english : arabic),
+      (value) => value || '',
+      (value) => String(value || '')
+    );
+    assert.ok(
+      nodes.searchResults.innerHTML.includes('Test Restaurant'),
+      `category query ${query} must return restaurants`
+    );
+  }
+});
+
+test('destination title, accessibility labels, and desktop layout remain explicit', async () => {
+  const [html, appSource, css] = await Promise.all([
+    readProjectFile('index.html'),
+    readProjectFile('assets/js/app.js'),
+    readProjectFile('assets/css/app.css')
+  ]);
+
+  assert.ok(html.includes('<title>TravelTrip — اختر وجهتك</title>'), 'initial title must not assume Phuket');
+  assert.ok(
+    appSource.includes('TravelTrip — Choose your destination'),
+    'destination picker title must support English'
+  );
+  assert.ok(html.includes('id="cityPickerBtnLabel">اختيار المدينة</span>'), 'city picker must have a visible label');
+  assert.ok(
+    !css.includes("content: 'مختار لرحلتك'"),
+    'decorative repeated text must not be exposed to assistive technology'
+  );
+  assert.ok(css.includes('@media (min-width: 1024px)'), 'desktop layout must have a dedicated responsive breakpoint');
 });
 
 test('More menu labels map to their actual actions and expose manual flight refresh', async () => {
