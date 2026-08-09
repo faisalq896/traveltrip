@@ -93,23 +93,27 @@ test('Thailand dates, config, language, and hotel placeholders are safe', async 
 });
 
 test('PDF dependency is local and available in the offline app shell', async () => {
-  const [html, worker, pdfBundle] = await Promise.all([
+  const [html, worker, pdfBundle, font] = await Promise.all([
     readProjectFile('index.html'),
     readProjectFile('sw.js'),
-    readProjectFile('assets/vendor/html2pdf.bundle.min.js')
+    readProjectFile('assets/vendor/jspdf.umd.min.js'),
+    readProjectFile('assets/fonts/Amiri-Regular.ttf')
   ]);
 
-  assert.ok(html.includes('assets/vendor/html2pdf.bundle.min.js'), 'HTML must load the local PDF bundle');
+  assert.ok(html.includes('assets/vendor/jspdf.umd.min.js'), 'HTML must load local jsPDF');
+  assert.ok(html.includes('assets/js/trip-pdf.js'), 'HTML must load the direct PDF generator');
   assert.ok(!html.includes('cdnjs.cloudflare.com'), 'HTML must not depend on the PDF CDN');
   assert.ok(
-    worker.includes("'./assets/vendor/html2pdf.bundle.min.js?v=0.14.0'"),
-    'service worker must cache the exact local PDF bundle URL'
+    worker.includes("'./assets/vendor/jspdf.umd.min.js?v=4.2.1'") &&
+      worker.includes("'./assets/fonts/Amiri-Regular.ttf?v=1'"),
+    'service worker must cache jsPDF and the Arabic font'
   );
   assert.ok(
-    worker.includes("'./assets/js/app.js?v=20260809-14'"),
+    worker.includes("'./assets/js/app.js?v=20260809-15'") && worker.includes("'./assets/js/trip-pdf.js?v=20260809-1'"),
     'service worker must cache the exact versioned application URL'
   );
-  assert.ok(pdfBundle.length > 500000, 'local PDF bundle appears incomplete');
+  assert.ok(pdfBundle.length > 300000, 'local jsPDF bundle appears incomplete');
+  assert.ok(font.length > 100000, 'local Arabic font appears incomplete');
 });
 
 test('itinerary header buttons keep the correct labels and actions', async () => {
@@ -131,22 +135,14 @@ test('itinerary header buttons keep the correct labels and actions', async () =>
   );
 });
 
-test('PDF export renders visible content and rejects blank output', async () => {
-  const [appSource, css] = await Promise.all([
+test('PDF export is direct from schedule data and rejects invalid output', async () => {
+  const [appSource, generatorSource, css] = await Promise.all([
     readProjectFile('assets/js/app.js'),
+    readProjectFile('assets/js/trip-pdf.js'),
     readProjectFile('assets/css/app.css')
   ]);
 
-  assert.ok(!css.includes('left: -20000px'), 'PDF content must not be rendered outside the capturable viewport');
-  assert.ok(
-    css.includes('.trip-pdf-document { position: fixed; left: 0; top: 0;'),
-    'PDF content must be visible to html2canvas while the loading overlay is shown'
-  );
-  assert.ok(appSource.includes('await waitForPdfAssets(documentNode);'), 'PDF export must wait for fonts and images');
-  assert.ok(
-    appSource.includes("if (!pdfCanvasHasContent(canvas)) throw new Error('PDF page canvas is blank');"),
-    'blank page canvases must be rejected'
-  );
+  assert.ok(!css.includes('.trip-pdf-document'), 'legacy hidden PDF DOM styles must be removed');
   assert.ok(appSource.includes("signature !== '%PDF-'"), 'invalid or empty PDF blobs must not be downloaded');
   assert.ok(
     appSource.includes("typeof navigator.canShare !== 'function'"),
@@ -157,33 +153,15 @@ test('PDF export renders visible content and rejects blank output', async () => 
     'failed or unsupported file sharing must fall back to a real download'
   );
   assert.ok(
-    appSource.includes('function tripPdfRenderOptions') && appSource.includes('scale: 1,'),
-    'PDF rendering must stay below mobile browser canvas limits'
+    appSource.includes('window.TravelTripPdf.createTripPdfBlob({'),
+    'sharing must call the data-to-PDF generator'
   );
-  assert.ok(
-    appSource.includes('windowWidth: 794,') && appSource.includes('windowHeight: sourceHeight,'),
-    'PDF rendering must use stable A4 source dimensions'
-  );
-  assert.ok(
-    appSource.includes('const pages = [...documentNode.children].filter(page => page.textContent.trim());'),
-    'PDF export must render each itinerary page separately'
-  );
-  assert.ok(
-    appSource.includes('const blob = await renderTripPdfPages(documentNode, filename);'),
-    'PDF export must avoid one oversized full-itinerary canvas'
-  );
+  assert.ok(generatorSource.includes('for (const day of schedule)'), 'generator must build pages from schedule data');
   assert.ok(
     appSource.includes('const pdfSchedule = getScheduleForPdf();'),
     'PDF sharing must resolve the current city itinerary before checking for content'
   );
-  assert.ok(
-    appSource.includes('readStoredJson(scopedKey, null)'),
-    'PDF sharing must recover the city-scoped saved itinerary'
-  );
-  assert.ok(
-    appSource.includes('getCityData(cityKey).schedule'),
-    'PDF sharing must retain the correct city defaults when no saved state exists'
-  );
+  assert.ok(appSource.includes('sanitizeSchedule(state.schedule'), 'PDF sharing must use the current runtime schedule');
 });
 
 test('global search normalizes Arabic and includes category aliases', async () => {
