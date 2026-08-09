@@ -1847,130 +1847,7 @@ function addTravelAiSuggestion(index) {
 }
 
 function getScheduleForPdf() {
-  const runtimeSchedule = sanitizeSchedule(state.schedule, [], 'pdf_runtime_schedule');
-  if (runtimeSchedule.length) return runtimeSchedule;
-
-  const cityKey = currentCityKey();
-  const scopedKey = cityScopedKey('tg_schedule', cityKey);
-  const scopedSchedule = sanitizeSchedule(readStoredJson(scopedKey, null), [], scopedKey);
-  if (scopedSchedule.length) return scopedSchedule;
-
-  if (cityKey === 'phuket') {
-    const legacySchedule = sanitizeSchedule(readStoredJson('tg_schedule', null), [], 'tg_schedule');
-    if (legacySchedule.length) return legacySchedule;
-  }
-
-  return deepClone(getCityData(cityKey).schedule);
-}
-
-function buildTripPdfDocument(schedule = getScheduleForPdf()) {
-  const city = getCityConfig();
-  const cityDisplayName = state.language === 'en' ? (city.key === 'bangkok' ? 'Bangkok' : 'Phuket') : city.label;
-  const totalStops = schedule.reduce((total, day) => total + day.items.length, 0);
-  const completedStops = schedule.reduce((total, day) => total + day.items.filter(item => item.done).length, 0);
-  const estimatedTotal = schedule.reduce((total, day) => total + day.items.reduce((sum, item) => sum + (Number(item.estimatedCost) || 0), 0), 0);
-  const days = schedule.map(day => `
-    <section class="pdf-day">
-      <header><div><span>${ui('اليوم', 'Day')} ${escapeHtml(day.day)}</span><h2>${escapeHtml(localizeContent(day.date))}</h2></div><p>${escapeHtml(localizeContent(day.city))}<br>${escapeHtml(localizeContent(day.hotel || ui('بدون فندق محدد', 'No hotel selected')))}</p></header>
-      <div class="pdf-stops">${day.items.length ? day.items.map(item => `<article><time>${escapeHtml(item.time)}</time><div><h3>${escapeHtml(localizeContent(item.title))}</h3><p>${escapeHtml(localizeContent(item.sub || ''))}</p>${item.estimatedCost !== null && item.estimatedCost !== undefined ? `<small>${ui('التكلفة التقديرية', 'Estimated cost')}: ${Number(item.estimatedCost).toLocaleString()} ${ui('بات', 'THB')}</small>` : ''}</div><b>${item.done ? '✓' : ''}</b></article>`).join('') : `<p class="pdf-empty">${ui('لا توجد محطات مضافة.', 'No stops added.')}</p>`}</div>
-    </section>`).join('');
-  const wrapper = document.createElement('div');
-  wrapper.className = 'trip-pdf-document';
-  wrapper.dir = state.language === 'ar' ? 'rtl' : 'ltr';
-  wrapper.innerHTML = `
-    <section class="pdf-cover">
-      <div class="pdf-brand"><span>✦</span> TRAVELTRIP</div>
-      <div class="pdf-cover-copy"><p>${ui('خطتك الخاصة إلى', 'Your personal trip to')}</p><h1>${escapeHtml(state.language === 'en' ? city.key.toUpperCase() : city.label)}</h1><strong>${ui('رحلة مرتبة. ذكريات أجمل.', 'A clearer plan. Better memories.')}</strong></div>
-      <div class="pdf-cover-meta"><div><b>${schedule.length}</b><span>${ui('أيام', 'Days')}</span></div><div><b>${totalStops}</b><span>${ui('محطات', 'Stops')}</span></div><div><b>${completedStops}</b><span>${ui('منجز', 'Done')}</span></div></div>
-      <footer><span>${new Date().toLocaleDateString(state.language === 'en' ? 'en-GB' : 'ar-KW')}</span><span>faisalq896.github.io/traveltrip</span></footer>
-    </section>
-    <section class="pdf-summary"><div><span>${ui('ملخص الرحلة', 'TRIP SUMMARY')}</span><h2>${ui('كل تفاصيل رحلتك في مكان واحد', 'Everything for your trip in one place')}</h2></div><div class="pdf-summary-grid"><p><b>${cityDisplayName}</b>${ui('الوجهة', 'Destination')}</p><p><b>${schedule.length}</b>${ui('عدد الأيام', 'Trip days')}</p><p><b>${estimatedTotal.toLocaleString()} ${ui('بات', 'THB')}</b>${ui('تكلفة الأنشطة التقديرية', 'Estimated activities')}</p><p><b>${state.weather.temp ?? '--'}°</b>${ui('آخر درجة حرارة محفوظة', 'Last saved temperature')}</p></div></section>
-    ${days}
-    <section class="pdf-closing"><div class="pdf-brand"><span>✦</span> TRAVELTRIP</div><h2>${ui('رحلة سعيدة وآمنة', 'Have a safe and wonderful trip')}</h2><p>${ui('شارك هذه الخطة مع رفقاء الرحلة وخلو كل شخص يعرف المحطة القادمة.', 'Share this plan with your travel companions so everyone knows what comes next.')}</p></section>`;
-  return wrapper;
-}
-
-async function waitForPdfAssets(root) {
-  if (document.fonts?.ready) await document.fonts.ready;
-  const images = [...root.querySelectorAll('img')];
-  await Promise.all(images.map(image => {
-    if (image.complete) return image.decode?.().catch(() => {}) || Promise.resolve();
-    return new Promise(resolve => {
-      const finish = () => resolve();
-      image.addEventListener('load', finish, { once: true });
-      image.addEventListener('error', finish, { once: true });
-      setTimeout(finish, 8000);
-    });
-  }));
-  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-}
-
-function pdfCanvasHasContent(canvas) {
-  if (!canvas || canvas.width < 100 || canvas.height < 100) return false;
-  const sample = document.createElement('canvas');
-  sample.width = 32;
-  sample.height = 32;
-  const context = sample.getContext('2d', { willReadFrequently: true });
-  if (!context) return false;
-  context.drawImage(canvas, 0, 0, sample.width, sample.height);
-  const pixels = context.getImageData(0, 0, sample.width, sample.height).data;
-  let colored = 0;
-  for (let index = 0; index < pixels.length; index += 4) {
-    const red = pixels[index];
-    const green = pixels[index + 1];
-    const blue = pixels[index + 2];
-    const alpha = pixels[index + 3];
-    if (alpha > 20 && (Math.max(red, green, blue) - Math.min(red, green, blue) > 8 || red + green + blue < 690)) colored += 1;
-  }
-  return colored > 20;
-}
-
-function tripPdfRenderOptions(filename, sourceHeight) {
-  return {
-    margin: 0,
-    filename,
-    image: { type: 'jpeg', quality: 0.94 },
-    html2canvas: {
-      scale: 1,
-      useCORS: true,
-      allowTaint: false,
-      logging: false,
-      backgroundColor: '#f4f8fb',
-      scrollX: 0,
-      scrollY: 0,
-      width: 794,
-      windowWidth: 794,
-      windowHeight: sourceHeight,
-      onclone: clonedDocument => {
-        const clonedPdf = clonedDocument.querySelector('.trip-pdf-document');
-        if (clonedPdf) {
-          clonedPdf.style.position = 'relative';
-          clonedPdf.style.inset = 'auto';
-          clonedPdf.style.width = '794px';
-        }
-      }
-    },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-    pagebreak: { mode: ['css', 'legacy'] }
-  };
-}
-
-async function renderTripPdfPages(documentNode, filename) {
-  const pages = [...documentNode.children].filter(page => page.textContent.trim());
-  if (!pages.length) throw new Error('PDF has no pages');
-  let pdf = null;
-  for (const page of pages) {
-    if (pdf) pdf.addPage();
-    const worker = window.html2pdf()
-      .set({ ...tripPdfRenderOptions(filename, page.scrollHeight), ...(pdf ? { pdf } : {}) })
-      .from(page)
-      .toCanvas();
-    const canvas = await worker.get('canvas');
-    if (!pdfCanvasHasContent(canvas)) throw new Error('PDF page canvas is blank');
-    await worker.toPdf();
-    pdf = await worker.get('pdf');
-  }
-  return pdf.output('blob');
+  return sanitizeSchedule(state.schedule, [], 'pdf_runtime_schedule');
 }
 
 function createPdfLoadingOverlay() {
@@ -2009,22 +1886,27 @@ async function shareTripPdf() {
   const button = document.getElementById('shareTripPdfButton');
   const pdfSchedule = getScheduleForPdf();
   if (!pdfSchedule.length) { alert(ui('لم أتمكن من العثور على جدول لهذه المدينة.', 'No itinerary could be found for this city.')); return; }
-  if (typeof window.html2pdf !== 'function') { alert(ui('تعذر تحميل أداة PDF. أعد فتح التطبيق وحاول مرة أخرى.', 'The PDF tool could not load. Reopen the app and try again.')); return; }
+  if (typeof window.TravelTripPdf?.createTripPdfBlob !== 'function') { alert(ui('تعذر تحميل أداة PDF. أعد فتح التطبيق وحاول مرة أخرى.', 'The PDF tool could not load. Reopen the app and try again.')); return; }
   const originalText = button?.textContent;
   if (button) { button.disabled = true; button.textContent = ui('جاري إنشاء PDF...', 'Creating PDF...'); }
-  const documentNode = buildTripPdfDocument(pdfSchedule);
-  if (!documentNode || documentNode.textContent.trim().length < 20) {
-    if (button) { button.disabled = false; button.textContent = originalText; }
-    alert(ui('لا يوجد محتوى صالح لإنشاء ملف PDF.', 'There is no valid content to create a PDF.'));
-    return;
-  }
   const loadingOverlay = createPdfLoadingOverlay();
-  document.body.appendChild(documentNode);
   try {
-    await waitForPdfAssets(documentNode);
-    if (!documentNode.isConnected || documentNode.scrollWidth < 100 || documentNode.scrollHeight < 100) throw new Error('PDF content is not renderable');
     const filename = `TRAVELTRIP-${currentCityKey()}-${new Date().toISOString().slice(0, 10)}.pdf`;
-    const blob = await renderTripPdfPages(documentNode, filename);
+    const city = getCityConfig();
+    const destination = state.language === 'en' ? (city.key === 'bangkok' ? 'Bangkok' : 'Phuket') : city.label;
+    const localizedSchedule = pdfSchedule.map(day => ({
+      ...day,
+      date: localizeContent(day.date),
+      city: localizeContent(day.city),
+      hotel: localizeContent(day.hotel),
+      items: day.items.map(item => ({ ...item, title: localizeContent(item.title), sub: localizeContent(item.sub) }))
+    }));
+    const blob = await window.TravelTripPdf.createTripPdfBlob({
+      schedule: localizedSchedule,
+      destination,
+      language: state.language,
+      fontUrl: './assets/fonts/Amiri-Regular.ttf?v=1'
+    });
     const signature = await blob.slice(0, 5).text();
     if (blob.size < 5000 || signature !== '%PDF-') throw new Error('Generated PDF is empty or invalid');
     const file = new File([blob], filename, { type: 'application/pdf' });
@@ -2041,9 +1923,9 @@ async function shareTripPdf() {
       alert(ui('جهازك لا يدعم مشاركة ملفات PDF مباشرة من المتصفح. تم تنزيل الملف لتقدر ترسله من التنزيلات.', 'Your browser cannot share PDF files directly. The file was downloaded so you can send it from Downloads.'));
     }
   } catch (error) {
+    console.error('Trip PDF generation failed', error);
     if (error?.name !== 'AbortError') alert(ui('تعذر إنشاء ملف PDF الآن. لم يتم تنزيل أي ملف فارغ.', 'Could not create the PDF. No empty file was downloaded.'));
   } finally {
-    documentNode.remove();
     loadingOverlay.remove();
     if (button) { button.disabled = false; button.textContent = originalText; }
   }

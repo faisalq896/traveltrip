@@ -1,11 +1,13 @@
-const CACHE_NAME = 'traveltrip-v18';
+const CACHE_NAME = 'traveltrip-v19';
 const APP_SHELL = [
   './',
   './index.html',
   './data.js?v=20260808-16',
-  './assets/js/app.js?v=20260809-14',
-  './assets/css/app.css?v=20260808-19',
-  './assets/vendor/html2pdf.bundle.min.js?v=0.14.0',
+  './assets/js/app.js?v=20260809-15',
+  './assets/js/trip-pdf.js?v=20260809-1',
+  './assets/css/app.css?v=20260809-20',
+  './assets/vendor/jspdf.umd.min.js?v=4.2.1',
+  './assets/fonts/Amiri-Regular.ttf?v=1',
   './manifest.webmanifest',
   './assets/icons/app-icon.svg',
   './assets/icons/app-icon-192.png',
