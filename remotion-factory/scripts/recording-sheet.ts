@@ -56,7 +56,7 @@ const script = (s: Scene): string[] => {
       if (used < ids.length) lines.push(star(ids[used++]));
     } else if (piece.trim()) lines.push(piece.trim());
   }
-  for (const id of ids.slice(used)) lines.push(`${star(id)} — يظهر على الشاشة`);
+  for (const id of ids.slice(used)) lines.push(`${star(id)} — يظهر على الشاشة، بدون موضع قراءة في النص`);
   return lines;
 };
 
