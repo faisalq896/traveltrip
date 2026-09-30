@@ -26,7 +26,7 @@ export const Quiz: React.FC<QuizProps> = ({questions, countdownSec, answerSec, h
             <div style={{fontFamily: FONTS.display, fontSize: 40, color: COLORS.textDim}}>سؤال {qIndex + 1} / {questions.length}</div>
             <div style={{maxWidth: 1500, textAlign: 'center'}}><Label size={72}>{q.q}</Label></div>
             {counting ? (
-              <div style={{width: 180, height: 180, borderRadius: '50%', border: `8px solid ${COLORS.amber}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.display, fontWeight: 800, fontSize: 110, color: COLORS.amber}}>{remaining}</div>
+              <div style={{width: 180, height: 180, borderRadius: '50%', border: `8px solid ${COLORS.amber}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONTS.display, fontWeight: 700, fontSize: 110, color: COLORS.amber}}>{remaining}</div>
             ) : (
               <div style={{opacity: aOn, transform: `scale(${0.9 + 0.1 * aOn})`, padding: '14px 44px', borderRadius: 30, border: `4px solid ${COLORS.green}`, background: 'rgba(74,222,128,0.12)'}}>
                 <Label size={62} color={COLORS.green}>{q.a}</Label>

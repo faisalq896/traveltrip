@@ -67,7 +67,7 @@ export const ScreenText: React.FC<{text: string}> = ({text}) => {
   return (
     <TextZone style={{alignItems: 'center'}}>
       <div style={{
-        opacity: on, transform: `scale(${0.96 + 0.04 * on})`, fontFamily: FONTS.display, fontWeight: 800, fontSize: 64,
+        opacity: on, transform: `scale(${0.96 + 0.04 * on})`, fontFamily: FONTS.display, fontWeight: 700, fontSize: 64,
         lineHeight: 1.4, textAlign: 'center', color: COLORS.text,
       }}>{text}</div>
     </TextZone>

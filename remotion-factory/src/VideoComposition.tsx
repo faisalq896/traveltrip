@@ -1,9 +1,10 @@
 import React from 'react';
 import {AbsoluteFill, Sequence} from 'remotion';
 import {DefinitionPanel, ScreenText} from './lib/DefinitionPanel';
+import rules from '../data/rules.json';
 import {SceneFrame} from './lib/Frame';
 import {FPS} from './lib/layout';
-import {COLORS} from './lib/theme';
+import {COLORS, FONTS} from './lib/theme';
 import type {Scene, VideoData} from './lib/types';
 import {Compare} from './templates/Compare';
 import {Definition} from './templates/Definition';
@@ -30,6 +31,11 @@ export const SceneView: React.FC<{scene: Scene}> = ({scene}) => (
     {scene.template === 'Quiz' && <Quiz {...scene.props} />}
     {scene.definition ? <DefinitionPanel definition={scene.definition} /> : null}
     {scene.screenText ? <ScreenText text={scene.screenText} /> : null}
+    {scene.modelNote ? (
+      <div style={{position: 'absolute', left: 96, right: 96, top: 1040, textAlign: 'center', fontFamily: FONTS.body, fontSize: 26, color: COLORS.textDim}}>
+        {rules.modelNote}
+      </div>
+    ) : null}
   </SceneFrame>
 );
 

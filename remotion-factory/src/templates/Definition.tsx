@@ -19,7 +19,7 @@ export const Definition: React.FC<DefinitionProps> = ({term, keywords = [], visu
       ) : null}
       <div style={{position: 'absolute', right: 0, top: 0, width: visual ? 920 : 1728, height: 688, display: 'flex', flexDirection: 'column', alignItems: visual ? 'flex-start' : 'center', justifyContent: 'center', gap: 34}}>
         <div style={{opacity: termOn, transform: `translateY(${(1 - termOn) * 20}px)`}}>
-          <Label size={110} weight={800} color={COLORS.amber}>{term}</Label>
+          <Label size={110} weight={700} color={COLORS.amber}>{term}</Label>
         </div>
         <div style={{display: 'flex', flexDirection: visual ? 'column' : 'row', gap: 22, alignItems: 'center'}}>
           {keywords.map((k, n) => {

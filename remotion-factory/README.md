@@ -16,7 +16,7 @@ In the left sidebar:
 - **`U2-L4-A`** — the whole video (295 s, 8850 frames, 1920×1080, 30 fps).
 - **`U2-L4-A-scenes/`** — one composition per scene (`m1` … `m9b`), to review a single scene.
 
-Run `npm run validate` first if you edit any data file.
+Run `npm run validate` first if you edit any data file. Fonts load from Google Fonts, so Studio needs internet.
 
 ## What is still missing
 

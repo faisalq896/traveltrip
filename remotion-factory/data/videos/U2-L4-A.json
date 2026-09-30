@@ -22,7 +22,7 @@
       "props": {"title": "الشكل البلّوري للمعادن", "subtitle": "(أ): من الذرّة إلى البلّورة", "code": "U2-L4-A"}
     },
     {
-      "id": "m3", "start": 32, "end": 67, "template": "IdealCrystal", "topic": "crystalline-matter",
+      "id": "m3", "start": 32, "end": 67, "template": "IdealCrystal", "topic": "crystalline-matter", "modelNote": true,
       "narration": "الذرّات والأيونات، لما تتكوّن المادة في ظروف ملائمة، ما تتكوّم عشوائي... تترتّب. بالطول، وبالعرض، وبالارتفاع... يعني في الأبعاد الثلاثة. [قراءة التعريف] ركّزوا على هالعبارة: تترتّب في الأبعاد الثلاثة.",
       "definition": {"items": [{"id": "crystalline-matter", "at": 22, "highlights": [{"text": "تترتّب في الأبعاد الثلاثة", "at": 30}]}]},
       "props": {
@@ -33,7 +33,7 @@
       }
     },
     {
-      "id": "m4a", "start": 67, "end": 105, "template": "Compare", "topic": "crystalline-vs-amorphous",
+      "id": "m4a", "start": 67, "end": 105, "template": "Compare", "topic": "crystalline-vs-amorphous", "modelNote": true,
       "narration": "المادة المتبلّرة: فيها ترتيب هندسي، وتركيب شبكي ووحدة بنائية، وتتكوّن منها بلّورة، وفي معظمها انفصام ومكسر. وغير المتبلّرة: لا ترتيب، ولا تركيب شبكي، ولا بلّورة. ما فيها انفصام... بس فيها مكسر. مثل الأوبال: تركيبه ثابت بس غير متبلّر، وعشان جذي هو من أشباه المعادن.",
       "props": {
         "mode": "table",
@@ -90,7 +90,7 @@
       }
     },
     {
-      "id": "m7a", "start": 157, "end": 187, "template": "IdealCrystal", "topic": "spatial-arrangement",
+      "id": "m7a", "start": 157, "end": 187, "template": "IdealCrystal", "topic": "spatial-arrangement", "modelNote": true,
       "narration": "[قراءة تعريف البناء الداخلي] العامل الأول: الترتيب الفراغي. كل ذرّة أو أيون يترتّب بحيث تكون له نفس الظروف اللي حول الذرّات الثانية، فيتكوّن التركيب الشبكي الفراغي. وهالتركيب تكرار لوحدة صغيرة جداً اسمها الوحدة البنائية، أصغر جزء من البلّورة. والعالم برافيه صنّف الوحدات البنائية إلى أربعة عشر نمطاً.",
       "definition": {"items": [
         {"id": "internal-structure", "at": 0.5, "highlights": [{"text": "الترتيب الفراغي", "at": 12}]},
@@ -105,7 +105,7 @@
       }
     },
     {
-      "id": "m7b", "start": 187, "end": 202, "template": "IdealCrystal", "topic": "diamond-graphite",
+      "id": "m7b", "start": 187, "end": 202, "template": "IdealCrystal", "topic": "diamond-graphite", "modelNote": true,
       "narration": "والمفاجأة: الألماس والجرافيت... ثنينهم كربون! بس الترتيب مختلف. واحد أقسى معدن، والثاني نسوّي منه أقلام الرصاص.",
       "props": {
         "kind": "carbonLattices",

@@ -22,6 +22,7 @@ export type SceneBase = {
   topic?: string;
   screenText?: string; // plain on-screen statement, drawn in the reserved text zone
   definition?: DefinitionRef; // verbatim book definition, drawn in the reserved text zone
+  modelNote?: boolean; // simplified model on screen -> caption from data/rules.json (CLAUDE.md)
   notes?: string;
 };
 

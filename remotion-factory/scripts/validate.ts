@@ -69,6 +69,10 @@ for (const v of videos) {
     }
     if ((s.props as any).text || (s.props as any).definitionText) fail(where, 'inline definition text — use scene.definition');
 
+    // 3b. Simplified models carry the CLAUDE.md caption.
+    const hasModel = s.template === 'IdealCrystal' || (s.template === 'Compare' && s.props.sides.some((x) => x.backdrop));
+    if (hasModel && !s.modelNote) fail(where, 'simplified model on screen without modelNote (نموذج توضيحي، الأحجام النسبية تقريبية)');
+
     // 4. Assets used by the scene exist in the manifest.
     for (const vis of visualsOf(s)) {
       if (vis.kind !== 'asset') continue;

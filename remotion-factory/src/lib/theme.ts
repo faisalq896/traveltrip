@@ -13,6 +13,6 @@ export const COLORS = {
 } as const;
 
 export const FONTS = {
-  display: "'Noto Kufi Arabic', 'IBM Plex Sans Arabic', sans-serif",
-  body: "'IBM Plex Sans Arabic', 'Noto Kufi Arabic', sans-serif",
+  display: "'IBM Plex Sans Arabic', sans-serif",
+  body: "'IBM Plex Sans Arabic', sans-serif",
 } as const;

@@ -1,33 +1,34 @@
 # Crystal video factory — working rules
 
 Reusable Remotion templates for the U2-L4 crystal-form series. Data lives in files; templates hold no lesson text.
-
-> These rules are taken from the script's own "قواعد الصحة العلمية" and "الأصول" sections
-> (`script_crystal_form_4videos.pdf`, pp. 2–3). The project `CLAUDE.md` from `D:\ZARRA_REMOTION_TEST`
-> was not available when this was built — replace this file with it, then re-check the rules below against it.
+The rules below come from the ZARRA `CLAUDE.md` (work rules, science rules, visual language) and from the
+script's "قواعد الصحة العلمية". Where a rule is checkable, it is checked by `npm run validate`.
 
 ## Rules and where they are enforced
 
-| Rule | Where |
-|---|---|
-| **Ideal shape first.** Every symmetry/lattice concept is explained on a code-drawn ideal shape; the real specimen follows under "شكلها في الطبيعة" and is never used to explain. | `scripts/validate.ts` — a `NaturalSample` needs an earlier `IdealCrystal` with the same `topic` (or `standalone` + `standaloneReason`). |
-| **Reserved text zone.** Sentences (screen text, book definitions) only in `TEXT_ZONE` (y 760–1032); visuals only in `STAGE` (y 48–736). Nothing else draws over the zone. | `src/lib/layout.ts`, `Stage` / `TextZone` in `src/lib/Frame.tsx`. Checked by eye in the review stills — there is no automatic overflow check. |
-| **Definitions verbatim from the book.** Scenes reference a definition by id; the text is never typed in a scene. Highlights must be exact substrings. | `data/definitions/U2-L4.json`, `DefinitionPanel`, `validate.ts`. |
-| **Script timings.** Scenes are contiguous and add up to the script's duration (A = 295 s). | `validate.ts`, `frameRange()` in `src/VideoComposition.tsx`. |
-| **Templates read data files.** | `data/videos/*.json`, `data/assets.json`, `data/definitions/*.json`. |
-| **Missing assets are visible.** An unregistered/missing asset draws a labelled dashed placeholder, never a blank. | `src/lib/Media.tsx`, `validate.ts` warnings. |
-| Semi-precious stones: never shown. Pyrite: not used for the cubic axis. Quartz: hexagonal axis only after the explanation; beryl: "as in nature" only. | Content rules for videos ب–د — not exercised by video A. |
+| Rule | Source | Where |
+|---|---|---|
+| Ideal shape first: concepts are explained on a code-drawn ideal shape; the real specimen comes after and never explains. | script | `validate.ts` — `NaturalSample` needs an earlier `IdealCrystal` with the same `topic` (or `standalone` + `standaloneReason`). |
+| Reserved text zone: speech/sentences only in `TEXT_ZONE` (y 760–1032), no model enters it, models stay whole inside `STAGE` (y 48–736). | CLAUDE.md, visual language | `src/lib/layout.ts`, `Stage` / `TextZone`. Checked by eye in review stills — no automatic overflow check. |
+| Book definitions verbatim; highlights are exact substrings. | script | `data/definitions/U2-L4.json`, `DefinitionPanel`, `validate.ts`. |
+| Simplified models carry "نموذج توضيحي، الأحجام النسبية تقريبية". | CLAUDE.md, science rules | `scene.modelNote` + `data/rules.json`; `validate.ts` requires it on every `IdealCrystal` and on `Compare` scenes with a backdrop. |
+| Script timings: scenes contiguous, total = script (A = 295 s). | script | `validate.ts`, `frameRange()`. |
+| Font: IBM Plex Sans Arabic via `@remotion/google-fonts`. RTL, dark scientific stage. | CLAUDE.md | `src/lib/fonts.ts`, `SceneFrame`. |
+| Little on-screen text; the voice explains. | CLAUDE.md | Only script-specified text is on screen; narration is stored in data, not rendered. |
+| No invented tools; libraries from the approved list. | CLAUDE.md #7 | Remotion + React only. GLB viewer (Three.js) not wired yet. |
+| Sources/licences recorded for every external asset. | CLAUDE.md | `CREDITS.md`, `data/assets.json`. |
+| UTF-8 without BOM. | CLAUDE.md | all files. |
+| Suspended content (incl. gemstones pp. 59–62) never appears; semi-precious stones never shown. | CLAUDE.md, script | Nothing to check in video A; keep in mind for B–D. |
+| Missing assets are visible: a labelled dashed placeholder, never a blank. | — | `src/lib/Media.tsx`, `validate.ts` warnings. |
 
 ## Layout
 
-- `src/templates/` — `IdealCrystal`, `Compare`, `NaturalSample`, `Definition` (the four reusable templates).
+- `src/templates/` — `IdealCrystal`, `Compare`, `NaturalSample`, `Definition`.
 - `src/scenes/` — `TitleCard`, `LessonMap`, `Quiz` (small motion-graphic scenes the script also needs).
 - `src/lib/` — layout, theme, fonts, lattice geometry, media slot, definition panel.
 - `data/` — everything the videos say and show.
 
 ## Commands
 
-- `npm run studio` — open Remotion Studio.
-- `npm run validate` — check the rules above against the data.
-- `npm run typecheck`
-- No MP4 is rendered in this pass. `scripts/review-stills.mjs` renders PNG stills only.
+- `npm run studio` — Remotion Studio. `npm run validate` — the rules above. `npm run typecheck`.
+- No MP4 is rendered. `scripts/review-stills.mjs` renders PNG stills only.

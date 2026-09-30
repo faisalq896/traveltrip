@@ -117,7 +117,7 @@ const UnitCellRepeat: React.FC<Extract<IdealCrystalProps, {kind: 'unitCellRepeat
       {count ? (
         <div style={{position: 'absolute', right: 40, top: 110, width: 640, opacity: shift, transform: `translateX(${(1 - shift) * 80}px)`}}>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 24, justifyContent: 'center'}}>
-            <div style={{fontFamily: FONTS.display, fontWeight: 800, fontSize: 200, lineHeight: 1, color: COLORS.amber}}>{count.value}</div>
+            <div style={{fontFamily: FONTS.display, fontWeight: 700, fontSize: 200, lineHeight: 1, color: COLORS.amber}}>{count.value}</div>
             <Label size={62} color={COLORS.text}>{count.caption}</Label>
           </div>
           <div style={{display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginTop: 24}}>
@@ -164,8 +164,8 @@ const CarbonLattices: React.FC<Extract<IdealCrystalProps, {kind: 'carbonLattices
         {panel(panels[1].title, gv, 78, 0.6)}
       </div>
       <div style={{position: 'absolute', left: 0, width: '100%', top: 250, textAlign: 'center'}}>
-        <div style={{opacity: eqOn * (1 - neOn), fontFamily: FONTS.display, fontWeight: 800, fontSize: 84, color: COLORS.text, position: 'absolute', width: '100%'}}>{equalsLabel}</div>
-        <div style={{opacity: neOn, fontFamily: FONTS.display, fontWeight: 800, fontSize: 150, color: COLORS.rose, transform: `scale(${1 + 0.05 * pulse(t)})`}}>{notEqualsLabel}</div>
+        <div style={{opacity: eqOn * (1 - neOn), fontFamily: FONTS.display, fontWeight: 700, fontSize: 84, color: COLORS.text, position: 'absolute', width: '100%'}}>{equalsLabel}</div>
+        <div style={{opacity: neOn, fontFamily: FONTS.display, fontWeight: 700, fontSize: 150, color: COLORS.rose, transform: `scale(${1 + 0.05 * pulse(t)})`}}>{notEqualsLabel}</div>
       </div>
     </Stage>
   );

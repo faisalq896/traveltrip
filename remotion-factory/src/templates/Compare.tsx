@@ -32,7 +32,7 @@ const Panel: React.FC<{side: CompareSide; w: number; h: number; pushIn?: boolean
       <div style={{position: 'absolute', left: 30, right: 30, top: 84, bottom: verdict ? 100 : 30, transform: `scale(${zoom})`}}><VisualSlot visual={side.visual} compact={h < 400} /></div>
       <div style={{position: 'absolute', top: 12, width: '100%', textAlign: 'center'}}><Label size={40} color={COLORS.amber}>{side.title}</Label></div>
       {qOn > 0 ? (
-        <div style={{position: 'absolute', top: 40, left: 36, opacity: qOn, transform: `scale(${0.6 + 0.4 * qOn})`, fontFamily: FONTS.display, fontWeight: 800, fontSize: 120, color: COLORS.amber}}>؟</div>
+        <div style={{position: 'absolute', top: 40, left: 36, opacity: qOn, transform: `scale(${0.6 + 0.4 * qOn})`, fontFamily: FONTS.display, fontWeight: 700, fontSize: 120, color: COLORS.amber}}>؟</div>
       ) : null}
       {verdict ? (
         <div style={{

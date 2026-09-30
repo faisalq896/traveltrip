@@ -35,7 +35,7 @@ export const LessonMap: React.FC<LessonMapProps> = ({root, branches, highlight, 
               padding: '22px 12px', textAlign: 'center', borderRadius: 26, background: hot ? `rgba(255,183,3,${0.12 + 0.12 * glow})` : COLORS.panel,
               border: `4px solid ${hot ? COLORS.amber : COLORS.panelEdge}`, boxShadow: hot ? `0 0 ${50 * glow}px ${COLORS.amber}` : 'none',
             }}>
-              <div style={{fontFamily: FONTS.display, fontWeight: 800, fontSize: 60, color: hot ? COLORS.amber : COLORS.textDim}}>({b.key})</div>
+              <div style={{fontFamily: FONTS.display, fontWeight: 700, fontSize: 60, color: hot ? COLORS.amber : COLORS.textDim}}>({b.key})</div>
               <Label size={44}>{b.label}</Label>
             </div>
             {hot && highlightLabel ? (

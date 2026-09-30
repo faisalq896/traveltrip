@@ -1,13 +1,10 @@
 # Credits
 
-## Fonts (bundled in `public/fonts/`, SIL Open Font License 1.1)
+## Fonts (loaded from Google Fonts by `@remotion/google-fonts`, SIL Open Font License 1.1)
 
 | Font | Use | Source |
 |---|---|---|
-| Noto Kufi Arabic (400/700/800) | headings, labels, big numerals | © 2019–2022 Google LLC — via [Fontsource](https://fontsource.org/fonts/noto-kufi-arabic) |
-| IBM Plex Sans Arabic (400/600) | body text, book definitions | © IBM Corp. — via [Fontsource](https://fontsource.org/fonts/ibm-plex-sans-arabic) |
-
-The license texts sit beside the font files (`public/fonts/LICENSE-*.txt`).
+| IBM Plex Sans Arabic (400/600/700, arabic + latin) | all text | © IBM Corp. — [Google Fonts](https://fonts.google.com/specimen/IBM+Plex+Sans+Arabic) via `@remotion/google-fonts/IBMPlexSansArabic` |
 
 ## Software
 
