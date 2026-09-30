@@ -7,7 +7,8 @@
     "studio": "remotion studio",
     "typecheck": "tsc --noEmit",
     "validate": "tsx scripts/validate.ts",
-    "still": "remotion still"
+    "still": "remotion still",
+    "sheet": "tsx scripts/recording-sheet.ts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.530",

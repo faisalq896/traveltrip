@@ -115,7 +115,7 @@
     },
     {
       "id": "m7c", "start": 202, "end": 212, "template": "NaturalSample", "topic": "diamond-graphite",
-      "narration": "(يستمر شرح الجرافيت)",
+      "narration": "",
       "props": {"layout": "single", "title": "شكلها في الطبيعة", "sample": {"name": "الجرافيت", "visual": {"kind": "asset", "id": "graphite-glb"}}}
     },
     {
