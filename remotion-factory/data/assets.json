@@ -1,0 +1,9 @@
+{
+  "halite-glb":        {"kind": "glb",   "label": "هاليت (حبة ملح)",            "file": null, "status": "missing", "source": "مكتبة GLB", "usedIn": ["m1"]},
+  "quartz-meshy-glb":  {"kind": "glb",   "label": "بلّورة كوارتز (Meshy)",       "file": null, "status": "missing", "source": "مكتبة GLB", "usedIn": ["m4a", "m5"]},
+  "quartz-glb":        {"kind": "glb",   "label": "كوارتز",                     "file": null, "status": "missing", "source": "مكتبة GLB", "usedIn": ["m8"]},
+  "graphite-glb":      {"kind": "glb",   "label": "جرافيت",                     "file": null, "status": "missing", "source": "مكتبة GLB", "usedIn": ["m7c", "m8"]},
+  "copper-glb":        {"kind": "glb",   "label": "نحاس",                       "file": null, "status": "missing", "source": "مكتبة GLB", "usedIn": ["m8"]},
+  "amethyst-fig48":    {"kind": "image", "label": "صورة الأمثيست (مادة متبلّرة)", "file": null, "status": "missing", "source": "ش48 من الكتاب", "usedIn": ["m3"]},
+  "opal-fig26":        {"kind": "image", "label": "صورة الأوبال",                "file": null, "status": "missing", "source": "ش26 من الكتاب", "usedIn": ["m4a"]}
+}

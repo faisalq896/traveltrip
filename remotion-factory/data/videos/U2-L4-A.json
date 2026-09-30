@@ -1,0 +1,162 @@
+{
+  "id": "U2-L4-A",
+  "title": "الشكل البلّوري للمعادن (أ): من الذرّة إلى البلّورة",
+  "durationSec": 295,
+  "source": "script_crystal_form_4videos.pdf — الفيديو (أ) — U2-L4-A (~4:55) — كتاب الطالب ص53–58",
+  "scenes": [
+    {
+      "id": "m1", "start": 0, "end": 25, "template": "Compare", "topic": "hook",
+      "narration": "شوفوا هالثنين: حبة ملح طبخ، وقطعة زجاج. ثنينهم صلبين، وثنينهم يعدّي منهم الضوء. بس لو دخلنا جوّاهم... بنلقى فرق كبير. تتوقعون منو فيهم البلّورة؟ خلونا نكتشف.",
+      "screenText": "ثنينهم صلبين... ثنينهم شفافين... بس واحد بلّورة!",
+      "props": {
+        "mode": "hero", "pushIn": true, "questionMarkAt": 14,
+        "sides": [
+          {"title": "حبة ملح", "visual": {"kind": "asset", "id": "halite-glb"}},
+          {"title": "قطعة زجاج", "visual": {"kind": "code", "shape": "glassShard"}}
+        ]
+      }
+    },
+    {
+      "id": "m2", "start": 25, "end": 32, "template": "TitleCard", "topic": "title",
+      "narration": "(موسيقى فقط)",
+      "props": {"title": "الشكل البلّوري للمعادن", "subtitle": "(أ): من الذرّة إلى البلّورة", "code": "U2-L4-A"}
+    },
+    {
+      "id": "m3", "start": 32, "end": 67, "template": "IdealCrystal", "topic": "crystalline-matter",
+      "narration": "الذرّات والأيونات، لما تتكوّن المادة في ظروف ملائمة، ما تتكوّم عشوائي... تترتّب. بالطول، وبالعرض، وبالارتفاع... يعني في الأبعاد الثلاثة. [قراءة التعريف] ركّزوا على هالعبارة: تترتّب في الأبعاد الثلاثة.",
+      "definition": {"items": [{"id": "crystalline-matter", "at": 22, "highlights": [{"text": "تترتّب في الأبعاد الثلاثة", "at": 30}]}]},
+      "props": {
+        "kind": "atomAssembly",
+        "labels": {"row": "صف", "layer": "طبقة", "lattice": "شبكة ثلاثية الأبعاد", "x": "طول", "y": "ارتفاع", "z": "عرض"},
+        "timeline": {"row": 4, "layer": 9, "lattice": 14, "arrows": 18},
+        "endMedia": {"visual": {"kind": "asset", "id": "amethyst-fig48"}, "at": 25, "caption": "مادة متبلّرة"}
+      }
+    },
+    {
+      "id": "m4a", "start": 67, "end": 105, "template": "Compare", "topic": "crystalline-vs-amorphous",
+      "narration": "المادة المتبلّرة: فيها ترتيب هندسي، وتركيب شبكي ووحدة بنائية، وتتكوّن منها بلّورة، وفي معظمها انفصام ومكسر. وغير المتبلّرة: لا ترتيب، ولا تركيب شبكي، ولا بلّورة. ما فيها انفصام... بس فيها مكسر. مثل الأوبال: تركيبه ثابت بس غير متبلّر، وعشان جذي هو من أشباه المعادن.",
+      "props": {
+        "mode": "table",
+        "sides": [
+          {"title": "المتبلّرة", "visual": {"kind": "asset", "id": "quartz-meshy-glb"}, "backdrop": "ordered"},
+          {"title": "غير المتبلّرة", "visual": {"kind": "asset", "id": "opal-fig26"}, "backdrop": "scattered"}
+        ],
+        "rowsAt": {"start": 4, "every": 8},
+        "rows": [
+          {"label": "الترتيب الهندسي للذرّات أو الأيونات", "values": ["يوجد", "لا يوجد"]},
+          {"label": "التركيب الشبكي والوحدة البنائية", "values": ["يوجد", "لا يوجد"]},
+          {"label": "تكوّن بلّورة", "values": ["تتكوّن", "لا تتكوّن"]},
+          {"label": "الانفصام والمكسر", "values": ["يوجد في معظمها انفصام ومكسر", "لا يوجد مستوى انفصام، لكن يوجد مكسر"]}
+        ]
+      }
+    },
+    {
+      "id": "m4b", "start": 105, "end": 112, "template": "Compare", "topic": "crystalline-verdict",
+      "narration": "وجواب سؤالنا: الملح هو المتبلّر... والزجاج غير متبلّر.",
+      "props": {
+        "mode": "hero",
+        "sides": [
+          {"title": "حبة ملح", "visual": {"kind": "asset", "id": "halite-glb"}},
+          {"title": "قطعة زجاج", "visual": {"kind": "code", "shape": "glassShard"}}
+        ],
+        "verdicts": {"at": 0.8, "values": ["متبلّرة", "غير متبلّرة"], "marks": [true, false]},
+        "callout": {"text": "ارسم المخطط بدفترك", "at": 3.5}
+      }
+    },
+    {
+      "id": "m5", "start": 112, "end": 137, "template": "Definition", "topic": "crystal",
+      "narration": "تتكوّن بلّورات المعادن في الطبيعة نتيجة عمليات تبلّر معيّنة. [قراءة التعريف] ثلاث كلمات ركّزوا عليها: صلب متجانس... أسطح مستوية... عوامل طبيعية.",
+      "definition": {"items": [{"id": "crystal", "at": 1.5, "highlights": [
+        {"text": "صلب متجانس", "at": 13}, {"text": "أسطح مستوية", "at": 16}, {"text": "عوامل طبيعية", "at": 19}
+      ]}]},
+      "props": {
+        "term": "البلّورة",
+        "visual": {"kind": "asset", "id": "quartz-meshy-glb"},
+        "keywords": [{"text": "صلب متجانس", "at": 13}, {"text": "أسطح مستوية", "at": 16}, {"text": "عوامل طبيعية", "at": 19}]
+      }
+    },
+    {
+      "id": "m6", "start": 137, "end": 157, "template": "LessonMap", "topic": "lesson-map",
+      "narration": "هذي خريطة درسنا كامل. الشكل البلّوري للمعدن ندرسه من أربع زوايا، وكل زاوية لها فيديو. اليوم نبدأ من جوّا البلّورة: البناء الداخلي.",
+      "props": {
+        "root": "الشكل البلّوري للمعدن",
+        "highlight": "أ",
+        "branches": [
+          {"key": "أ", "label": "البناء الداخلي", "children": ["الترتيب الفراغي", "طبيعة الروابط"]},
+          {"key": "ب", "label": "الخواص الخارجية"},
+          {"key": "ج", "label": "التماثل"},
+          {"key": "د", "label": "النظم البلّورية"}
+        ]
+      }
+    },
+    {
+      "id": "m7a", "start": 157, "end": 187, "template": "IdealCrystal", "topic": "spatial-arrangement",
+      "narration": "[قراءة تعريف البناء الداخلي] العامل الأول: الترتيب الفراغي. كل ذرّة أو أيون يترتّب بحيث تكون له نفس الظروف اللي حول الذرّات الثانية، فيتكوّن التركيب الشبكي الفراغي. وهالتركيب تكرار لوحدة صغيرة جداً اسمها الوحدة البنائية، أصغر جزء من البلّورة. والعالم برافيه صنّف الوحدات البنائية إلى أربعة عشر نمطاً.",
+      "definition": {"items": [
+        {"id": "internal-structure", "at": 0.5, "highlights": [{"text": "الترتيب الفراغي", "at": 12}]},
+        {"id": "unit-cell", "at": 9, "highlights": [{"text": "الوحدة البنائية", "at": 9.5}]}
+      ]},
+      "props": {
+        "kind": "unitCellRepeat",
+        "unitLabel": "الوحدة البنائية",
+        "latticeLabel": "التركيب الشبكي الفراغي",
+        "timeline": {"growX": 4, "growY": 8, "growZ": 12, "label": 15},
+        "count": {"value": 14, "caption": "برافيه", "at": 20}
+      }
+    },
+    {
+      "id": "m7b", "start": 187, "end": 202, "template": "IdealCrystal", "topic": "diamond-graphite",
+      "narration": "والمفاجأة: الألماس والجرافيت... ثنينهم كربون! بس الترتيب مختلف. واحد أقسى معدن، والثاني نسوّي منه أقلام الرصاص.",
+      "props": {
+        "kind": "carbonLattices",
+        "panels": [{"title": "الألماس", "arrangement": "diamond"}, {"title": "الجرافيت", "arrangement": "graphite"}],
+        "atomLabel": "C", "equalsLabel": "C = C", "notEqualsLabel": "≠", "notEqualsAt": 7
+      }
+    },
+    {
+      "id": "m7c", "start": 202, "end": 212, "template": "NaturalSample", "topic": "diamond-graphite",
+      "narration": "(يستمر شرح الجرافيت)",
+      "props": {"layout": "single", "title": "شكلها في الطبيعة", "sample": {"name": "الجرافيت", "visual": {"kind": "asset", "id": "graphite-glb"}}}
+    },
+    {
+      "id": "m8", "start": 212, "end": 267, "template": "NaturalSample", "topic": "bond-types",
+      "narration": "العامل الثاني: طبيعة الروابط الكيميائية وقوّتها. هي اللي تحدّد صفات المعدن الفيزيائية. التساهمية، مثل الكوارتز والألماس: صلادة عالية، بس هشّة. الأيونية، مثل الهاليت والفلوريت: صلادة متوسطة وهشّة، ومحاليلها توصل التيار. الفلزية، مثل النحاس والفضة والذهب: تنطرق وتنسحب، وتوصل زين. وفان ديرفال، مثل الجرافيت: قوى ضعيفة، فالمعدن ليّن. وهذا سرّ الألماس والجرافيت: نفس العنصر... بس رابطة غير، وترتيب غير.",
+      "props": {
+        "layout": "cards", "tag": "جدول للفهم", "bondLabel": "الرابطة", "flipAt": [2, 15, 28, 41],
+        "standalone": true, "standaloneReason": "جدول خواص حسب نوع الرابطة — ليس شرحاً لعنصر تماثل، فلا يسبقه شكل مثالي",
+        "cards": [
+          {"name": "كوارتز", "visual": {"kind": "asset", "id": "quartz-glb"}, "properties": ["صلادة عالية", "هشّة", "غير موصلة"], "bond": "تساهمية"},
+          {"name": "هاليت", "visual": {"kind": "asset", "id": "halite-glb"}, "properties": ["صلادة متوسطة", "هشّة", "رديئة التوصيل لكن محاليلها توصل التيار"], "bond": "أيونية"},
+          {"name": "نحاس", "visual": {"kind": "asset", "id": "copper-glb"}, "properties": ["قابلة للطرق والسحب", "موصلة جيدة"], "bond": "فلزية"},
+          {"name": "جرافيت", "visual": {"kind": "asset", "id": "graphite-glb"}, "properties": ["صلادة منخفضة جداً", "ليّنة"], "bond": "فان ديرفال"}
+        ]
+      }
+    },
+    {
+      "id": "m9a", "start": 267, "end": 272, "template": "LessonMap", "topic": "recap-map",
+      "narration": "عرفنا شلون البلّورة من جوّا...",
+      "props": {
+        "root": "الشكل البلّوري للمعدن", "highlight": "أ", "fillChildrenAt": 0.8,
+        "branches": [
+          {"key": "أ", "label": "البناء الداخلي", "children": ["الترتيب الفراغي", "طبيعة الروابط"]},
+          {"key": "ب", "label": "الخواص الخارجية"},
+          {"key": "ج", "label": "التماثل"},
+          {"key": "د", "label": "النظم البلّورية"}
+        ]
+      }
+    },
+    {
+      "id": "m9b", "start": 272, "end": 295, "template": "Quiz", "topic": "recap-quiz",
+      "narration": "...الفيديو الجاي نطلع برّا، ونكتشف زاوية ما تتغيّر أبداً، مهما كبرت البلّورة.",
+      "props": {
+        "countdownSec": 4, "answerSec": 2.5,
+        "questions": [
+          {"q": "أصغر جزء في البلّورة وله صفات البلّورة الكاملة نفسها؟", "a": "الوحدة البنائية"},
+          {"q": "من مميزات المادة المتبلّرة: يوجد في معظمها ......", "a": "انفصام ومكسر"},
+          {"q": "علّل: لا نعتمد على التركيب الكيميائي فقط للتعرّف على المعدن.", "a": "لأن بعض المعادن تركيبها متشابه وتختلف في خواصها، مثل الألماس والجرافيت"}
+        ],
+        "homework": {"label": "الواجب", "text": "ارسم المخطط السهمي للفرق بين المادة المتبلّرة وغير المتبلّرة"}
+      }
+    }
+  ]
+}
