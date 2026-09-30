@@ -10,6 +10,9 @@ const book = definitions as Record<string, DefinitionEntry>;
 
 export const bookText = (id: string) => book[id]?.text;
 
+/** The term is only prefixed when the book sentence itself does not name it. */
+export const needsTermLabel = (e: DefinitionEntry) => !e.text.includes(e.term);
+
 const renderWithHighlights = (text: string, highlights: {text: string; at: number}[], t: number) => {
   // Split on the highlight substrings; the visible characters stay exactly the book's.
   const marks = highlights
@@ -34,29 +37,33 @@ const renderWithHighlights = (text: string, highlights: {text: string; at: numbe
   return out;
 };
 
-/** Book definitions are shown exactly as stored in data/definitions — never retyped in a scene. */
+/**
+ * Book definitions are shown exactly as stored in data/definitions — never retyped in a scene.
+ * One definition at a time: a later item replaces the earlier one, so the text zone never overflows.
+ */
 export const DefinitionPanel: React.FC<{definition: DefinitionRef}> = ({definition}) => {
   const t = useSceneTime();
-  const entries = definition.items.map((it) => ({it, entry: book[it.id]}));
-  const total = entries.reduce((n, e) => n + (e.entry?.text.length ?? 0), 0);
-  const size = total < 130 ? 46 : total < 200 ? 40 : 32;
+  const items = definition.items;
+  const active = items.reduce((acc, it, n) => (t >= it.at ? n : acc), 0);
+  const it = items[active];
+  const entry = book[it.id];
+  if (!entry) return <TextZone><div style={{color: COLORS.rose, fontSize: 30}}>تعريف غير موجود: {it.id}</div></TextZone>;
+  const on = ramp(t, it.at, 0.6);
+  const label = needsTermLabel(entry) ? entry.term : null;
+  const len = entry.text.length + (label?.length ?? 0);
+  const size = len < 130 ? 46 : len < 200 ? 40 : 36;
   return (
-    <TextZone style={{gap: 12}}>
-      {entries.map(({it, entry}) => {
-        const on = ramp(t, it.at, 0.6);
-        if (!entry) return <div key={it.id} style={{color: COLORS.rose, fontSize: 30}}>تعريف غير موجود: {it.id}</div>;
-        return (
-          <div key={it.id} style={{
-            opacity: on, transform: `translateY(${(1 - on) * 24}px)`, display: 'flex', gap: 18, alignItems: 'flex-start',
-            background: 'rgba(21,50,77,0.85)', border: `2px solid ${COLORS.panelEdge}`, borderRadius: 22, padding: "10px 24px",
-          }}>
-            <div style={{flex: 'none', marginTop: 8}}><BookIcon size={size * 0.8} /></div>
-            <div style={{fontFamily: FONTS.body, fontWeight: 400, fontSize: size, lineHeight: 1.55, direction: 'rtl'}}>
-              {renderWithHighlights(entry.text, it.highlights ?? [], t)}
-            </div>
-          </div>
-        );
-      })}
+    <TextZone>
+      <div style={{
+        opacity: on, transform: `translateY(${(1 - on) * 24}px)`, display: 'flex', gap: 18, alignItems: 'flex-start',
+        background: 'rgba(21,50,77,0.85)', border: `2px solid ${COLORS.panelEdge}`, borderRadius: 22, padding: '14px 26px',
+      }}>
+        <div style={{flex: 'none', marginTop: 8}}><BookIcon size={size * 0.8} /></div>
+        <div style={{fontFamily: FONTS.body, fontWeight: 400, fontSize: size, lineHeight: 1.55, direction: 'rtl'}}>
+          {label ? <span style={{fontWeight: 700, color: COLORS.teal}}>{label}: </span> : null}
+          {renderWithHighlights(entry.text, it.highlights ?? [], t)}
+        </div>
+      </div>
     </TextZone>
   );
 };

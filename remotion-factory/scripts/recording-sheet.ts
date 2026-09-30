@@ -43,7 +43,8 @@ const onScreen = (s: Scene): string => {
 
 const star = (id: string) => {
   const e = book[id];
-  return e ? `⭐ «${e.text}»` : `⭐ [تعريف غير موجود: ${id}]`;
+  if (!e) return `⭐ [تعريف غير موجود: ${id}]`;
+  return e.text.includes(e.term) ? `⭐ «${e.text}»` : `⭐ ${e.term}: «${e.text}»`;
 };
 
 /** Narration with each [قراءة ...] marker replaced by the verbatim definition(s) of that scene. */

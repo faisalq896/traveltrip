@@ -143,6 +143,7 @@ export type AssetEntry = {
 };
 
 export type DefinitionEntry = {
+  term: string; // shown as a label when the book text does not name it
   text: string; // verbatim from the student book
   source: string;
   verifiedAgainstBook: boolean;
