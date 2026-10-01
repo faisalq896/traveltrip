@@ -21,6 +21,11 @@ script's "قواعد الصحة العلمية". Where a rule is checkable, it i
 | Suspended content (incl. gemstones pp. 59–62) never appears; semi-precious stones never shown. | CLAUDE.md, script | Nothing to check in video A; keep in mind for B–D. |
 | Missing assets are visible: a labelled dashed placeholder, never a blank. | — | `src/lib/Media.tsx`, `validate.ts` warnings. |
 
+## بداية كل فيديو
+
+ترتيب بداية كل فيديو ثابت: التشويق (15-20 ث) ثم الشعار (3 ث) ثم العنوان.
+ونوع التشويق يتغير حسب الدرس من IDEAS.md.
+
 ## Layout
 
 - `src/templates/` — `IdealCrystal`, `Compare`, `NaturalSample`, `Definition`.
