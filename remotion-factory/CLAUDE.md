@@ -26,6 +26,16 @@ script's "قواعد الصحة العلمية". Where a rule is checkable, it i
 ترتيب بداية كل فيديو ثابت: التشويق (15-20 ث) ثم الشعار (3 ث) ثم العنوان.
 ونوع التشويق يتغير حسب الدرس من IDEAS.md.
 
+## الأصول الخارجية (إذن فيصل، 01-10-2026)
+
+- **الرخص المسموحة فقط:** CC0، CC-BY، CC-BY-SA، والخطوط OFL.
+- **ممنوع:** NonCommercial (NC)، أي شي بدون رخصة واضحة، صور الكتاب، صور بحث Google العادي، الصور المولدة بالذكاء الاصطناعي.
+- **المصادر بالترتيب:** polyhaven.com (إضاءة HDRI وملمس، CC0) ← Wikimedia Commons (صور عينات حقيقية) ← Sketchfab: EDUROCK و rocksandminerals (GLB) ← Google Fonts (خطوط).
+- **صور العينات:** عينة حقيقية معروفة الاسم من متحف أو جامعة أو مصدر موثوق. تنعرض على فيصل مع اسم المعدن قبل استخدامها.
+- **التسجيل:** كل أصل في `CREDITS.md` (الاسم، الرابط، الناشر، الرخصة) وفي `data/assets.json` (`license`, `url`). اللي CC-BY أو CC-BY-SA يتذكر في نهاية الفيديو.
+- **الحجم:** أي ملف كبير ينضغط قبل ما يدخل المشروع (GLB بـ gltf-transform).
+- `npm run validate` يرفض أي أصل `ready` بدون رخصة مسموحة أو بدون رابط.
+
 ## Layout
 
 - `src/templates/` — `IdealCrystal`, `Compare`, `NaturalSample`, `Definition`.

@@ -24,6 +24,8 @@ Nothing below is bundled. Each needs its source and license recorded here when i
 
 | Asset id | What | Source named by the script |
 |---|---|---|
-| `halite-glb`, `quartz-glb`, `quartz-meshy-glb`, `graphite-glb`, `copper-glb` | GLB specimens | GLB library (the script names Meshy for the quartz crystal) |
-| `amethyst-fig48` | amethyst photo | student book fig. 48 |
-| `opal-fig26` | opal photo | student book fig. 26 |
+| `halite-glb`, `quartz-glb`, `quartz-meshy-glb`, `graphite-glb`, `copper-glb` | GLB specimens | mineral-lab, or Sketchfab (EDUROCK / rocksandminerals) |
+| `amethyst-fig48` | amethyst specimen photo | Wikimedia Commons — book images are not allowed |
+| `opal-fig26` | opal specimen photo | Wikimedia Commons — book images are not allowed |
+
+Allowed licences: CC0, CC-BY, CC-BY-SA, OFL (fonts). CC-BY / CC-BY-SA items are also credited at the end of the video.

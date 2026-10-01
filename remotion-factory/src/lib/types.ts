@@ -140,6 +140,8 @@ export type AssetEntry = {
   status: 'ready' | 'missing';
   source: string;
   usedIn: string[];
+  license: string | null; // CC0 | CC-BY | CC-BY-SA | OFL (see CLAUDE.md)
+  url: string | null; // where it was downloaded from
 };
 
 export type DefinitionEntry = {

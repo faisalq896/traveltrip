@@ -83,6 +83,14 @@ for (const v of videos) {
   }
 }
 
+// 5. Licences: only CC0 / CC-BY / CC-BY-SA / OFL, with a source URL, for anything marked ready.
+const ALLOWED = /^(CC0|CC-BY|CC-BY-SA|OFL)(\s?[0-9.]+)?$/;
+for (const [id, e] of Object.entries(registry)) {
+  if (e.status !== 'ready') continue;
+  if (!e.license || !ALLOWED.test(e.license)) fail(`assets/${id}`, `licence "${e.license}" is not CC0 / CC-BY / CC-BY-SA / OFL`);
+  if (!e.url) fail(`assets/${id}`, 'ready asset has no source url');
+}
+
 for (const d of Object.entries(book)) if (!d[1].verifiedAgainstBook) console.warn(`! definition "${d[0]}" not yet checked against the printed book`);
 for (const [id, scenes] of missing) console.warn(`! missing asset ${id} (${registry[id].label} — ${registry[id].source}) used in: ${[...new Set(scenes)].join(', ')}`);
 

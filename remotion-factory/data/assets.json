@@ -1,9 +1,88 @@
 {
-  "halite-glb":        {"kind": "glb",   "label": "هاليت (حبة ملح)",            "file": null, "status": "missing", "source": "مكتبة GLB", "usedIn": ["m1"]},
-  "quartz-meshy-glb":  {"kind": "glb",   "label": "بلّورة كوارتز (Meshy)",       "file": null, "status": "missing", "source": "مكتبة GLB", "usedIn": ["m4a", "m5"]},
-  "quartz-glb":        {"kind": "glb",   "label": "كوارتز",                     "file": null, "status": "missing", "source": "مكتبة GLB", "usedIn": ["m8"]},
-  "graphite-glb":      {"kind": "glb",   "label": "جرافيت",                     "file": null, "status": "missing", "source": "مكتبة GLB", "usedIn": ["m7c", "m8"]},
-  "copper-glb":        {"kind": "glb",   "label": "نحاس",                       "file": null, "status": "missing", "source": "مكتبة GLB", "usedIn": ["m8"]},
-  "amethyst-fig48":    {"kind": "image", "label": "صورة الأمثيست (مادة متبلّرة)", "file": null, "status": "missing", "source": "ش48 من الكتاب", "usedIn": ["m3"]},
-  "opal-fig26":        {"kind": "image", "label": "صورة الأوبال",                "file": null, "status": "missing", "source": "ش26 من الكتاب", "usedIn": ["m4a"]}
+  "halite-glb": {
+    "kind": "glb",
+    "label": "هاليت (حبة ملح)",
+    "file": null,
+    "status": "missing",
+    "source": "mineral-lab أو Sketchfab (EDUROCK / rocksandminerals)",
+    "usedIn": [
+      "m1"
+    ],
+    "license": null,
+    "url": null
+  },
+  "quartz-meshy-glb": {
+    "kind": "glb",
+    "label": "بلّورة كوارتز (Meshy)",
+    "file": null,
+    "status": "missing",
+    "source": "mineral-lab أو Sketchfab (EDUROCK / rocksandminerals)",
+    "usedIn": [
+      "m4a",
+      "m5"
+    ],
+    "license": null,
+    "url": null
+  },
+  "quartz-glb": {
+    "kind": "glb",
+    "label": "كوارتز",
+    "file": null,
+    "status": "missing",
+    "source": "mineral-lab أو Sketchfab (EDUROCK / rocksandminerals)",
+    "usedIn": [
+      "m8"
+    ],
+    "license": null,
+    "url": null
+  },
+  "graphite-glb": {
+    "kind": "glb",
+    "label": "جرافيت",
+    "file": null,
+    "status": "missing",
+    "source": "mineral-lab أو Sketchfab (EDUROCK / rocksandminerals)",
+    "usedIn": [
+      "m7c",
+      "m8"
+    ],
+    "license": null,
+    "url": null
+  },
+  "copper-glb": {
+    "kind": "glb",
+    "label": "نحاس",
+    "file": null,
+    "status": "missing",
+    "source": "mineral-lab أو Sketchfab (EDUROCK / rocksandminerals)",
+    "usedIn": [
+      "m8"
+    ],
+    "license": null,
+    "url": null
+  },
+  "amethyst-fig48": {
+    "kind": "image",
+    "label": "صورة الأمثيست (مادة متبلّرة)",
+    "file": null,
+    "status": "missing",
+    "source": "Wikimedia Commons (صورة الكتاب ش48 ممنوعة)",
+    "usedIn": [
+      "m3"
+    ],
+    "license": null,
+    "url": null
+  },
+  "opal-fig26": {
+    "kind": "image",
+    "label": "صورة الأوبال",
+    "file": null,
+    "status": "missing",
+    "source": "Wikimedia Commons (صورة الكتاب ش26 ممنوعة)",
+    "usedIn": [
+      "m4a"
+    ],
+    "license": null,
+    "url": null
+  }
 }
